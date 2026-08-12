@@ -2,6 +2,7 @@ import "./index.css";
 import { useBills } from "./hooks/useBills";
 import BillList from "./components/bills/BillList";
 import AddBillForm from "./components/bills/AddBillForm";
+import StatCard from "./components/common/StatCard";
  
 export default function App() {
   const { bills, addBill, deleteBill, togglePaid } = useBills();
