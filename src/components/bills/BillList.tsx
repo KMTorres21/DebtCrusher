@@ -41,7 +41,7 @@ export default function BillList({
               padding: 16,
               marginBottom: 16,
               boxShadow: "0 2px 8px rgba(0,0,0,.08)",
-            }}}
+            }}
 
       <h2
         style={{
