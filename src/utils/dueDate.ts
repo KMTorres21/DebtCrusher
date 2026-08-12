@@ -52,7 +52,8 @@ export function getDueDateInfo(bill: Bill): DueDateInfo {
     today.getMonth(),
     actualDueDay
   );
- 
+  console.log("TODAY:", today);
+  console.log("DUE DATE:", dueDate);
   const millisecondsPerDay = 1000 * 60 * 60 * 24;
  
   const daysUntilDue = Math.round(
