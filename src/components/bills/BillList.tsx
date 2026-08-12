@@ -1,217 +1,107 @@
-import { useState } from "react";
 import { Bill } from "../../types/Bill";
 import { getDueDateInfo } from "../../utils/dueDate";
 import { sortBills } from "../../utils/sortBills";
- 
+
 interface Props {
   bills: Bill[];
   onTogglePaid: (id: string) => void;
   onDelete: (id: string) => void;
-  onEdit: (bill: Bill) => void;
 }
- 
+
 export default function BillList({
   bills,
   onTogglePaid,
   onDelete,
-  onEdit,
 }: Props) {
-  if (bills.length === 0) {
-    return <p>No bills yet. Add your first bill below.</p>;
+  const sortedBills = sortBills(bills);
+
+  if (sortedBills.length === 0) {
+    return (
+      <div className="text-center text-gray-500 py-10">
+        No bills yet.
+      </div>
+    );
   }
 
-   const sortedBills = sortBills(bills);
-   const [showPaid, setShowPaid] = useState(false);
-
-   const activeBills = sortedBills.filter((bill) =>! bill.paid);
-   const paidBills = sortedBills.filter((bill) => bill.paid);
-  
   return (
-    <div>
-      <>
-       <h2>Active Bills</h2>
-       {activeBills.map((bill) => {
-        const dueInfo = getDueDateInfo(bill);
+    <div className="space-y-4">
+      {sortedBills.map((bill) => {
+        const dueInfo = getDueDateInfo(bill.dueDate);
+
         return (
           <div
             key={bill.id}
-            style={{
-              background: bill.paid ? "#ecfdf5" : "#ffffff",
-              borderRadius: 16,
-              padding: 16,
-              marginBottom: 16,
-              boxShadow: "0 2px 8px rgba(0,0,0,.08)",
-            }}
-
-      <h2
-        style={{
-          marginTop: 24,
-          cursor: "pointer",
-          userSelect: "none",
-        }}
-        onClick={() => setShowPaid(!showPaid)}
-      >
-        {showPaid ? "▼" : "▶"} Paid Bills ({paidBills.length})
-      </h2>
-
-      {showPaid &&
-        paidBills.map((bill) => (
-          <div
-            key={bill.id}
-            style={{
-              background: "#fff",
-              padding: 16,
-              borderRadius: 12,
-              marginBottom: 12,
-              boxShadow: "0 2px 8px rgba(0,0,0,.08)",
-            }}
+            className={`rounded-xl border p-4 shadow-sm transition
+              ${
+                bill.paid
+                  ? "bg-green-50 border-green-300"
+                  : dueInfo.isOverdue
+                  ? "bg-red-50 border-red-400"
+                  : "bg-white border-gray-200"
+              }`}
           >
-            <h3>{bill.name}</h3>
+            <div className="flex justify-between items-start">
+              <div>
+                <h2 className="font-semibold text-lg">{bill.name}</h2>
 
-            <p>${bill.amount.toFixed(2)}</p>
+                <p className="text-sm text-gray-500">
+                  {bill.category}
+                </p>
 
-            <p>Due: {bill.dueDay}</p>
+                <p className="text-sm mt-1">
+                  Due: {dueInfo.formattedDate}
+                </p>
 
-            <button onClick={() => onTogglePaid(bill.id)}>
-              Paid ✅
-            </button>
+                {!bill.paid && dueInfo.isOverdue && (
+                  <p className="text-red-600 text-sm font-semibold">
+                    Overdue by {dueInfo.daysOverdue} day
+                    {dueInfo.daysOverdue !== 1 ? "s" : ""}
+                  </p>
+                )}
 
-            <button
-              onClick={() => onDelete(bill.id)}
-              style={{ marginLeft: 10 }}
-            >
-              Delete
-            </button>
-          </div>
-        ))}
-    </>
-  </div>
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                gap: 12,
-              }}
-            >
-              <h3 style={{ margin: 0 }}>
-                {bill.category === "Utilities" && "⚡ "}
-                {bill.category === "Housing" && "🏠 "}
-                {bill.category === "Insurance" && "🛡️ "}
-                {bill.category === "Credit Card" && "💳 "}
-                {bill.category === "Medical" && "❤️ "}
-                {bill.category === "Subscriptions" && "🎬 "}
-                {bill.category === "Other" && "📄 "}
-                {bill.name}
-              </h3>
- 
-              <span
-                style={{
-                  background:
-                    dueInfo.status === "paid"
-                      ? "#dcfce7"
-                      : dueInfo.status === "overdue"
-                      ? "#fee2e2"
-                      : dueInfo.status === "today"
-                      ? "#fed7aa"
-                      : dueInfo.status === "soon"
-                      ? "#fef3c7"
-                      : "#dbeafe",
- 
-                  color:
-                    dueInfo.status === "paid"
-                      ? "#166534"
-                      : dueInfo.status === "overdue"
-                      ? "#b91c1c"
-                      : dueInfo.status === "today"
-                      ? "#9a3412"
-                      : dueInfo.status === "soon"
-                      ? "#92400e"
-                      : "#1e40af",
- 
-                  padding: "4px 10px",
-                  borderRadius: 20,
-                  fontSize: 12,
-                  fontWeight: 600,
-                  whiteSpace: "nowrap",
-                }}
-              >
-                {dueInfo.label}
-              </span>
+                {!bill.paid && !dueInfo.isOverdue && (
+                  <p className="text-gray-500 text-sm">
+                    {dueInfo.daysUntilDue} day
+                    {dueInfo.daysUntilDue !== 1 ? "s" : ""} remaining
+                  </p>
+                )}
+              </div>
+
+              <div className="text-right">
+                <div className="text-xl font-bold">
+                  ${bill.amount.toFixed(2)}
+                </div>
+
+                <div
+                  className={`text-sm font-semibold ${
+                    bill.paid
+                      ? "text-green-600"
+                      : "text-orange-500"
+                  }`}
+                >
+                  {bill.paid ? "Paid" : "Unpaid"}
+                </div>
+              </div>
             </div>
- 
-            <p
-              style={{
-                fontSize: 24,
-                fontWeight: "bold",
-                margin: "12px 0 4px",
-              }}
-            >
-              ${bill.amount.toFixed(2)}
-            </p>
- 
-            <p
-              style={{
-                color: "#666",
-                marginTop: 0,
-                marginBottom: 16,
-              }}
-            >
-              {bill.category}
-            </p>
- 
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "flex-end",
-                gap: 8,
-                flexWrap: "wrap",
-              }}
-            >
-              <button
-                onClick={() => onEdit(bill)}
-                style={{
-                  padding: "6px 12px",
-                  fontSize: 14,
-                  borderRadius: 8,
-                  border: "none",
-                  cursor: "pointer",
-                  background: "#eff6ff",
-                  color: "#1d4ed8",
-                }}
-              >
-                ✏️ Edit
-              </button>
- 
+
+            <div className="flex gap-2 mt-4">
               <button
                 onClick={() => onTogglePaid(bill.id)}
-                style={{
-                  padding: "6px 12px",
-                  fontSize: 14,
-                  borderRadius: 8,
-                  border: "none",
-                  cursor: "pointer",
-                  background: bill.paid
-                    ? "#dcfce7"
-                    : "#f0fdf4",
-                  color: "#166534",
-                }}
+                className={`flex-1 rounded-lg px-4 py-2 text-white transition
+                  ${
+                    bill.paid
+                      ? "bg-orange-500 hover:bg-orange-600"
+                      : "bg-green-600 hover:bg-green-700"
+                  }`}
               >
-                {bill.paid ? "✓ Paid" : "✓ Mark Paid"}
+                {bill.paid ? "Mark Unpaid" : "Mark Paid"}
               </button>
- 
+
               <button
                 onClick={() => onDelete(bill.id)}
-                style={{
-                  padding: "6px 12px",
-                  fontSize: 14,
-                  borderRadius: 8,
-                  border: "none",
-                  cursor: "pointer",
-                  background: "#ef4444",
-                  color: "white",
-                }}
+                className="rounded-lg bg-red-600 hover:bg-red-700 text-white px-4 py-2 transition"
               >
-                🗑 Delete
+                Delete
               </button>
             </div>
           </div>
