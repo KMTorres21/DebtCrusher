@@ -30,7 +30,8 @@ export function getDueDateInfo(bill: Bill): DueDateInfo {
     today.getDate()
   );
  
-  // Prevent invalid dates such as February 31.
+  // If the requested day doesn't exist in this month,
+  // use the last day of the month.
   const daysInMonth = new Date(
     today.getFullYear(),
     today.getMonth() + 1,
@@ -42,21 +43,23 @@ export function getDueDateInfo(bill: Bill): DueDateInfo {
     daysInMonth
   );
  
+  // IMPORTANT:
+  // Always use the CURRENT month here.
+  // A past due date is overdue; it does not roll
+  // forward to the next month.
   const dueDate = new Date(
     today.getFullYear(),
     today.getMonth(),
     actualDueDay
   );
  
-  const millisecondsPerDay =
-    1000 * 60 * 60 * 24;
+  const millisecondsPerDay = 1000 * 60 * 60 * 24;
  
   const daysUntilDue = Math.round(
     (dueDate.getTime() - todayStart.getTime()) /
       millisecondsPerDay
   );
  
-  // Unpaid and past due.
   if (daysUntilDue < 0) {
     const daysOverdue = Math.abs(daysUntilDue);
  
