@@ -23,7 +23,6 @@ export default function BillList({
    const sortedBills = sortBills(bills);
    const [showPaid, setShowPaid] = useState(false);
 
-   const sortedBills = sortBills(bills);
    const activeBills = sortedBills.filter((bill) =>! bill.paid);
    const paidBills = sortedBills.filter((bill) => bill.paid);
   
