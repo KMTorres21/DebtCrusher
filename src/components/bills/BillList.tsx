@@ -1,6 +1,6 @@
 import { Bill } from "../../types/Bill";
 import { getDueDateInfo } from "../../utils/dueDate";
-
+ 
 interface Props {
   bills: Bill[];
   onTogglePaid: (id: string) => void;
@@ -20,145 +20,148 @@ export default function BillList({
  
   return (
     <div>
-      {bills.map((bill) => (
-     const dueInfo = getDueDateInfo(bill);
-
-     return  (
-        <div
-          key={bill.id}
-          style={{
-            background: bill.paid ? "#ecfdf5" : "#ffffff",
-            borderRadius: 16,
-            padding: 16,
-            marginBottom: 16,
-            boxShadow: "0 2px 8px rgba(0,0,0,.08)",
-          }}
-        >
+      {bills.map((bill) => {
+        const dueInfo = getDueDateInfo(bill);
+ 
+        return (
           <div
+            key={bill.id}
             style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              gap: 12,
-            }}
-          >
-            <h3 style={{ margin: 0 }}>
-              {bill.category === "Utilities" && "⚡ "}
-              {bill.category === "Housing" && "🏠 "}
-              {bill.category === "Insurance" && "🛡️ "}
-              {bill.category === "Credit Card" && "💳 "}
-              {bill.category === "Medical" && "❤️ "}
-              {bill.category === "Subscriptions" && "🎬 "}
-              {bill.category === "Other" && "📄 "}
-              {bill.name}
-            </h3>
- 
-            <span
-  style={{
-    background:
-      dueInfo.status === "paid"
-        ? "#dcfce7"
-        : dueInfo.status === "today"
-        ? "#fed7aa"
-        : dueInfo.status === "soon"
-        ? "#fef3c7"
-        : "#dbeafe",
- 
-    color:
-      dueInfo.status === "paid"
-        ? "#166534"
-        : dueInfo.status === "today"
-        ? "#9a3412"
-        : dueInfo.status === "soon"
-        ? "#92400e"
-        : "#1e40af",
- 
-    padding: "4px 10px",
-    borderRadius: 20,
-    fontSize: 12,
-    fontWeight: 600,
-    whiteSpace: "nowrap",
-  }}
->
-  {dueInfo.label}
-</span>
-          </div>
- 
-          <p
-            style={{
-              fontSize: 24,
-              fontWeight: "bold",
-              margin: "12px 0 4px",
-            }}
-          >
-            ${bill.amount.toFixed(2)}
-          </p>
- 
-          <p
-            style={{
-              color: "#666",
-              marginTop: 0,
+              background: bill.paid ? "#ecfdf5" : "#ffffff",
+              borderRadius: 16,
+              padding: 16,
               marginBottom: 16,
+              boxShadow: "0 2px 8px rgba(0,0,0,.08)",
             }}
           >
-            {bill.category}
-          </p>
- 
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "flex-end",
-              gap: 8,
-              flexWrap: "wrap",
-            }}
-          >
-            <button
-              onClick={() => onEdit(bill)}
+            <div
               style={{
-                padding: "6px 12px",
-                fontSize: 14,
-                borderRadius: 8,
-                border: "none",
-                cursor: "pointer",
-                background: "#eff6ff",
-                color: "#1d4ed8",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                gap: 12,
               }}
             >
-              ✏️ Edit
-            </button>
+              <h3 style={{ margin: 0 }}>
+                {bill.category === "Utilities" && "⚡ "}
+                {bill.category === "Housing" && "🏠 "}
+                {bill.category === "Insurance" && "🛡️ "}
+                {bill.category === "Credit Card" && "💳 "}
+                {bill.category === "Medical" && "❤️ "}
+                {bill.category === "Subscriptions" && "🎬 "}
+                {bill.category === "Other" && "📄 "}
+                {bill.name}
+              </h3>
  
-            <button
-              onClick={() => onTogglePaid(bill.id)}
+              <span
+                style={{
+                  background:
+                    dueInfo.status === "paid"
+                      ? "#dcfce7"
+                      : dueInfo.status === "today"
+                      ? "#fed7aa"
+                      : dueInfo.status === "soon"
+                      ? "#fef3c7"
+                      : "#dbeafe",
+ 
+                  color:
+                    dueInfo.status === "paid"
+                      ? "#166534"
+                      : dueInfo.status === "today"
+                      ? "#9a3412"
+                      : dueInfo.status === "soon"
+                      ? "#92400e"
+                      : "#1e40af",
+ 
+                  padding: "4px 10px",
+                  borderRadius: 20,
+                  fontSize: 12,
+                  fontWeight: 600,
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {dueInfo.label}
+              </span>
+            </div>
+ 
+            <p
               style={{
-                padding: "6px 12px",
-                fontSize: 14,
-                borderRadius: 8,
-                border: "none",
-                cursor: "pointer",
-                background: bill.paid ? "#dcfce7" : "#f0fdf4",
-                color: "#166534",
+                fontSize: 24,
+                fontWeight: "bold",
+                margin: "12px 0 4px",
               }}
             >
-              {bill.paid ? "✓ Paid" : "✓ Mark Paid"}
-            </button>
+              ${bill.amount.toFixed(2)}
+            </p>
  
-            <button
-              onClick={() => onDelete(bill.id)}
+            <p
               style={{
-                padding: "6px 12px",
-                fontSize: 14,
-                borderRadius: 8,
-                border: "none",
-                cursor: "pointer",
-                background: "#ef4444",
-                color: "white",
+                color: "#666",
+                marginTop: 0,
+                marginBottom: 16,
               }}
             >
-              🗑 Delete
-            </button>
+              {bill.category}
+            </p>
+ 
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-end",
+                gap: 8,
+                flexWrap: "wrap",
+              }}
+            >
+              <button
+                onClick={() => onEdit(bill)}
+                style={{
+                  padding: "6px 12px",
+                  fontSize: 14,
+                  borderRadius: 8,
+                  border: "none",
+                  cursor: "pointer",
+                  background: "#eff6ff",
+                  color: "#1d4ed8",
+                }}
+              >
+                ✏️ Edit
+              </button>
+ 
+              <button
+                onClick={() => onTogglePaid(bill.id)}
+                style={{
+                  padding: "6px 12px",
+                  fontSize: 14,
+                  borderRadius: 8,
+                  border: "none",
+                  cursor: "pointer",
+                  background: bill.paid
+                    ? "#dcfce7"
+                    : "#f0fdf4",
+                  color: "#166534",
+                }}
+              >
+                {bill.paid ? "✓ Paid" : "✓ Mark Paid"}
+              </button>
+ 
+              <button
+                onClick={() => onDelete(bill.id)}
+                style={{
+                  padding: "6px 12px",
+                  fontSize: 14,
+                  borderRadius: 8,
+                  border: "none",
+                  cursor: "pointer",
+                  background: "#ef4444",
+                  color: "white",
+                }}
+              >
+                🗑 Delete
+              </button>
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
