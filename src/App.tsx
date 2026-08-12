@@ -1,24 +1,17 @@
+import "./index.css";
 import { useBills } from "./hooks/useBills";
 import BillList from "./components/bills/BillList";
+import AddBillForm from "./components/bills/AddBillForm";
  
 export default function App() {
   const { bills, addBill, deleteBill, togglePaid } = useBills();
- 
-  function addSampleBill() {
-    addBill({
-      name: "Electric",
-      amount: 125.75,
-      dueDay: 15,
-      paid: false,
-      category: "Utilities",
-      notes: "",
-    });
-  }
  
   const monthlyTotal = bills.reduce(
     (sum, bill) => sum + bill.amount,
     0
   );
+ 
+  const paidCount = bills.filter((bill) => bill.paid).length;
  
   return (
     <main className="app">
@@ -34,10 +27,14 @@ export default function App() {
           ${monthlyTotal.toFixed(2)}
         </div>
  
-        <button onClick={addSampleBill}>
-          Add Sample Bill
-        </button>
+        <p>
+          {paidCount} of {bills.length} bills paid
+        </p>
       </section>
+ 
+      <br />
+ 
+      <AddBillForm onAdd={addBill} />
  
       <br />
  
