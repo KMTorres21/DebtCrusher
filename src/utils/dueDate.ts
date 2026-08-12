@@ -30,28 +30,44 @@ export function getDueDateInfo(bill: Bill): DueDateInfo {
     today.getDate()
   );
  
-  let dueDate = new Date(
+  // Prevent invalid dates such as February 31.
+  const daysInMonth = new Date(
     today.getFullYear(),
-    today.getMonth(),
-    bill.dueDay
+    today.getMonth() + 1,
+    0
+  ).getDate();
+ 
+  const actualDueDay = Math.min(
+    bill.dueDay,
+    daysInMonth
   );
  
-  // If this month's due date has already passed,
-  // the next occurrence is next month.
-  if (dueDate < todayStart) {
-    dueDate = new Date(
-      today.getFullYear(),
-      today.getMonth() + 1,
-      bill.dueDay
-    );
-  }
+  const dueDate = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    actualDueDay
+  );
  
-  const millisecondsPerDay = 1000 * 60 * 60 * 24;
+  const millisecondsPerDay =
+    1000 * 60 * 60 * 24;
  
   const daysUntilDue = Math.round(
     (dueDate.getTime() - todayStart.getTime()) /
       millisecondsPerDay
   );
+ 
+  // Unpaid and past due.
+  if (daysUntilDue < 0) {
+    const daysOverdue = Math.abs(daysUntilDue);
+ 
+    return {
+      status: "overdue",
+      label: `Overdue by ${daysOverdue} day${
+        daysOverdue === 1 ? "" : "s"
+      }`,
+      daysUntilDue,
+    };
+  }
  
   if (daysUntilDue === 0) {
     return {
@@ -83,3 +99,4 @@ export function getDueDateInfo(bill: Bill): DueDateInfo {
     daysUntilDue,
   };
 }
+ 
