@@ -31,17 +31,34 @@ export default function App() {
         <p>Take control of your bills.</p>
       </header>
  
-      <section className="summary">
-        <h2>This Month</h2>
+<section
+  style={{
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
+    gap: "16px",
+    marginBottom: "24px",
+  }}
+>
+  <StatCard
+    title="Monthly Total"
+    value={`$${monthlyTotal.toFixed(2)}`}
+  />
  
-        <div className="amount">
-          ${monthlyTotal.toFixed(2)}
-        </div>
+  <StatCard
+    title="Paid"
+    value={`$${paidAmount.toFixed(2)}`}
+  />
  
-        <p>
-          {paidCount} of {bills.length} bills paid
-        </p>
-      </section>
+  <StatCard
+    title="Remaining"
+    value={`$${remainingAmount.toFixed(2)}`}
+  />
+ 
+  <StatCard
+    title="Due This Week"
+    value={dueThisWeek}
+  />
+</section>
  
       <br />
  
