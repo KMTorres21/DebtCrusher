@@ -1,22 +1,22 @@
-import { Bill } from "./types/Bill";
 import { useState } from "react";
 import "./index.css";
 import { useBills } from "./hooks/useBills";
 import BillList from "./components/bills/BillList";
 import AddBillForm from "./components/bills/AddBillForm";
 import StatCard from "./components/common/StatCard";
+import { Bill } from "./types/Bill";
  
 export default function App() {
-  const { 
-   bills, 
-   addBill, 
-   updateBill,
-   deleteBill, 
-   togglePaid,
+  const {
+    bills,
+    addBill,
+    updateBill,
+    deleteBill,
+    togglePaid,
   } = useBills();
- const [editingBill, setEditingBill] =
-  useState<Bill | null>(null);
+ 
   const [showAddBill, setShowAddBill] = useState(false);
+  const [editingBill, setEditingBill] = useState<Bill | null>(null);
  
   const monthlyTotal = bills.reduce(
     (sum, bill) => sum + bill.amount,
@@ -41,6 +41,14 @@ export default function App() {
   ) {
     addBill(bill);
     setShowAddBill(false);
+  }
+ 
+  function handleEditBill(
+    id: string,
+    bill: Parameters<typeof addBill>[0]
+  ) {
+    updateBill(id, bill);
+    setEditingBill(null);
   }
  
   return (
@@ -81,7 +89,9 @@ export default function App() {
       </section>
  
       <section>
-        <h2 style={{ marginBottom: "16px" }}>Bills</h2>
+        <h2 style={{ marginBottom: "16px" }}>
+          Bills
+        </h2>
  
         <BillList
           bills={bills}
@@ -91,7 +101,7 @@ export default function App() {
         />
       </section>
  
-      {/* Floating Add Bill Button */}
+      {/* Add Bill Button */}
       <button
         className="floating-add-button"
         onClick={() => setShowAddBill(true)}
@@ -108,54 +118,71 @@ export default function App() {
         >
           <div
             className="modal"
-            onClick={(event) => event.stopPropagation()}
+            onClick={(event) =>
+              event.stopPropagation()
+            }
           >
             <div className="modal-header">
               <h2>Add Bill</h2>
  
               <button
                 className="modal-close"
-                onClick={() => setShowAddBill(false)}
+                onClick={() =>
+                  setShowAddBill(false)
+                }
                 aria-label="Close"
               >
                 ×
               </button>
             </div>
- {editingBill && (
-  <div
-    className="modal-backdrop"
-    onClick={() => setEditingBill(null)}
-  >
-    <div
-      className="modal"
-      onClick={(event) => event.stopPropagation()}
-    >
-      <div className="modal-header">
-        <h2>Edit Bill</h2>
  
-        <button
-          className="modal-close"
+            <AddBillForm
+              onAdd={handleAddBill}
+              onCancel={() =>
+                setShowAddBill(false)
+              }
+            />
+          </div>
+        </div>
+      )}
+ 
+      {/* Edit Bill Modal */}
+      {editingBill && (
+        <div
+          className="modal-backdrop"
           onClick={() => setEditingBill(null)}
-          aria-label="Close"
         >
-          ×
-        </button>
-      </div>
+          <div
+            className="modal"
+            onClick={(event) =>
+              event.stopPropagation()
+            }
+          >
+            <div className="modal-header">
+              <h2>Edit Bill</h2>
  
-      <AddBillForm
-        onAdd={addBill}
-        editingBill={editingBill}
-        onUpdate={updateBill}
-        onCancel={() => setEditingBill(null)}
-      />
-    </div>
-  </div>
-)}
-            <AddBillForm onAdd={handleAddBill} />
+              <button
+                className="modal-close"
+                onClick={() =>
+                  setEditingBill(null)
+                }
+                aria-label="Close"
+              >
+                ×
+              </button>
+            </div>
+ 
+            <AddBillForm
+              onAdd={addBill}
+              editingBill={editingBill}
+              onUpdate={handleEditBill}
+              onCancel={() =>
+                setEditingBill(null)
+              }
+            />
           </div>
         </div>
       )}
     </main>
   );
 }
- 
