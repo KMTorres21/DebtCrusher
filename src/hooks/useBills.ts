@@ -1,59 +1,50 @@
 import { useEffect, useState } from "react";
 import { Bill } from "../types/Bill";
 import { loadBills, saveBills } from "../utils/storage";
- 
+
 export function useBills() {
-  const [bills, setBills] = useState<Bill[]>(loadBills());
- 
+  const [bills, setBills] = useState<Bill[]>([]);
+
+  // Load bills on startup
+  useEffect(() => {
+    setBills(loadBills());
+  }, []);
+
+  // Save whenever bills change
   useEffect(() => {
     saveBills(bills);
   }, [bills]);
- 
-  function addBill(
-    bill: Omit<Bill, "id" | "createdAt">
-  ) {
-    const newBill: Bill = {
-      ...bill,
-      id: crypto.randomUUID(),
-      createdAt: new Date().toISOString(),
-    };
- 
-    setBills((prev) => [...prev, newBill]);
+
+  function addBill(bill: Bill) {
+    setBills((prev) => [...prev, bill]);
   }
- 
- function updateBill(
-  id: string,
-  updates: Omit<Bill, "id" | "createdAt">
-) {
-  setBills((prev) =>
-    prev.map((bill) =>
-      bill.id === id
-        ? {
-            ...bill,
-            ...updates,
-            updatedAt: new Date().toISOString(),
-          }
-        : bill
-    )
-  );
-}
- 
-  function deleteBill(id: string) {
+
+  function updateBill(updatedBill: Bill) {
     setBills((prev) =>
-      prev.filter((bill) => bill.id !== id)
+      prev.map((bill) =>
+        bill.id === updatedBill.id ? updatedBill : bill
+      )
     );
   }
- 
+
+  function deleteBill(id: string) {
+    setBills((prev) => prev.filter((bill) => bill.id !== id));
+  }
+
   function togglePaid(id: string) {
     setBills((prev) =>
       prev.map((bill) =>
         bill.id === id
-          ? { ...bill, paid: !bill.paid }
+          ? {
+              ...bill,
+              paid: !bill.paid,
+              updatedAt: new Date().toISOString(),
+            }
           : bill
       )
     );
   }
- 
+
   return {
     bills,
     addBill,
