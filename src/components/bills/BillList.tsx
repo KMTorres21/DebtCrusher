@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Bill } from "../../types/Bill";
 import { getDueDateInfo } from "../../utils/dueDate";
 import { sortBills } from "../../utils/sortBills";
@@ -20,12 +21,15 @@ export default function BillList({
   }
 
    const sortedBills = sortBills(bills);
-     
+   const [showPaid, setShowPaid] = useState(false);
+  
   return (
     <div>
       {sortedBills.map((bill) => {
         const dueInfo = getDueDateInfo(bill);
         const sortedBills = sortBills(bills);
+        const activeBills = sortedBills.filter((bill) => !bill.paid);
+        const paidBills = sortedBills.filter((bill) => bill.paid);
         return (
           <div
             key={bill.id}
