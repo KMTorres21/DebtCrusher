@@ -58,6 +58,8 @@ export default function BillList({
                   background:
                     dueInfo.status === "paid"
                       ? "#dcfce7"
+                      : dueInfo.status === "overdue"
+                      ? "#fee2e2"
                       : dueInfo.status === "today"
                       ? "#fed7aa"
                       : dueInfo.status === "soon"
@@ -67,6 +69,8 @@ export default function BillList({
                   color:
                     dueInfo.status === "paid"
                       ? "#166534"
+                      : dueInfo.status === "overdue"
+                      ? "#b91c1c"
                       : dueInfo.status === "today"
                       ? "#9a3412"
                       : dueInfo.status === "soon"
