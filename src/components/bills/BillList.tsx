@@ -1,5 +1,6 @@
 import { Bill } from "../../types/Bill";
- 
+import { getDueDateInfo } from "../../utils/dueDate";
+
 interface Props {
   bills: Bill[];
   onTogglePaid: (id: string) => void;
@@ -20,6 +21,9 @@ export default function BillList({
   return (
     <div>
       {bills.map((bill) => (
+     const dueInfo = getDueDateInfo(bill);
+
+     return  (
         <div
           key={bill.id}
           style={{
@@ -50,16 +54,34 @@ export default function BillList({
             </h3>
  
             <span
-              style={{
-                background: "#e5e7eb",
-                padding: "4px 10px",
-                borderRadius: 20,
-                fontSize: 12,
-                whiteSpace: "nowrap",
-              }}
-            >
-              Due {bill.dueDay}
-            </span>
+  style={{
+    background:
+      dueInfo.status === "paid"
+        ? "#dcfce7"
+        : dueInfo.status === "today"
+        ? "#fed7aa"
+        : dueInfo.status === "soon"
+        ? "#fef3c7"
+        : "#dbeafe",
+ 
+    color:
+      dueInfo.status === "paid"
+        ? "#166534"
+        : dueInfo.status === "today"
+        ? "#9a3412"
+        : dueInfo.status === "soon"
+        ? "#92400e"
+        : "#1e40af",
+ 
+    padding: "4px 10px",
+    borderRadius: 20,
+    fontSize: 12,
+    fontWeight: 600,
+    whiteSpace: "nowrap",
+  }}
+>
+  {dueInfo.label}
+</span>
           </div>
  
           <p
