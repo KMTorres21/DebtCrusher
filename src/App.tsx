@@ -13,6 +13,16 @@ export default function App() {
   );
  
   const paidCount = bills.filter((bill) => bill.paid).length;
+
+  const paidAmount = bills
+  .filter((bill) => bill.paid)
+  .reduce((sum, bill) => sum + bill.amount, 0);
+ 
+  const remainingAmount = monthlyTotal - paidAmount;
+ 
+  const dueThisWeek = bills.filter(
+  (bill) => bill.dueDay >= 1 && bill.dueDay <= 7 && !bill.paid
+).length;
  
   return (
     <main className="app">
