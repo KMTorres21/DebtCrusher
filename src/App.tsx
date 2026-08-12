@@ -87,6 +87,7 @@ export default function App() {
           bills={bills}
           onDelete={deleteBill}
           onTogglePaid={togglePaid}
+          onEdit={setEditingBill}
         />
       </section>
  
