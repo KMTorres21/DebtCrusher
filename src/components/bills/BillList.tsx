@@ -1,5 +1,6 @@
 import { Bill } from "../../types/Bill";
 import { getDueDateInfo } from "../../utils/dueDate";
+import { sortBills } from "../../utils/sortBills";
  
 interface Props {
   bills: Bill[];
