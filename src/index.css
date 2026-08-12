@@ -79,3 +79,94 @@ button{
 button:hover{
   background:#0d47a1;
 }
+.floating-add-button {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+ 
+  width: 56px;
+  height: 56px;
+ 
+  border: none;
+  border-radius: 50%;
+ 
+  background: #1565c0;
+  color: white;
+ 
+  font-size: 32px;
+  line-height: 1;
+ 
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+ 
+  cursor: pointer;
+ 
+  z-index: 100;
+}
+ 
+.floating-add-button:hover {
+  background: #0d47a1;
+}
+ 
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+ 
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+ 
+  background: rgba(0, 0, 0, 0.45);
+ 
+  padding: 16px;
+ 
+  z-index: 200;
+}
+ 
+.modal {
+  width: 100%;
+  max-width: 500px;
+ 
+  max-height: 90vh;
+  overflow-y: auto;
+ 
+  background: white;
+ 
+  border-radius: 20px 20px 12px 12px;
+ 
+  padding: 20px;
+ 
+  box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.2);
+}
+ 
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+ 
+  margin-bottom: 16px;
+}
+ 
+.modal-header h2 {
+  margin: 0;
+}
+ 
+.modal-close {
+  width: 36px;
+  height: 36px;
+ 
+  border: none;
+  border-radius: 50%;
+ 
+  background: #f1f1f1;
+  color: #333;
+ 
+  font-size: 24px;
+  line-height: 1;
+ 
+  cursor: pointer;
+}
+ 
+.modal-close:hover {
+  background: #e0e0e0;
+}
+ 
