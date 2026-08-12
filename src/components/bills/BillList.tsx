@@ -41,9 +41,51 @@ export default function BillList({
               padding: 16,
               marginBottom: 16,
               boxShadow: "0 2px 8px rgba(0,0,0,.08)",
+                  ))}
+
+      <h2
+        style={{
+          marginTop: 24,
+          cursor: "pointer",
+          userSelect: "none",
+        }}
+        onClick={() => setShowPaid(!showPaid)}
+      >
+        {showPaid ? "▼" : "▶"} Paid Bills ({paidBills.length})
+      </h2>
+
+      {showPaid &&
+        paidBills.map((bill) => (
+          <div
+            key={bill.id}
+            style={{
+              background: "#fff",
+              padding: 16,
+              borderRadius: 12,
+              marginBottom: 12,
+              boxShadow: "0 2px 8px rgba(0,0,0,.08)",
             }}
           >
-            <div
+            <h3>{bill.name}</h3>
+
+            <p>${bill.amount.toFixed(2)}</p>
+
+            <p>Due: {bill.dueDay}</p>
+
+            <button onClick={() => onTogglePaid(bill.id)}>
+              Paid ✅
+            </button>
+
+            <button
+              onClick={() => onDelete(bill.id)}
+              style={{ marginLeft: 10 }}
+            >
+              Delete
+            </button>
+          </div>
+        ))}
+    </>
+  </div>
               style={{
                 display: "flex",
                 justifyContent: "space-between",
