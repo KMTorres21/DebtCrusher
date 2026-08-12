@@ -21,6 +21,23 @@ export function useBills() {
     setBills((prev) => [...prev, newBill]);
   }
  
+ function updateBill(
+  id: string,
+  updates: Omit<Bill, "id" | "createdAt">
+) {
+  setBills((prev) =>
+    prev.map((bill) =>
+      bill.id === id
+        ? {
+            ...bill,
+            ...updates,
+            updatedAt: new Date().toISOString(),
+          }
+        : bill
+    )
+  );
+}
+ 
   function deleteBill(id: string) {
     setBills((prev) =>
       prev.filter((bill) => bill.id !== id)
@@ -40,6 +57,7 @@ export function useBills() {
   return {
     bills,
     addBill,
+    updateBill,
     deleteBill,
     togglePaid,
   };
