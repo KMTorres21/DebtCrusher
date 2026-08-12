@@ -23,7 +23,7 @@ export default function BillList({
     <div>
       {bills.map((bill) => {
         const dueInfo = getDueDateInfo(bill);
- 
+        const sortedBills = sortBills(bills);
         return (
           <div
             key={bill.id}
