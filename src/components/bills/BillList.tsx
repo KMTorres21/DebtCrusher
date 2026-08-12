@@ -27,7 +27,7 @@ export default function BillList({
     <div>
       <>
        <h2>Active Bills</h2>
-       {activeBills.map((bill) => (
+       {activeBills.map((bill) => {
         const dueInfo = getDueDateInfo(bill);
         const sortedBills = sortBills(bills);
         const activeBills = sortedBills.filter((bill) => !bill.paid);
@@ -41,7 +41,7 @@ export default function BillList({
               padding: 16,
               marginBottom: 16,
               boxShadow: "0 2px 8px rgba(0,0,0,.08)",
-                  ))}
+            })}
 
       <h2
         style={{
