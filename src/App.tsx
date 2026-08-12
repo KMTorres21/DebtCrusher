@@ -121,7 +121,36 @@ export default function App() {
                 ×
               </button>
             </div>
+ {editingBill && (
+  <div
+    className="modal-backdrop"
+    onClick={() => setEditingBill(null)}
+  >
+    <div
+      className="modal"
+      onClick={(event) => event.stopPropagation()}
+    >
+      <div className="modal-header">
+        <h2>Edit Bill</h2>
  
+        <button
+          className="modal-close"
+          onClick={() => setEditingBill(null)}
+          aria-label="Close"
+        >
+          ×
+        </button>
+      </div>
+ 
+      <AddBillForm
+        onAdd={addBill}
+        editingBill={editingBill}
+        onUpdate={updateBill}
+        onCancel={() => setEditingBill(null)}
+      />
+    </div>
+  </div>
+)}
             <AddBillForm onAdd={handleAddBill} />
           </div>
         </div>
