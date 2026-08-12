@@ -1,3 +1,4 @@
+import { Bill } from "./types/Bill";
 import { useState } from "react";
 import "./index.css";
 import { useBills } from "./hooks/useBills";
@@ -6,7 +7,15 @@ import AddBillForm from "./components/bills/AddBillForm";
 import StatCard from "./components/common/StatCard";
  
 export default function App() {
-  const { bills, addBill, deleteBill, togglePaid } = useBills();
+  const { 
+   bills, 
+   addBill, 
+   updateBill,
+   deleteBill, 
+   togglePaid,
+  } = useBills();
+ const [editingBill, setEditingBill] =
+  useState<Bill | null>(null);
   const [showAddBill, setShowAddBill] = useState(false);
  
   const monthlyTotal = bills.reduce(
