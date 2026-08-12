@@ -18,7 +18,9 @@ export default function BillList({
   if (bills.length === 0) {
     return <p>No bills yet. Add your first bill below.</p>;
   }
- 
+
+   const sortedBills = sortBills(bills);
+     
   return (
     <div>
       {sortedBills.map((bill) => {
