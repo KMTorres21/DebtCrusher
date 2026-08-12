@@ -1,181 +1,115 @@
-import { useEffect, useState } from "react";
-import { Bill } from "../../types/Bill";
- 
+import { useState } from "react";
+import { Bill, BillCategory } from "../../types/Bill";
+
 interface Props {
-  onAdd: (
-    bill: Omit<Bill, "id" | "createdAt">
-  ) => void;
-  editingBill?: Bill | null;
-  onUpdate?: (
-    id: string,
-    bill: Omit<Bill, "id" | "createdAt">
-  ) => void;
-  onCancel?: () => void;
+  onSave: (bill: Bill) => void;
 }
- 
-export default function AddBillForm({
-  onAdd,
-  editingBill = null,
-  onUpdate,
-  onCancel,
-}: Props) {
+
+const categories: BillCategory[] = [
+  "Housing",
+  "Utilities",
+  "Insurance",
+  "Phone",
+  "Internet",
+  "Credit Card",
+  "Loan",
+  "Subscription",
+  "Medical",
+  "Transportation",
+  "Other",
+];
+
+export default function BillForm({ onSave }: Props) {
   const [name, setName] = useState("");
   const [amount, setAmount] = useState("");
-  const [dueDay, setDueDay] = useState("");
-  const [category, setCategory] = useState("Utilities");
-  const [paid, setPaid] = useState(false);
+  const [dueDate, setDueDate] = useState("");
+  const [category, setCategory] = useState<BillCategory>("Other");
   const [recurring, setRecurring] = useState(true);
-  const [autoPay, setAutoPay] = useState(false);
-  const [notes, setNotes] = useState("");
- 
-  useEffect(() => {
-    if (editingBill) {
-      setName(editingBill.name);
-      setAmount(editingBill.amount.toString());
-      setDueDay(editingBill.dueDay.toString());
-      setCategory(editingBill.category);
-      setPaid(editingBill.paid);
-      setRecurring(editingBill.recurring);
-      setAutoPay(editingBill.autoPay);
-      setNotes(editingBill.notes);
-    } else {
-      resetForm();
-    }
-  }, [editingBill]);
- 
-  function resetForm() {
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+
+    if (!name || !amount || !dueDate) return;
+
+    const now = new Date().toISOString();
+
+    const bill: Bill = {
+      id: crypto.randomUUID(),
+      name,
+      amount: parseFloat(amount),
+      dueDate,
+      category,
+      recurring,
+      paid: false,
+      createdAt: now,
+      updatedAt: now,
+    };
+
+    onSave(bill);
+
     setName("");
     setAmount("");
-    setDueDay("");
-    setCategory("Utilities");
-    setPaid(false);
+    setDueDate("");
+    setCategory("Other");
     setRecurring(true);
-    setAutoPay(false);
-    setNotes("");
   }
- 
-  function submit(event: React.FormEvent) {
-    event.preventDefault();
- 
-    if (!name.trim() || !amount || !dueDay) {
-      return;
-    }
- 
-    const bill = {
-      name: name.trim(),
-      amount: Number(amount),
-      dueDay: Number(dueDay),
-      category,
-      paid,
-      recurring,
-      autoPay,
-      notes,
-    };
- 
-    if (editingBill && onUpdate) {
-      onUpdate(editingBill.id, bill);
-    } else {
-      onAdd(bill);
-    }
- 
-    resetForm();
-  }
- 
+
   return (
-    <form onSubmit={submit}>
+    <form onSubmit={handleSubmit} className="space-y-4">
+
       <input
+        type="text"
         placeholder="Bill Name"
         value={name}
-        onChange={(event) => setName(event.target.value)}
+        onChange={(e) => setName(e.target.value)}
+        className="w-full border rounded-lg p-3"
+        required
       />
- 
+
       <input
         type="number"
-        min="0"
         step="0.01"
         placeholder="Amount"
         value={amount}
-        onChange={(event) => setAmount(event.target.value)}
+        onChange={(e) => setAmount(e.target.value)}
+        className="w-full border rounded-lg p-3"
+        required
       />
- 
+
       <input
-        type="number"
-        min="1"
-        max="31"
-        placeholder="Due Day"
-        value={dueDay}
-        onChange={(event) => setDueDay(event.target.value)}
+        type="date"
+        value={dueDate}
+        onChange={(e) => setDueDate(e.target.value)}
+        className="w-full border rounded-lg p-3"
+        required
       />
- 
+
       <select
         value={category}
-        onChange={(event) => setCategory(event.target.value)}
+        onChange={(e) => setCategory(e.target.value as BillCategory)}
+        className="w-full border rounded-lg p-3"
       >
-        <option>Utilities</option>
-        <option>Housing</option>
-        <option>Insurance</option>
-        <option>Subscriptions</option>
-        <option>Loan</option>
-        <option>Credit Card</option>
-        <option>Medical</option>
-        <option>Other</option>
+        {categories.map((cat) => (
+          <option key={cat}>{cat}</option>
+        ))}
       </select>
- 
-      <label>
+
+      <label className="flex items-center gap-2">
         <input
           type="checkbox"
           checked={recurring}
-          onChange={(event) => setRecurring(event.target.checked)}
+          onChange={(e) => setRecurring(e.target.checked)}
         />
-        Recurring monthly
+        Recurring Monthly Bill
       </label>
- 
-      <label>
-        <input
-          type="checkbox"
-          checked={autoPay}
-          onChange={(event) => setAutoPay(event.target.checked)}
-        />
-        Autopay
-      </label>
- 
-      {editingBill && (
-        <label>
-          <input
-            type="checkbox"
-            checked={paid}
-            onChange={(event) => setPaid(event.target.checked)}
-          />
-          Paid
-        </label>
-      )}
- 
-      <textarea
-        placeholder="Notes"
-        value={notes}
-        onChange={(event) => setNotes(event.target.value)}
-      />
- 
-      <div
-        style={{
-          display: "flex",
-          gap: 8,
-          marginTop: 12,
-        }}
+
+      <button
+        type="submit"
+        className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-lg p-3 font-semibold"
       >
-        <button type="submit">
-          {editingBill ? "Save Changes" : "Add Bill"}
-        </button>
- 
-        {editingBill && onCancel && (
-          <button
-            type="button"
-            onClick={onCancel}
-          >
-            Cancel
-          </button>
-        )}
-      </div>
+        Save Bill
+      </button>
+
     </form>
   );
 }
