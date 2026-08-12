@@ -25,7 +25,9 @@ export default function BillList({
   
   return (
     <div>
-      {sortedBills.map((bill) => {
+      <>
+       <h2>Active Bills</h2>
+       {activeBills.map((bill) => (
         const dueInfo = getDueDateInfo(bill);
         const sortedBills = sortBills(bills);
         const activeBills = sortedBills.filter((bill) => !bill.paid);
