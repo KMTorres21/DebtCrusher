@@ -4,12 +4,14 @@ interface Props {
   bills: Bill[];
   onTogglePaid: (id: string) => void;
   onDelete: (id: string) => void;
+  onEdit: (bill: Bill) => void;
 }
  
 export default function BillList({
   bills,
   onTogglePaid,
   onDelete,
+  onEdit,
 }: Props) {
   if (bills.length === 0) {
     return <p>No bills yet. Add your first bill below.</p>;
@@ -85,8 +87,24 @@ export default function BillList({
               display: "flex",
               justifyContent: "flex-end",
               gap: 8,
+              flexWrap: "wrap",
             }}
           >
+            <button
+              onClick={() => onEdit(bill)}
+              style={{
+                padding: "6px 12px",
+                fontSize: 14,
+                borderRadius: 8,
+                border: "none",
+                cursor: "pointer",
+                background: "#eff6ff",
+                color: "#1d4ed8",
+              }}
+            >
+              ✏️ Edit
+            </button>
+ 
             <button
               onClick={() => onTogglePaid(bill.id)}
               style={{
@@ -122,4 +140,3 @@ export default function BillList({
     </div>
   );
 }
- 
