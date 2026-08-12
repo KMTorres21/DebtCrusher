@@ -1,188 +1,80 @@
-import { useState } from "react";
-import "./index.css";
-import { useBills } from "./hooks/useBills";
+import BillForm from "./components/bills/BillForm";
 import BillList from "./components/bills/BillList";
-import AddBillForm from "./components/bills/AddBillForm";
-import StatCard from "./components/common/StatCard";
-import { Bill } from "./types/Bill";
- 
+import { useBills } from "./hooks/useBills";
+
 export default function App() {
   const {
     bills,
     addBill,
-    updateBill,
     deleteBill,
     togglePaid,
   } = useBills();
- 
-  const [showAddBill, setShowAddBill] = useState(false);
-  const [editingBill, setEditingBill] = useState<Bill | null>(null);
- 
-  const monthlyTotal = bills.reduce(
-    (sum, bill) => sum + bill.amount,
-    0
-  );
- 
-  const paidAmount = bills
-    .filter((bill) => bill.paid)
+
+  const totalBills = bills.length;
+  const unpaidBills = bills.filter((b) => !b.paid).length;
+  const totalAmount = bills
+    .filter((b) => !b.paid)
     .reduce((sum, bill) => sum + bill.amount, 0);
- 
-  const remainingAmount = monthlyTotal - paidAmount;
- 
-  const dueThisWeek = bills.filter(
-    (bill) =>
-      bill.dueDay >= 1 &&
-      bill.dueDay <= 7 &&
-      !bill.paid
-  ).length;
- 
-  function handleAddBill(
-    bill: Parameters<typeof addBill>[0]
-  ) {
-    addBill(bill);
-    setShowAddBill(false);
-  }
- 
-  function handleEditBill(
-    id: string,
-    bill: Parameters<typeof addBill>[0]
-  ) {
-    updateBill(id, bill);
-    setEditingBill(null);
-  }
- 
+
   return (
-    <main className="app">
-      <header className="hero">
-        <h1>💰 DebtCrusher</h1>
-        <p>Take control of your bills.</p>
-      </header>
- 
-      <section
-        style={{
-          display: "grid",
-          gridTemplateColumns:
-            "repeat(auto-fit, minmax(160px, 1fr))",
-          gap: "16px",
-          marginBottom: "24px",
-        }}
-      >
-        <StatCard
-          title="Monthly Total"
-          value={`$${monthlyTotal.toFixed(2)}`}
-        />
- 
-        <StatCard
-          title="Paid"
-          value={`$${paidAmount.toFixed(2)}`}
-        />
- 
-        <StatCard
-          title="Remaining"
-          value={`$${remainingAmount.toFixed(2)}`}
-        />
- 
-        <StatCard
-          title="Due This Week"
-          value={dueThisWeek}
-        />
-      </section>
- 
-      <section>
-        <h2 style={{ marginBottom: "16px" }}>
-          Bills
-        </h2>
- 
-        <BillList
-          bills={bills}
-          onDelete={deleteBill}
-          onTogglePaid={togglePaid}
-          onEdit={setEditingBill}
-        />
-      </section>
- 
-      {/* Add Bill Button */}
-      <button
-        className="floating-add-button"
-        onClick={() => setShowAddBill(true)}
-        aria-label="Add Bill"
-      >
-        +
-      </button>
- 
-      {/* Add Bill Modal */}
-      {showAddBill && (
-        <div
-          className="modal-backdrop"
-          onClick={() => setShowAddBill(false)}
-        >
-          <div
-            className="modal"
-            onClick={(event) =>
-              event.stopPropagation()
-            }
-          >
-            <div className="modal-header">
-              <h2>Add Bill</h2>
- 
-              <button
-                className="modal-close"
-                onClick={() =>
-                  setShowAddBill(false)
-                }
-                aria-label="Close"
-              >
-                ×
-              </button>
+    <div className="min-h-screen bg-gray-100">
+      <div className="max-w-xl mx-auto p-4">
+
+        <h1 className="text-4xl font-bold text-center mb-2">
+          💰 DebtCrusher
+        </h1>
+
+        <p className="text-center text-gray-600 mb-6">
+          Crush debt. Take control.
+        </p>
+
+        {/* Dashboard */}
+        <div className="bg-white rounded-xl shadow p-4 mb-6">
+          <h2 className="text-xl font-semibold mb-4">
+            Dashboard
+          </h2>
+
+          <div className="space-y-2">
+            <div className="flex justify-between">
+              <span>Total Bills</span>
+              <strong>{totalBills}</strong>
             </div>
- 
-            <AddBillForm
-              onAdd={handleAddBill}
-              onCancel={() =>
-                setShowAddBill(false)
-              }
-            />
+
+            <div className="flex justify-between">
+              <span>Unpaid Bills</span>
+              <strong>{unpaidBills}</strong>
+            </div>
+
+            <div className="flex justify-between">
+              <span>Total Due</span>
+              <strong>${totalAmount.toFixed(2)}</strong>
+            </div>
           </div>
         </div>
-      )}
- 
-      {/* Edit Bill Modal */}
-      {editingBill && (
-        <div
-          className="modal-backdrop"
-          onClick={() => setEditingBill(null)}
-        >
-          <div
-            className="modal"
-            onClick={(event) =>
-              event.stopPropagation()
-            }
-          >
-            <div className="modal-header">
-              <h2>Edit Bill</h2>
- 
-              <button
-                className="modal-close"
-                onClick={() =>
-                  setEditingBill(null)
-                }
-                aria-label="Close"
-              >
-                ×
-              </button>
-            </div>
- 
-            <AddBillForm
-              onAdd={addBill}
-              editingBill={editingBill}
-              onUpdate={handleEditBill}
-              onCancel={() =>
-                setEditingBill(null)
-              }
-            />
-          </div>
+
+        {/* Add Bill */}
+        <div className="bg-white rounded-xl shadow p-4 mb-6">
+          <h2 className="text-xl font-semibold mb-4">
+            Add Bill
+          </h2>
+
+          <BillForm onSave={addBill} />
         </div>
-      )}
-    </main>
+
+        {/* Bills */}
+        <div className="bg-white rounded-xl shadow p-4">
+          <h2 className="text-xl font-semibold mb-4">
+            Bills
+          </h2>
+
+          <BillList
+            bills={bills}
+            onTogglePaid={togglePaid}
+            onDelete={deleteBill}
+          />
+        </div>
+
+      </div>
+    </div>
   );
 }
