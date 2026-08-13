@@ -13,10 +13,15 @@ export function useBills() {
     setBills((prev) => [...prev, bill]);
   }
 
- function updateBill(updatedBill: Bill) {
+function updateBill(updatedBill: Bill) {
   setBills((prev) =>
     prev.map((bill) =>
-      bill.id === updatedBill.id ? updatedBill : bill
+      bill.id === updatedBill.id
+        ? {
+            ...updatedBill,
+            updatedAt: new Date().toISOString(),
+          }
+        : bill
     )
   );
 }
