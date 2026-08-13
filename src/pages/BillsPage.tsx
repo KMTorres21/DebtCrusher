@@ -26,9 +26,12 @@ export default function BillsPage() {
       .includes(search.toLowerCase())
   );
 
-  const handleEdit = (bill: Bill) => {
-    console.log("Edit bill:", bill);
-  };
+const [editingBill, setEditingBill] =
+  useState<Bill | null>(null);
+
+const handleEdit = (bill: Bill) => {
+  setEditingBill(bill);
+};
 
   return (
     <div className="space-y-6 px-5 py-6 pb-32">
