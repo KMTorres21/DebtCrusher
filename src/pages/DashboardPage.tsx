@@ -1,3 +1,5 @@
+import UpcomingBills from "../components/dashboard/UpcomingBills";
+
 import { useBills } from "../hooks/useBills";
 
 export default function DashboardPage() {
