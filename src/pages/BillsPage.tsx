@@ -9,12 +9,13 @@ import BillCard from "../components/bills/BillCard";
 import AddBillModal from "../components/bills/AddBillModal";
 
 export default function BillsPage() {
-  const {
-    bills,
-    addBill,
-    togglePaid,
-    deleteBill,
-  } = useBills();
+const {
+  bills,
+  addBill,
+  updateBill,
+  togglePaid,
+  deleteBill,
+} = useBills();
 
   const [search, setSearch] = useState("");
   const [isAddModalOpen, setIsAddModalOpen] =
