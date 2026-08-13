@@ -11,16 +11,9 @@ export function useBills() {
 
   function addBill(bill: Bill) {
     setBills((prev) =>
-  prev
-    .map((bill) =>
-      bill.id === updatedBill.id
-        ? {
-            ...updatedBill,
-            updatedAt: new Date().toISOString(),
-          }
-        : bill
-    )
-    .sort((a, b) => a.dueDate.localeCompare(b.dueDate))
+  [...prev, bill].sort((a, b) =>
+    a.dueDate.localeCompare(b.dueDate)
+  )
 );
   }
 
