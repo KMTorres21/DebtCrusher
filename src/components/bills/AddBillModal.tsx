@@ -11,7 +11,7 @@ useEffect(() => {
   } else {
     resetForm();
   }
-}, [bill]);";
+}, [bill]);
 
 import { Bill, BillCategory } from "../../types/Bill";
 import Button from "../common/Button";
