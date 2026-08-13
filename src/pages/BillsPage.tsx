@@ -32,6 +32,7 @@ const [editingBill, setEditingBill] =
 
 const handleEdit = (bill: Bill) => {
   setEditingBill(bill);
+  setIsAddModalOpen(true);
 };
 
   return (
