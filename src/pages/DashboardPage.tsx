@@ -18,6 +18,34 @@ export default function DashboardPage() {
       new Date(bill.dueDate) < new Date()
   ).length;
 
+const progress =
+  totalBills === 0
+    ? 0
+    : Math.round((paidBills / totalBills) * 100);
+
+<div className="rounded-2xl bg-white p-6 shadow">
+  <div className="flex items-center justify-between">
+    <p className="text-sm text-slate-500">
+      Monthly Progress
+    </p>
+
+    <span className="text-sm font-semibold text-blue-600">
+      {progress}%
+    </span>
+  </div>
+
+  <div className="mt-4 h-3 w-full overflow-hidden rounded-full bg-slate-200">
+    <div
+      className="h-full rounded-full bg-blue-600 transition-all duration-500"
+      style={{ width: `${progress}%` }}
+    />
+  </div>
+
+  <p className="mt-3 text-sm text-slate-600">
+    {paidBills} of {totalBills} bills paid
+  </p>
+</div>
+
   return (
     <div className="space-y-6 px-5 py-6 pb-32">
       <div>
