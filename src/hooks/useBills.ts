@@ -10,12 +10,9 @@ export function useBills() {
   }, [bills]);
 
   function addBill(bill: Bill) {
-    setBills((prev) => [...prev, bill]);
-  }
-
-function updateBill(updatedBill: Bill) {
-  setBills((prev) =>
-    prev.map((bill) =>
+    setBills((prev) =>
+  prev
+    .map((bill) =>
       bill.id === updatedBill.id
         ? {
             ...updatedBill,
@@ -23,25 +20,53 @@ function updateBill(updatedBill: Bill) {
           }
         : bill
     )
-  );
+    .sort((a, b) => a.dueDate.localeCompare(b.dueDate))
+);
+  }
+
+function updateBill(updatedBill: Bill) {
+  setBills((prev) =>
+  prev
+    .map((bill) =>
+      bill.id === updatedBill.id
+        ? {
+            ...updatedBill,
+            updatedAt: new Date().toISOString(),
+          }
+        : bill
+    )
+    .sort((a, b) => a.dueDate.localeCompare(b.dueDate))
+);
 }
 
   function deleteBill(id: string) {
-    setBills((prev) => prev.filter((bill) => bill.id !== id));
+    setBills((prev) =>
+  prev
+    .map((bill) =>
+      bill.id === updatedBill.id
+        ? {
+            ...updatedBill,
+            updatedAt: new Date().toISOString(),
+          }
+        : bill
+    )
+    .sort((a, b) => a.dueDate.localeCompare(b.dueDate))
+);
   }
 
   function togglePaid(id: string) {
     setBills((prev) =>
-      prev.map((bill) =>
-        bill.id === id
-          ? {
-              ...bill,
-              paid: !bill.paid,
-              updatedAt: new Date().toISOString(),
-            }
-          : bill
-      )
-    );
+  prev
+    .map((bill) =>
+      bill.id === updatedBill.id
+        ? {
+            ...updatedBill,
+            updatedAt: new Date().toISOString(),
+          }
+        : bill
+    )
+    .sort((a, b) => a.dueDate.localeCompare(b.dueDate))
+);
   }
 
   return {
