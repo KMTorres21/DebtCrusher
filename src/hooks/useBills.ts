@@ -13,13 +13,13 @@ export function useBills() {
     setBills((prev) => [...prev, bill]);
   }
 
-  function updateBill(updatedBill: Bill) {
-    setBills((prev) =>
-      prev.map((bill) =>
-        bill.id === updatedBill.id ? updatedBill : bill
-      )
-    );
-  }
+ function updateBill(updatedBill: Bill) {
+  setBills((prev) =>
+    prev.map((bill) =>
+      bill.id === updatedBill.id ? updatedBill : bill
+    )
+  );
+}
 
   function deleteBill(id: string) {
     setBills((prev) => prev.filter((bill) => bill.id !== id));
