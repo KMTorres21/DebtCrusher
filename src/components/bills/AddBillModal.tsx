@@ -80,18 +80,18 @@ export default function AddBillModal({
 
     const now = new Date().toISOString();
 
-    const newBill: Bill = {
-      id: crypto.randomUUID(),
-      name: name.trim(),
-      amount: numericAmount,
-      dueDate,
-      category,
-      recurring,
-      paid: false,
-      notes: notes.trim() || undefined,
-      createdAt: now,
-      updatedAt: now,
-    };
+  const newBill: Bill = {
+  id: bill?.id ?? crypto.randomUUID(),
+  name: name.trim(),
+  amount: numericAmount,
+  dueDate,
+  category,
+  recurring,
+  paid: bill?.paid ?? false,
+  notes: notes.trim() || undefined,
+  createdAt: bill?.createdAt ?? now,
+  updatedAt: now,
+};
 
     onSave(newBill);
 
