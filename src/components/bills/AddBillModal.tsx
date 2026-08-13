@@ -1,6 +1,7 @@
 import { FormEvent, useEffect, useState } from "react";
 import { Bill, BillCategory } from "../../types/Bill";
 import Button from "../common/Button";
+import { X } from "lucide-react"
 
 interface AddBillModalProps {
   open: boolean;
