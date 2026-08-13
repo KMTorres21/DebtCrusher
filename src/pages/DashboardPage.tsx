@@ -18,6 +18,11 @@ export default function DashboardPage() {
       new Date(bill.dueDate) < new Date()
   ).length;
 
+const progress =
+  totalBills === 0
+    ? 0
+    : Math.round((paidBills / totalBills) * 100);
+
 <div className="rounded-2xl bg-white p-6 shadow">
   <div className="flex items-center justify-between">
     <p className="text-sm text-slate-500">
