@@ -6,6 +6,7 @@ import Button from "../common/Button";
 
 interface AddBillModalProps {
   open: boolean;
+  bill?: Bill | null;
   onClose: () => void;
   onSave: (bill: Bill) => void;
 }
@@ -26,6 +27,7 @@ const categories: BillCategory[] = [
 
 export default function AddBillModal({
   open,
+  bill,
   onClose,
   onSave,
 }: AddBillModalProps) {
