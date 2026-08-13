@@ -1,21 +1,71 @@
-import { Outlet } from "react-router-dom";
-
-import Header from "../components/common/Header";
-import BottomNav from "../components/common/BottomNav";
-import PageContainer from "../components/common/PageContainer";
-
-export default function AppLayout() {
+import {
+  Home,
+  CreditCard,
+  Wallet,
+  Target,
+  Settings,
+} from "lucide-react";
+import { NavLink } from "react-router-dom";
+ 
+const navItems = [
+  {
+    label: "Dashboard",
+    path: "/",
+    icon: Home,
+  },
+  {
+    label: "Bills",
+    path: "/bills",
+    icon: CreditCard,
+  },
+  {
+    label: "Income",
+    path: "/income",
+    icon: Wallet,
+  },
+  {
+    label: "Debts",
+    path: "/debts",
+    icon: Target,
+  },
+  {
+    label: "Settings",
+    path: "/settings",
+    icon: Settings,
+  },
+];
+ 
+export default function BottomNav() {
   return (
-    <div className="min-h-screen bg-slate-100 flex flex-col">
-      <Header />
-
-      <main className="flex-1 pb-24">
-        <PageContainer>
-          <Outlet />
-        </PageContainer>
-      </main>
-
-      <BottomNav />
-    </div>
+    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-slate-200 bg-white shadow-lg">
+      <div className="mx-auto flex max-w-3xl items-stretch justify-around">
+        {navItems.map(({ label, path, icon: Icon }) => (
+          <NavLink
+            key={path}
+            to={path}
+            className={({ isActive }) =>
+              `flex min-h-[72px] flex-1 flex-col items-center justify-center gap-1 transition-colors ${
+                isActive
+                  ? "text-blue-600"
+                  : "text-slate-500 hover:text-slate-800"
+              }`
+            }
+          >
+            {({ isActive }) => (
+              <>
+                <Icon
+                  size={30}
+                  strokeWidth={isActive ? 2.8 : 2}
+                />
+ 
+                <span className="text-xs font-semibold">
+                  {label}
+                </span>
+              </>
+            )}
+          </NavLink>
+        ))}
+      </div>
+    </nav>
   );
 }
