@@ -7,6 +7,14 @@ const filteredBills = bills.filter((bill) =>
   placeholder="Search bills..."
   className="w-full rounded-xl border p-3 mb-4"
 />
+
+import { Plus } from "lucide-react";
+
+<Button
+  className="fixed bottom-24 right-6 rounded-full w-16 h-16"
+>
+  <Plus size={32} />
+</Button>
  bill.name.toLowerCase().includes(search.toLowerCase())
 );
 
