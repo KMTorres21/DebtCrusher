@@ -108,10 +108,23 @@ const handleEdit = (bill: Bill) => {
 
       {/* Add Bill Modal */}
       <AddBillModal
-        open={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
-        onSave={addBill}
-      />
+  open={isAddModalOpen}
+  bill={editingBill}
+  onClose={() => {
+    setEditingBill(null);
+    setIsAddModalOpen(false);
+  }}
+  onSave={(bill) => {
+    if (editingBill) {
+      updateBill(bill);
+    } else {
+      addBill(bill);
+    }
+
+    setEditingBill(null);
+    setIsAddModalOpen(false);
+  }}
+/>
 
     </div>
   );
