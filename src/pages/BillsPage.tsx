@@ -1,7 +1,6 @@
+import { Plus } from "lucide-react";
 const [search, setSearch] = useState("");
 const filteredBills = bills.filter((bill) =>
-
-import { Plus } from "lucide-react";
 
 <input
   value={search}
