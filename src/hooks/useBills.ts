@@ -3,14 +3,8 @@ import { Bill } from "../types/Bill";
 import { loadBills, saveBills } from "../utils/storage";
 
 export function useBills() {
-  const [bills, setBills] = useState<Bill[]>([]);
+  const [bills, setBills] = useState<Bill[]>(() => loadBills());
 
-  // Load bills on startup
-  useEffect(() => {
-    setBills(loadBills());
-  }, []);
-
-  // Save whenever bills change
   useEffect(() => {
     saveBills(bills);
   }, [bills]);
