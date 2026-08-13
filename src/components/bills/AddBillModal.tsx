@@ -1,18 +1,4 @@
 import { FormEvent, useEffect, useState } from "react";
-
-useEffect(() => {
-  if (bill) {
-    setName(bill.name);
-    setAmount(bill.amount.toString());
-    setDueDate(bill.dueDate);
-    setCategory(bill.category);
-    setRecurring(bill.recurring);
-    setNotes(bill.notes ?? "");
-  } else {
-    resetForm();
-  }
-}, [bill]);
-
 import { Bill, BillCategory } from "../../types/Bill";
 import Button from "../common/Button";
 
@@ -51,6 +37,19 @@ export default function AddBillModal({
   const [recurring, setRecurring] = useState(false);
   const [notes, setNotes] = useState("");
 
+  useEffect(() => {
+  if (bill) {
+    setName(bill.name);
+    setAmount(bill.amount.toString());
+    setDueDate(bill.dueDate);
+    setCategory(bill.category);
+    setRecurring(bill.recurring);
+    setNotes(bill.notes ?? "");
+  } else {
+    resetForm();
+  }
+}, [bill]);";
+    
   if (!open) {
     return null;
   }
