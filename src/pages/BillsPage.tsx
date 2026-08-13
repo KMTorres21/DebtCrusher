@@ -1,6 +1,8 @@
 const [search, setSearch] = useState("");
 const filteredBills = bills.filter((bill) =>
 
+import { Plus } from "lucide-react";
+
 <input
   value={search}
   onChange={(e) => setSearch(e.target.value)}
@@ -8,7 +10,6 @@ const filteredBills = bills.filter((bill) =>
   className="w-full rounded-xl border p-3 mb-4"
 />
 
-import { Plus } from "lucide-react";
 
 <Button
   className="fixed bottom-24 right-6 rounded-full w-16 h-16"
