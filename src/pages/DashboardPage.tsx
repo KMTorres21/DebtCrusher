@@ -97,7 +97,7 @@ export default function DashboardPage() {
                   <h2 className="mt-2 text-3xl font-bold text-red-600">
                     {overdueBills}
                   </h2>
-
+        </div>
       </div>
     </div>
   );
