@@ -1,7 +1,17 @@
 import { FormEvent, useEffect, useState } from "react";
 
-import { FormEvent, useState } from "react";
-import { X } from "lucide-react";
+useEffect(() => {
+  if (bill) {
+    setName(bill.name);
+    setAmount(bill.amount.toString());
+    setDueDate(bill.dueDate);
+    setCategory(bill.category);
+    setRecurring(bill.recurring);
+    setNotes(bill.notes ?? "");
+  } else {
+    resetForm();
+  }
+}, [bill]);";
 
 import { Bill, BillCategory } from "../../types/Bill";
 import Button from "../common/Button";
