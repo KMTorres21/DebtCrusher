@@ -107,7 +107,7 @@ export default function AddBillModal({
         <div className="flex items-center justify-between border-b border-slate-100 px-6 py-5">
           <div>
             <h2 className="text-2xl font-bold text-slate-900">
-              Add Bill
+              {bill ? "Edit Bill" : "Add Bill"}
             </h2>
 
             <p className="mt-1 text-sm text-slate-500">
