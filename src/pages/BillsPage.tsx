@@ -96,7 +96,10 @@ const handleEdit = (bill: Bill) => {
       {/* Floating Add Button */}
       <Button
         type="button"
-        onClick={() => setIsAddModalOpen(true)}
+        onClick={() => {
+  setEditingBill(null);
+  setIsAddModalOpen(true);
+}}
         aria-label="Add bill"
         className="fixed bottom-24 right-6 z-50 flex h-16 w-16 items-center justify-center rounded-full p-0 shadow-xl"
       >
