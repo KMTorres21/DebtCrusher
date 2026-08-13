@@ -1,5 +1,12 @@
-const [search, setSearch] = useState("");
+import { Plus } from "lucide-react";
  
+<Button
+  className="fixed bottom-24 right-6 rounded-full w-16 h-16"
+>
+  <Plus size={32} />
+</Button>
+
+const [search, setSearch] = useState(""); 
 const filteredBills = bills.filter((bill) =>
   bill.name.toLowerCase().includes(search.toLowerCase())
 );
