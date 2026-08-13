@@ -35,3 +35,5 @@ function BillsPage() {
     </>
   );
 }
+
+export default BillsPage;
