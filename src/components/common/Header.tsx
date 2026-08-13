@@ -1,71 +1,39 @@
-import {
-  Home,
-  CreditCard,
-  Wallet,
-  Target,
-  Settings,
-} from "lucide-react";
-import { NavLink } from "react-router-dom";
- 
-const navItems = [
-  {
-    label: "Dashboard",
-    path: "/",
-    icon: Home,
-  },
-  {
-    label: "Bills",
-    path: "/bills",
-    icon: CreditCard,
-  },
-  {
-    label: "Income",
-    path: "/income",
-    icon: Wallet,
-  },
-  {
-    label: "Debts",
-    path: "/debts",
-    icon: Target,
-  },
-  {
-    label: "Settings",
-    path: "/settings",
-    icon: Settings,
-  },
-];
- 
-export default function BottomNav() {
+import { Settings } from "lucide-react";
+import { Link } from "react-router-dom";
+
+export default function Header() {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-slate-200 bg-white shadow-lg">
-      <div className="mx-auto flex max-w-3xl items-stretch justify-around">
-        {navItems.map(({ label, path, icon: Icon }) => (
-          <NavLink
-            key={path}
-            to={path}
-            className={({ isActive }) =>
-              `flex min-h-[72px] flex-1 flex-col items-center justify-center gap-1 transition-colors ${
-                isActive
-                  ? "text-blue-600"
-                  : "text-slate-500 hover:text-slate-800"
-              }`
-            }
-          >
-            {({ isActive }) => (
-              <>
-                <Icon
-                  size={30}
-                  strokeWidth={isActive ? 2.8 : 2}
-                />
- 
-                <span className="text-xs font-semibold">
-                  {label}
-                </span>
-              </>
-            )}
-          </NavLink>
-        ))}
+    <header className="bg-blue-700 text-white shadow-md">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-5">
+
+        <Link
+          to="/"
+          className="flex items-center gap-3"
+        >
+          <div className="text-4xl">
+            💰
+          </div>
+
+          <div>
+            <h1 className="text-2xl font-bold">
+              DebtCrusher
+            </h1>
+
+            <p className="text-sm text-blue-100">
+              Crush debt. Build wealth.
+            </p>
+          </div>
+        </Link>
+
+        <Link
+          to="/settings"
+          aria-label="Settings"
+          className="rounded-full p-3 hover:bg-blue-600"
+        >
+          <Settings size={30} />
+        </Link>
+
       </div>
-    </nav>
+    </header>
   );
 }
