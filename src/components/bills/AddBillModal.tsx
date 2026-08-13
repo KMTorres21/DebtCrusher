@@ -292,7 +292,7 @@ export default function AddBillModal({
               variant="primary"
               className="flex-1"
             >
-              Save Bill
+              {bill ? "Save Changes" : "Save Bill"}
             </Button>
           </div>
         </form>
