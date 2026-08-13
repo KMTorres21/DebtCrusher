@@ -48,7 +48,7 @@ export default function AddBillModal({
   } else {
     resetForm();
   }
-}, [bill]);"
+}, [bill]);
     
   if (!open) {
     return null;
