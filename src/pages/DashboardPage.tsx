@@ -18,11 +18,6 @@ export default function DashboardPage() {
       new Date(bill.dueDate) < new Date()
   ).length;
 
-const progress =
-  totalBills === 0
-    ? 0
-    : Math.round((paidBills / totalBills) * 100);
-
 <div className="rounded-2xl bg-white p-6 shadow">
   <div className="flex items-center justify-between">
     <p className="text-sm text-slate-500">
@@ -94,11 +89,14 @@ const progress =
           <p className="text-sm text-slate-500">
             Overdue Bills
           </p>
-
-          <h2 className="mt-2 text-3xl font-bold text-red-600">
-            {overdueBills}
-          </h2>
-        </div>
+        
+        const progress =
+          totalBills === 0
+            ? 0
+            : Math.round((paidBills / totalBills) * 100);
+                  <h2 className="mt-2 text-3xl font-bold text-red-600">
+                    {overdueBills}
+                  </h2>
 
       </div>
     </div>
