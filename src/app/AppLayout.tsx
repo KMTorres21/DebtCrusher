@@ -1,71 +1,18 @@
-import {
-  Home,
-  CreditCard,
-  Wallet,
-  Target,
-  Settings,
-} from "lucide-react";
-import { NavLink } from "react-router-dom";
+import { Outlet } from "react-router-dom";
  
-const navItems = [
-  {
-    label: "Dashboard",
-    path: "/",
-    icon: Home,
-  },
-  {
-    label: "Bills",
-    path: "/bills",
-    icon: CreditCard,
-  },
-  {
-    label: "Income",
-    path: "/income",
-    icon: Wallet,
-  },
-  {
-    label: "Debts",
-    path: "/debts",
-    icon: Target,
-  },
-  {
-    label: "Settings",
-    path: "/settings",
-    icon: Settings,
-  },
-];
+import Header from "../components/common/Header";
+import BottomNav from "../components/common/BottomNav";
  
-export default function BottomNav() {
+export default function AppLayout() {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-slate-200 bg-white shadow-lg">
-      <div className="mx-auto flex max-w-3xl items-stretch justify-around">
-        {navItems.map(({ label, path, icon: Icon }) => (
-          <NavLink
-            key={path}
-            to={path}
-            className={({ isActive }) =>
-              `flex min-h-[72px] flex-1 flex-col items-center justify-center gap-1 transition-colors ${
-                isActive
-                  ? "text-blue-600"
-                  : "text-slate-500 hover:text-slate-800"
-              }`
-            }
-          >
-            {({ isActive }) => (
-              <>
-                <Icon
-                  size={30}
-                  strokeWidth={isActive ? 2.8 : 2}
-                />
+    <div className="min-h-screen bg-slate-100">
+      <Header />
  
-                <span className="text-xs font-semibold">
-                  {label}
-                </span>
-              </>
-            )}
-          </NavLink>
-        ))}
-      </div>
-    </nav>
+      <main className="pb-24">
+        <Outlet />
+      </main>
+ 
+      <BottomNav />
+    </div>
   );
 }
