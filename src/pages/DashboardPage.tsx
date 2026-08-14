@@ -36,6 +36,37 @@ export default function DashboardPage() {
     income
   )
   return (
+<div className="grid grid-cols-2 gap-4">
+
+  <div className="rounded-2xl bg-white p-5 shadow">
+    <p className="text-sm text-slate-500">Monthly Income</p>
+    <p className="mt-2 text-2xl font-bold text-green-600">
+      {formatCurrency(summary.totalIncome)}
+    </p>
+  </div>
+
+  <div className="rounded-2xl bg-white p-5 shadow">
+    <p className="text-sm text-slate-500">Monthly Bills</p>
+    <p className="mt-2 text-2xl font-bold text-red-600">
+      {formatCurrency(summary.totalBills)}
+    </p>
+  </div>
+
+  <div className="rounded-2xl bg-white p-5 shadow">
+    <p className="text-sm text-slate-500">Debt Payments</p>
+    <p className="mt-2 text-2xl font-bold text-orange-600">
+      {formatCurrency(summary.totalDebtPayments)}
+    </p>
+  </div>
+
+  <div className="rounded-2xl bg-white p-5 shadow">
+    <p className="text-sm text-slate-500">Remaining Cash</p>
+    <p className="mt-2 text-2xl font-bold text-blue-600">
+      {formatCurrency(summary.remainingCash)}
+    </p>
+  </div>
+
+</div>
     <div className="space-y-6 px-5 py-6 pb-32">
       {/* Header */}
       <div>
