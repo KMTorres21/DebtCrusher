@@ -1,3 +1,4 @@
+import { formatCurrency } from "../../utils/formatCurrency";
 import { Bill } from "../../types/Bill";
 import Card from "../common/Card";
 import Badge from "../common/Badge";
