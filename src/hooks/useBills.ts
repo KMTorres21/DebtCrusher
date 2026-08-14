@@ -11,55 +11,49 @@ export function useBills() {
 
   function addBill(bill: Bill) {
     setBills((prev) =>
-  [...prev, bill].sort((a, b) =>
-    a.dueDate.localeCompare(b.dueDate)
-  )
-);
+      [...prev, bill].sort((a, b) =>
+        a.dueDate.localeCompare(b.dueDate)
+      )
+    );
   }
 
-function updateBill(updatedBill: Bill) {
-  setBills((prev) =>
-  prev
-    .map((bill) =>
-      bill.id === updatedBill.id
-        ? {
-            ...updatedBill,
-            updatedAt: new Date().toISOString(),
-          }
-        : bill
-    )
-    .sort((a, b) => a.dueDate.localeCompare(b.dueDate))
-);
-}
+  function updateBill(updatedBill: Bill) {
+    setBills((prev) =>
+      prev
+        .map((bill) =>
+          bill.id === updatedBill.id
+            ? {
+                ...updatedBill,
+                updatedAt: new Date().toISOString(),
+              }
+            : bill
+        )
+        .sort((a, b) => a.dueDate.localeCompare(b.dueDate))
+    );
+  }
 
   function deleteBill(id: string) {
     setBills((prev) =>
-  prev
-    .map((bill) =>
-      bill.id === updatedBill.id
-        ? {
-            ...updatedBill,
-            updatedAt: new Date().toISOString(),
-          }
-        : bill
-    )
-    .sort((a, b) => a.dueDate.localeCompare(b.dueDate))
-);
+      prev
+        .filter((bill) => bill.id !== id)
+        .sort((a, b) => a.dueDate.localeCompare(b.dueDate))
+    );
   }
 
   function togglePaid(id: string) {
     setBills((prev) =>
-  prev
-    .map((bill) =>
-      bill.id === updatedBill.id
-        ? {
-            ...updatedBill,
-            updatedAt: new Date().toISOString(),
-          }
-        : bill
-    )
-    .sort((a, b) => a.dueDate.localeCompare(b.dueDate))
-);
+      prev
+        .map((bill) =>
+          bill.id === id
+            ? {
+                ...bill,
+                paid: !bill.paid,
+                updatedAt: new Date().toISOString(),
+              }
+            : bill
+        )
+        .sort((a, b) => a.dueDate.localeCompare(b.dueDate))
+    );
   }
 
   return {
