@@ -10,6 +10,7 @@ export type DebtType =
 
 export interface Debt {
   id: string;
+
   name: string;
   type: DebtType;
 
@@ -17,13 +18,11 @@ export interface Debt {
   originalBalance: number;
 
   interestRate: number;
-
   minimumPayment: number;
 
   dueDate: string;
 
   creditLimit?: number;
-
   notes?: string;
 
   createdAt: string;
