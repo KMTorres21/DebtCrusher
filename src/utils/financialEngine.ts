@@ -1,13 +1,7 @@
 import { Bill } from "../types/Bill";
 import { Debt } from "../types/Debt";
 import { Income } from "../types/Income";
-
-export interface FinancialSummary {
-  totalIncome: number;
-  totalBills: number;
-  totalDebtPayments: number;
-  remainingCash: number;
-}
+import { FinancialSummary } from "../types/FinancialSummary";
 
 export function calculateFinancialSummary(
   bills: Bill[],
@@ -39,5 +33,25 @@ export function calculateFinancialSummary(
     totalBills,
     totalDebtPayments,
     remainingCash,
+    monthlyCashFlow: remainingCash,
   };
+}
+
+export function calculateNextPayday(
+  income: Income[]
+): string | null {
+  if (income.length === 0) {
+    return null;
+  }
+
+  return [...income]
+    .sort((a, b) =>
+      a.nextPayDate.localeCompare(b.nextPayDate)
+    )[0].nextPayDate;
+}
+
+export function calculateSafeToSpend(
+  summary: FinancialSummary
+): number {
+  return Math.max(summary.remainingCash, 0);
 }
