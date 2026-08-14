@@ -47,7 +47,7 @@ export default function DashboardPage() {
           </p>
 
           <h2 className="mt-2 text-3xl font-bold">
-            ${totalMonthlyBills.toFixed(2)}
+         formatCurrency(totalMonthlyBills)}
           </h2>
         </div>
 
