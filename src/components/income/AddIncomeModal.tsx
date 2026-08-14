@@ -21,6 +21,7 @@ const frequencies = [
 
 export default function AddIncomeModal({
   open,
+  income,
   onClose,
   onSave,
 }: AddIncomeModalProps) {
