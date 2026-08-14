@@ -1,38 +1,25 @@
+import Card from "./Card";
+
 interface StatCardProps {
   title: string;
   value: string | number;
+  valueClassName?: string;
 }
- 
-export default function StatCard({ title, value }: StatCardProps) {
+
+export default function StatCard({
+  title,
+  value,
+  valueClassName = "",
+}: StatCardProps) {
   return (
-    <div
-      style={{
-        background: "#ffffff",
-        borderRadius: "16px",
-        padding: "16px",
-        boxShadow: "0 2px 8px rgba(0,0,0,.08)",
-        flex: 1,
-        minWidth: "160px",
-      }}
-    >
-      <div
-        style={{
-          fontSize: "0.9rem",
-          color: "#666",
-          marginBottom: "8px",
-        }}
-      >
+    <Card>
+      <p className="text-sm text-slate-500">
         {title}
-      </div>
- 
-      <div
-        style={{
-          fontSize: "1.6rem",
-          fontWeight: 700,
-        }}
-      >
+      </p>
+
+      <p className={`mt-2 text-2xl font-bold ${valueClassName}`}>
         {value}
-      </div>
-    </div>
+      </p>
+    </Card>
   );
 }
