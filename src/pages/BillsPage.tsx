@@ -8,18 +8,24 @@ import Button from "../components/common/Button";
 import BillCard from "../components/bills/BillCard";
 import AddBillModal from "../components/bills/AddBillModal";
 
+import PageContainer from "../components/common/PageContainer";
+import PageHeader from "../components/common/PageHeader";
+import SearchBar from "../components/common/SearchBar";
+import EmptyState from "../components/common/EmptyState";
+
 export default function BillsPage() {
-const {
-  bills,
-  addBill,
-  updateBill,
-  togglePaid,
-  deleteBill,
-} = useBills();
+  const {
+    bills,
+    addBill,
+    updateBill,
+    togglePaid,
+    deleteBill,
+  } = useBills();
 
   const [search, setSearch] = useState("");
-  const [isAddModalOpen, setIsAddModalOpen] =
-    useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [editingBill, setEditingBill] =
+    useState<Bill | null>(null);
 
   const filteredBills = bills.filter((bill) =>
     bill.name
@@ -27,58 +33,35 @@ const {
       .includes(search.toLowerCase())
   );
 
-const [editingBill, setEditingBill] =
-  useState<Bill | null>(null);
-
-const handleEdit = (bill: Bill) => {
-  setEditingBill(bill);
-  setIsAddModalOpen(true);
-};
+  function handleEdit(bill: Bill) {
+    setEditingBill(bill);
+    setIsAddModalOpen(true);
+  }
 
   return (
-    <div className="space-y-6 px-5 py-6 pb-32">
+    <PageContainer>
 
-      {/* Header */}
-      <div>
-        <h1 className="text-4xl font-bold text-slate-900">
-          Bills
-        </h1>
-
-        <p className="mt-2 text-lg text-slate-500">
-          Track and manage your bills
-        </p>
-      </div>
-
-      {/* Search */}
-      <input
-        type="text"
-        value={search}
-        onChange={(event) =>
-          setSearch(event.target.value)
-        }
-        placeholder="Search bills..."
-        className="w-full rounded-xl border border-slate-200 bg-white p-4 shadow-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+      <PageHeader
+        title="Bills"
+        subtitle="Track and manage your bills"
       />
 
-      {/* Bill List */}
+      <SearchBar
+        value={search}
+        onChange={setSearch}
+        placeholder="Search bills..."
+      />
+
       {filteredBills.length === 0 ? (
-        <div className="rounded-2xl bg-white p-10 text-center shadow-md">
-
-          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-blue-100 text-4xl">
-            💳
-          </div>
-
-          <h2 className="mt-5 text-2xl font-bold text-slate-900">
-            {search ? "No bills found" : "No bills yet"}
-          </h2>
-
-          <p className="mx-auto mt-2 max-w-sm text-slate-500">
-            {search
+        <EmptyState
+          icon="💳"
+          title={search ? "No bills found" : "No bills yet"}
+          description={
+            search
               ? "Try a different search."
-              : "Tap the + button below to add your first bill."}
-          </p>
-
-        </div>
+              : "Tap the + button below to add your first bill."
+          }
+        />
       ) : (
         <div className="space-y-4">
           {filteredBills.map((bill) => (
@@ -93,39 +76,37 @@ const handleEdit = (bill: Bill) => {
         </div>
       )}
 
-      {/* Floating Add Button */}
       <Button
         type="button"
-        onClick={() => {
-  setEditingBill(null);
-  setIsAddModalOpen(true);
-}}
         aria-label="Add bill"
+        onClick={() => {
+          setEditingBill(null);
+          setIsAddModalOpen(true);
+        }}
         className="fixed bottom-24 right-6 z-50 flex h-16 w-16 items-center justify-center rounded-full p-0 shadow-xl"
       >
         <Plus size={32} strokeWidth={2.5} />
       </Button>
 
-      {/* Add Bill Modal */}
       <AddBillModal
-  open={isAddModalOpen}
-  bill={editingBill}
-  onClose={() => {
-    setEditingBill(null);
-    setIsAddModalOpen(false);
-  }}
-  onSave={(bill) => {
-    if (editingBill) {
-      updateBill(bill);
-    } else {
-      addBill(bill);
-    }
+        open={isAddModalOpen}
+        bill={editingBill}
+        onClose={() => {
+          setEditingBill(null);
+          setIsAddModalOpen(false);
+        }}
+        onSave={(bill) => {
+          if (editingBill) {
+            updateBill(bill);
+          } else {
+            addBill(bill);
+          }
 
-    setEditingBill(null);
-    setIsAddModalOpen(false);
-  }}
-/>
+          setEditingBill(null);
+          setIsAddModalOpen(false);
+        }}
+      />
 
-    </div>
+    </PageContainer>
   );
 }
