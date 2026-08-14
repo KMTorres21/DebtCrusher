@@ -144,7 +144,7 @@ export default function DashboardPage() {
             {paidBills} of {totalBills} bills paid
           </p>
         </div>
-
       </div>
+    </div>
   );
 }
