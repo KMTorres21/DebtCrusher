@@ -42,7 +42,7 @@ export default function UpcomingBills({ bills }: Props) {
               </div>
 
               <div className="font-bold">
-                ${bill.amount.toFixed(2)}
+                formatCurrency(totalMonthlyBills)}
               </div>
             </div>
           ))}

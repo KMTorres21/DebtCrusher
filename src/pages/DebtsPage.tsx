@@ -64,7 +64,7 @@ export default function DebtsPage() {
           </p>
 
           <p className="mt-2 text-2xl font-bold">
-            ${totalDebt.toFixed(2)}
+            formatCurrency(totalDebt)}
           </p>
         </div>
 
@@ -74,7 +74,7 @@ export default function DebtsPage() {
           </p>
 
           <p className="mt-2 text-2xl font-bold">
-            ${totalMinimumPayments.toFixed(2)}
+            formatCurrency(totalMonthlyBills)}
           </p>
         </div>
 
