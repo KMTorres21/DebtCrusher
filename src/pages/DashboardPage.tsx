@@ -65,8 +65,6 @@ export default function DashboardPage() {
       {formatCurrency(summary.remainingCash)}
     </p>
   </div>
-
-</div>
     <div className="space-y-6 px-5 py-6 pb-32">
       {/* Header */}
       <div>
