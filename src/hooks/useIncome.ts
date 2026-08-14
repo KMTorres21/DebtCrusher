@@ -45,5 +45,4 @@ export function useIncome() {
     addIncome,
     updateIncome,
     deleteIncome,
-  } = useIncome();
-}
+};
