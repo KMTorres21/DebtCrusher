@@ -1,19 +1,19 @@
-import PageContainer from "../components/layout/PageContainer";
-import PageHeader from "../components/layout/PageHeader";
-
 export default function CalendarPage() {
   return (
-    <PageContainer>
-      <PageHeader
-        title="Cash Flow Calendar"
-        subtitle="See your money throughout the month"
-      />
+    <div className="space-y-6 px-5 py-6 pb-32">
+      <div>
+        <h1 className="text-4xl font-bold text-slate-900">
+          Cash Flow Calendar
+        </h1>
 
-      <div className="rounded-2xl bg-white p-6 shadow">
-        <p className="text-slate-500">
-          Calendar coming in Sprint 3...
+        <p className="mt-2 text-slate-500">
+          Coming in Sprint 3
         </p>
       </div>
-    </PageContainer>
+
+      <div className="rounded-2xl bg-white p-6 shadow">
+        Calendar coming soon...
+      </div>
+    </div>
   );
 }
