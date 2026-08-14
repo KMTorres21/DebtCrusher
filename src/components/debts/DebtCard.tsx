@@ -44,7 +44,7 @@ export default function DebtCard({
           <span>Balance</span>
 
           <span className="font-semibold">
-            {formatCurrency(debt.balance)}}
+            {formatCurrency(debt.balance)}
           </span>
         </div>
 
@@ -69,7 +69,7 @@ export default function DebtCard({
           </p>
 
           <p className="font-semibold">
-       {formatCurrency(debt.minimumPayment)}}
+       {formatCurrency(debt.minimumPayment)}
           </p>
         </div>
 
