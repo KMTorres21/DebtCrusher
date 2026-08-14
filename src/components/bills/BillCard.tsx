@@ -35,7 +35,7 @@ export default function BillCard({
       <div className="flex justify-between items-center">
         <div>
           <p className="text-2xl font-bold">
-            formatCurrency(bill.amount)}
+            {formatCurrency(bill.amount)}
           </p>
 
           <p className="text-sm text-slate-500">
