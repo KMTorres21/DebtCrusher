@@ -51,7 +51,7 @@ export default function IncomePage() {
 
     // We'll wire editing into the modal next.
     console.log("Editing income:", item);
-  }
+  };
 
   return (
     <PageContainer>
