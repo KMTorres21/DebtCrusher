@@ -6,7 +6,7 @@ import Button from "../common/Button";
 
 interface AddIncomeModalProps {
   open: boolean;
-  income? Income | null
+  income? Income | null;
   onClose: () => void;
   onSave: (income: Income) => void;
 }
