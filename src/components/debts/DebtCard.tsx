@@ -1,4 +1,5 @@
-import { Debt } from "../../types/Debt";
+import { Debt } from "../../types/Debt"
+import { formatCurrency } from "../../utils/formatCurrency";
 
 interface DebtCardProps {
   debt: Debt;
@@ -43,7 +44,7 @@ export default function DebtCard({
           <span>Balance</span>
 
           <span className="font-semibold">
-            ${debt.balance.toFixed(2)}
+            {formatCurrency(debt.balance)}}
           </span>
         </div>
 
@@ -68,7 +69,7 @@ export default function DebtCard({
           </p>
 
           <p className="font-semibold">
-            ${debt.minimumPayment.toFixed(2)}
+       {formatCurrency(debt.minimumPayment)}}
           </p>
         </div>
 
