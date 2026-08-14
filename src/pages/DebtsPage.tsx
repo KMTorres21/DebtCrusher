@@ -1,11 +1,17 @@
-import { formatCurrency } from "../utils/formatCurrency";
 import { useState } from "react";
 import { Plus } from "lucide-react";
 
 import { Debt } from "../types/Debt";
 import { useDebts } from "../hooks/useDebts";
+import { formatCurrency } from "../utils/formatCurrency";
 
 import Button from "../components/common/Button";
+import PageContainer from "../components/common/PageContainer";
+import PageHeader from "../components/common/PageHeader";
+import SearchBar from "../components/common/SearchBar";
+import EmptyState from "../components/common/EmptyState";
+import StatCard from "../components/common/StatCard";
+
 import DebtCard from "../components/debts/DebtCard";
 import AddDebtModal from "../components/debts/AddDebtModal";
 
@@ -35,78 +41,45 @@ export default function DebtsPage() {
     0
   );
 
-  const handleEdit = (debt: Debt) => {
+  function handleEdit(debt: Debt) {
     setEditingDebt(debt);
 
-    // We'll wire the edit modal up next.
+    // Edit functionality will be completed next.
     console.log("Editing:", debt);
-  };
+  }
 
   return (
-    <div className="space-y-6 px-5 py-6 pb-32">
+    <PageContainer>
 
-      {/* Header */}
-      <div>
-        <h1 className="text-4xl font-bold text-slate-900">
-          Debts
-        </h1>
-
-        <p className="mt-2 text-lg text-slate-500">
-          Track and manage your debts
-        </p>
-      </div>
-
-      {/* Summary Cards */}
-      <div className="grid grid-cols-2 gap-4">
-
-        <div className="rounded-2xl bg-white p-5 shadow">
-          <p className="text-sm text-slate-500">
-            Total Debt
-          </p>
-
-          <p className="mt-2 text-2xl font-bold">
-            {formatCurrency(totalDebt)}
-          </p>
-        </div>
-
-        <div className="rounded-2xl bg-white p-5 shadow">
-          <p className="text-sm text-slate-500">
-            Monthly Minimum
-          </p>
-
-          <p className="mt-2 text-2xl font-bold">
-            {formatCurrency(totalMinimumPayments)}
-          </p>
-        </div>
-
-      </div>
-
-      {/* Search */}
-      <input
-        type="text"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        placeholder="Search debts..."
-        className="w-full rounded-xl border border-slate-200 p-4"
+      <PageHeader
+        title="Debts"
+        subtitle="Track and manage your debts"
       />
 
-      {/* Debt List */}
+      <div className="grid grid-cols-2 gap-4">
+        <StatCard
+          title="Total Debt"
+          value={formatCurrency(totalDebt)}
+        />
+
+        <StatCard
+          title="Monthly Minimum"
+          value={formatCurrency(totalMinimumPayments)}
+        />
+      </div>
+
+      <SearchBar
+        value={search}
+        onChange={setSearch}
+        placeholder="Search debts..."
+      />
+
       {filteredDebts.length === 0 ? (
-        <div className="rounded-2xl bg-white p-10 text-center shadow">
-
-          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-blue-100 text-4xl">
-            🏦
-          </div>
-
-          <h2 className="mt-5 text-2xl font-bold">
-            No debts yet
-          </h2>
-
-          <p className="mt-2 text-slate-500">
-            Tap the + button below to add your first debt.
-          </p>
-
-        </div>
+        <EmptyState
+          icon="🏦"
+          title="No debts yet"
+          description="Tap the + button below to add your first debt."
+        />
       ) : (
         <div className="space-y-4">
           {filteredDebts.map((debt) => (
@@ -120,7 +93,6 @@ export default function DebtsPage() {
         </div>
       )}
 
-      {/* Floating Add Button */}
       <Button
         type="button"
         onClick={() => setIsAddModalOpen(true)}
@@ -129,12 +101,12 @@ export default function DebtsPage() {
         <Plus size={32} />
       </Button>
 
-      {/* Add Modal */}
       <AddDebtModal
         open={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         onSave={addDebt}
       />
-    </div>
+
+    </PageContainer>
   );
 }
