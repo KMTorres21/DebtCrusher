@@ -1,5 +1,5 @@
 import { formatCurrency } from "../utils/formatCurrency";
-import { UpcomingBills } from "../components/dashboard/UpcomingBills";
+import  UpcomingBills  from "../components/dashboard/UpcomingBills";
 import { useBills } from "../hooks/useBills";
 
 export default function DashboardPage() {
