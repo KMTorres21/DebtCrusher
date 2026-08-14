@@ -1,9 +1,14 @@
 import { formatCurrency } from "../utils/formatCurrency";
 import  UpcomingBills  from "../components/dashboard/UpcomingBills";
 import { useBills } from "../hooks/useBills";
+import { useDebts } from "../hooks/useDebts";
+import { useIncome } from "../hooks/useIncome";
+import { calculateFinancialSummary } from "../utils/cashflow";
 
 export default function DashboardPage() {
   const { bills } = useBills();
+  const { debts } = useDebts();
+  const { income } = useIncome();
 
   const totalBills = bills.length;
 
@@ -24,7 +29,12 @@ export default function DashboardPage() {
     totalBills === 0
       ? 0
       : Math.round((paidBills / totalBills) * 100);
-
+  const summary = calculateFinancialSummary
+  (
+    bills,
+    debts,
+    income
+  )
   return (
     <div className="space-y-6 px-5 py-6 pb-32">
       {/* Header */}
