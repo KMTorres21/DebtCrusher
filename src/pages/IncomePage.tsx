@@ -47,8 +47,7 @@ export default function IncomePage() {
   const handleEdit = (item: Income) => {
     setEditingIncome(item);
     setIsAddModalOpen(true);
-  };
-
+  
     // We'll wire editing into the modal next.
     console.log("Editing income:", item);
   };
