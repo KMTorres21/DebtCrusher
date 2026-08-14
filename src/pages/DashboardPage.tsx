@@ -92,7 +92,7 @@ export default function DashboardPage() {
             </span>
           </div>
 
-<UpcomingBills bills={bills} />
+        <UpcomingBills bills={bills} />
 
           <div className="mt-4 h-3 w-full overflow-hidden rounded-full bg-slate-200">
             <div
