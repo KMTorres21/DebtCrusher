@@ -1,8 +1,16 @@
 import { formatCurrency } from "../utils/formatCurrency";
-import  UpcomingBills  from "../components/dashboard/UpcomingBills";
+
+import PageContainer from "../components/common/PageContainer";
+import PageHeader from "../components/common/PageHeader";
+import StatCard from "../components/common/StatCard";
+import Card from "../components/common/Card";
+
+import UpcomingBills from "../components/dashboard/UpcomingBills";
+
 import { useBills } from "../hooks/useBills";
 import { useDebts } from "../hooks/useDebts";
 import { useIncome } from "../hooks/useIncome";
+
 import { calculateFinancialSummary } from "../utils/cashflow";
 
 export default function DashboardPage() {
@@ -10,14 +18,17 @@ export default function DashboardPage() {
   const { debts } = useDebts();
   const { income } = useIncome();
 
-  const totalBills = bills.length;
-
-  const totalMonthlyBills = bills.reduce(
-    (total, bill) => total + bill.amount,
-    0
+  const summary = calculateFinancialSummary(
+    bills,
+    debts,
+    income
   );
 
-  const paidBills = bills.filter((bill) => bill.paid).length;
+  const totalBills = bills.length;
+
+  const paidBills = bills.filter(
+    (bill) => bill.paid
+  ).length;
 
   const overdueBills = bills.filter(
     (bill) =>
@@ -29,123 +40,98 @@ export default function DashboardPage() {
     totalBills === 0
       ? 0
       : Math.round((paidBills / totalBills) * 100);
-  const summary = calculateFinancialSummary
-  (
-    bills,
-    debts,
-    income
-  )
+
   return (
-<div className="grid grid-cols-2 gap-4">
+    <PageContainer>
 
-  <div className="rounded-2xl bg-white p-5 shadow">
-    <p className="text-sm text-slate-500">Monthly Income</p>
-    <p className="mt-2 text-2xl font-bold text-green-600">
-      {formatCurrency(summary.totalIncome)}
-    </p>
-  </div>
+      <PageHeader
+        title="Dashboard"
+        subtitle="Welcome back! 👋"
+      />
 
-  <div className="rounded-2xl bg-white p-5 shadow">
-    <p className="text-sm text-slate-500">Monthly Bills</p>
-    <p className="mt-2 text-2xl font-bold text-red-600">
-      {formatCurrency(summary.totalBills)}
-    </p>
-  </div>
+      <div className="grid grid-cols-2 gap-4">
 
-  <div className="rounded-2xl bg-white p-5 shadow">
-    <p className="text-sm text-slate-500">Debt Payments</p>
-    <p className="mt-2 text-2xl font-bold text-orange-600">
-      {formatCurrency(summary.totalDebtPayments)}
-    </p>
-  </div>
+        <StatCard
+          title="Monthly Income"
+          value={formatCurrency(summary.totalIncome)}
+          valueClassName="text-green-600"
+        />
 
-  <div className="rounded-2xl bg-white p-5 shadow">
-    <p className="text-sm text-slate-500">Remaining Cash</p>
-    <p className="mt-2 text-2xl font-bold text-blue-600">
-      {formatCurrency(summary.remainingCash)}
-    </p>
-  </div>
-    <div className="space-y-6 px-5 py-6 pb-32">
-      {/* Header */}
-      <div>
-        <h1 className="text-4xl font-bold text-slate-900">
-          Dashboard
-        </h1>
+        <StatCard
+          title="Monthly Bills"
+          value={formatCurrency(summary.totalBills)}
+          valueClassName="text-red-600"
+        />
 
-        <p className="mt-2 text-slate-500">
-          Welcome back! 👋
+        <StatCard
+          title="Debt Payments"
+          value={formatCurrency(summary.totalDebtPayments)}
+          valueClassName="text-orange-600"
+        />
+
+        <StatCard
+          title="Remaining Cash"
+          value={formatCurrency(summary.remainingCash)}
+          valueClassName="text-blue-600"
+        />
+
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+
+        <StatCard
+          title="Bills Added"
+          value={totalBills}
+        />
+
+        <StatCard
+          title="Bills Paid"
+          value={paidBills}
+        />
+
+        <StatCard
+          title="Overdue Bills"
+          value={overdueBills}
+          valueClassName="text-red-600"
+        />
+
+        <StatCard
+          title="Progress"
+          value={`${progress}%`}
+          valueClassName="text-blue-600"
+        />
+
+      </div>
+
+      <Card>
+
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-slate-500">
+            Monthly Progress
+          </p>
+
+          <span className="text-sm font-semibold text-blue-600">
+            {progress}%
+          </span>
+        </div>
+
+        <div className="mt-4">
+          <UpcomingBills bills={bills} />
+        </div>
+
+        <div className="mt-4 h-3 w-full overflow-hidden rounded-full bg-slate-200">
+          <div
+            className="h-full rounded-full bg-blue-600 transition-all duration-500"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+
+        <p className="mt-3 text-sm text-slate-600">
+          {paidBills} of {totalBills} bills paid
         </p>
-      </div>
 
-      {/* Dashboard Cards */}
-      <div className="grid gap-4">
+      </Card>
 
-        <div className="rounded-2xl bg-white p-6 shadow">
-          <p className="text-sm text-slate-500">
-            Monthly Bills
-          </p>
-
-          <h2 className="mt-2 text-3xl font-bold">
-            {formatCurrency(totalMonthlyBills)}
-          </h2>
-        </div>
-
-        <div className="rounded-2xl bg-white p-6 shadow">
-          <p className="text-sm text-slate-500">
-            Bills Added
-          </p>
-
-          <h2 className="mt-2 text-3xl font-bold">
-            {totalBills}
-          </h2>
-        </div>
-
-        <div className="rounded-2xl bg-white p-6 shadow">
-          <p className="text-sm text-slate-500">
-            Bills Paid
-          </p>
-
-          <h2 className="mt-2 text-3xl font-bold">
-            {paidBills}
-          </h2>
-        </div>
-
-        <div className="rounded-2xl bg-white p-6 shadow">
-          <p className="text-sm text-slate-500">
-            Overdue Bills
-          </p>
-
-          <h2 className="mt-2 text-3xl font-bold text-red-600">
-            {overdueBills}
-          </h2>
-        </div>
-
-        <div className="rounded-2xl bg-white p-6 shadow">
-          <div className="flex items-center justify-between">
-            <p className="text-sm text-slate-500">
-              Monthly Progress
-            </p>
-
-            <span className="text-sm font-semibold text-blue-600">
-              {progress}%
-            </span>
-          </div>
-
-        <UpcomingBills bills={bills} />
-
-          <div className="mt-4 h-3 w-full overflow-hidden rounded-full bg-slate-200">
-            <div
-              className="h-full rounded-full bg-blue-600 transition-all duration-500"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-
-          <p className="mt-3 text-sm text-slate-600">
-            {paidBills} of {totalBills} bills paid
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
+    </PageContainer>
   );
 }
