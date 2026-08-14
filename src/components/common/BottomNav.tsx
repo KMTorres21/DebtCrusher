@@ -5,6 +5,7 @@ import {
   Target,
   Settings,
 } from "lucide-react";
+import { CalendarDays } from "lucide-react";
 import { NavLink } from "react-router-dom";
  
 const navItems = [
@@ -17,6 +18,11 @@ const navItems = [
     label: "Bills",
     path: "/bills",
     icon: CreditCard,
+  },
+  {
+  label: "Timeline",
+  path: "/timeline",
+  icon: CalendarDays,
   },
   {
     label: "Income",
