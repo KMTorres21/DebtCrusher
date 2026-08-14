@@ -1,4 +1,4 @@
-import { formatCurrency } from "../utils/formatCurrency":
+import { formatCurrency } from "../utils/formatCurrency";
 import { UpcomingBills } from "../components/dashboard/UpcomingBills";
 import { useBills } from "../hooks/useBills";
 
