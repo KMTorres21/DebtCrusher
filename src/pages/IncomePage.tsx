@@ -106,10 +106,23 @@ export default function IncomePage() {
       </Button>
 
       <AddIncomeModal
-        open={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
-        onSave={addIncome}
-      />
+  open={isAddModalOpen}
+  income={editingIncome}
+  onClose={() => {
+    setEditingIncome(null);
+    setIsAddModalOpen(false);
+  }}
+  onSave={(income) => {
+    if (editingIncome) {
+      updateIncome(income);
+    } else {
+      addIncome(income);
+    }
+
+    setEditingIncome(null);
+    setIsAddModalOpen(false);
+  }}
+/>
 
     </PageContainer>
   );
