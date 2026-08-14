@@ -44,9 +44,9 @@ export default function IncomePage() {
           )[0].nextPayDate
       : "None";
 
-  const handleEdit = (item: Income) +>
-  {setEditingIncome(item);
-   setIsAddModalOpen(true);
+  const handleEdit = (item: Income) +> {
+    setEditingIncome(item);
+    setIsAddModalOpen(true);
   };
 
   function handleEdit(item: Income) {
