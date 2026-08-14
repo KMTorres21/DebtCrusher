@@ -1,3 +1,4 @@
+import { formatCurrency } from "../utils/formatCurrency";
 import { useState } from "react";
 import { Plus } from "lucide-react";
 
