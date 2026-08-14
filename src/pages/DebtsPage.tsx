@@ -75,7 +75,7 @@ export default function DebtsPage() {
           </p>
 
           <p className="mt-2 text-2xl font-bold">
-            {formatCurrency(totalMonthlyBills)}
+            {formatCurrency(totalMinimumPayments)}
           </p>
         </div>
 
