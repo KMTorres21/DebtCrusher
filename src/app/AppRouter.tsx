@@ -6,6 +6,7 @@ import BillsPage from "../pages/BillsPage";
 import IncomePage from "../pages/IncomePage";
 import DebtsPage from "../pages/DebtsPage";
 import SettingsPage from "../pages/SettingsPage";
+import CalendarPage from "../pages/CalendarPage";
 
 export default function AppRouter() {
   return (
