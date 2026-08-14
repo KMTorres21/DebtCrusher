@@ -6,6 +6,12 @@ import { useIncome } from "../hooks/useIncome";
 import { formatCurrency } from "../utils/formatCurrency";
 
 import Button from "../components/common/Button";
+import PageContainer from "../components/common/PageContainer";
+import PageHeader from "../components/common/PageHeader";
+import SearchBar from "../components/common/SearchBar";
+import StatCard from "../components/common/StatCard";
+import EmptyState from "../components/common/EmptyState";
+
 import IncomeCard from "../components/income/IncomeCard";
 import AddIncomeModal from "../components/income/AddIncomeModal";
 
@@ -38,76 +44,46 @@ export default function IncomePage() {
           )[0].nextPayDate
       : "None";
 
-  const handleEdit = (item: Income) => {
+  function handleEdit(item: Income) {
     setEditingIncome(item);
+
+    // We'll wire editing into the modal next.
     console.log("Editing income:", item);
-  };
+  }
 
   return (
-    <div className="space-y-6 px-5 py-6 pb-32">
+    <PageContainer>
 
-      {/* Header */}
-      <div>
-        <h1 className="text-4xl font-bold text-slate-900">
-          Income
-        </h1>
-
-        <p className="mt-2 text-lg text-slate-500">
-          Track your income sources
-        </p>
-      </div>
-
-      {/* Summary Cards */}
-      <div className="grid grid-cols-2 gap-4">
-
-        <div className="rounded-2xl bg-white p-5 shadow">
-          <p className="text-sm text-slate-500">
-            Monthly Income
-          </p>
-
-          <p className="mt-2 text-2xl font-bold">
-            {formatCurrency(totalIncome)}
-          </p>
-        </div>
-
-        <div className="rounded-2xl bg-white p-5 shadow">
-          <p className="text-sm text-slate-500">
-            Next Payday
-          </p>
-
-          <p className="mt-2 text-lg font-bold">
-            {nextPayday}
-          </p>
-        </div>
-
-      </div>
-
-      {/* Search */}
-      <input
-        type="text"
-        placeholder="Search income..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="w-full rounded-xl border border-slate-200 p-4"
+      <PageHeader
+        title="Income"
+        subtitle="Track your income sources"
       />
 
-      {/* Income List */}
+      <div className="grid grid-cols-2 gap-4">
+        <StatCard
+          title="Monthly Income"
+          value={formatCurrency(totalIncome)}
+          valueClassName="text-green-600"
+        />
+
+        <StatCard
+          title="Next Payday"
+          value={nextPayday}
+        />
+      </div>
+
+      <SearchBar
+        value={search}
+        onChange={setSearch}
+        placeholder="Search income..."
+      />
+
       {filteredIncome.length === 0 ? (
-        <div className="rounded-2xl bg-white p-10 text-center shadow">
-
-          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-green-100 text-4xl">
-            💵
-          </div>
-
-          <h2 className="mt-5 text-2xl font-bold">
-            No income yet
-          </h2>
-
-          <p className="mt-2 text-slate-500">
-            Tap the + button below to add your first income source.
-          </p>
-
-        </div>
+        <EmptyState
+          icon="💵"
+          title="No income yet"
+          description="Tap the + button below to add your first income source."
+        />
       ) : (
         <div className="space-y-4">
           {filteredIncome.map((item) => (
@@ -121,7 +97,6 @@ export default function IncomePage() {
         </div>
       )}
 
-      {/* Floating Add Button */}
       <Button
         type="button"
         onClick={() => setIsAddModalOpen(true)}
@@ -130,12 +105,12 @@ export default function IncomePage() {
         <Plus size={32} />
       </Button>
 
-      {/* Add Income Modal */}
       <AddIncomeModal
         open={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         onSave={addIncome}
       />
-    </div>
+
+    </PageContainer>
   );
 }
