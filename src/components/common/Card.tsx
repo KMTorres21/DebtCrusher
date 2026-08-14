@@ -1,5 +1,4 @@
 import { ReactNode } from "react";
-import clsx from "clsx";
 
 interface CardProps {
   children: ReactNode;
@@ -8,14 +7,11 @@ interface CardProps {
 
 export default function Card({
   children,
-  className,
+  className = "",
 }: CardProps) {
   return (
     <div
-      className={clsx(
-        "rounded-2xl bg-white shadow-md p-5",
-        className
-      )}
+      className={`rounded-2xl bg-white p-6 shadow ${className}`}
     >
       {children}
     </div>
