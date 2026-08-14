@@ -3,14 +3,12 @@ import { Debt } from "../types/Debt";
 const STORAGE_KEY = "debtcrusher-debts";
 
 export function loadDebts(): Debt[] {
-  const data = localStorage.getItem(STORAGE_KEY);
+  const stored = localStorage.getItem(STORAGE_KEY);
 
-  if (!data) {
-    return [];
-  }
+  if (!stored) return [];
 
   try {
-    return JSON.parse(data);
+    return JSON.parse(stored);
   } catch {
     return [];
   }
