@@ -1,6 +1,6 @@
 import { Bill } from "../types/Bill";
-import { Income } from "../types/Income";
 import { Debt } from "../types/Debt";
+import { Income } from "../types/Income";
 import { CalendarEvent } from "../types/CalendarEvent";
 
 export function buildCalendarEvents(
@@ -32,15 +32,13 @@ export function buildCalendarEvents(
   });
 
   debts.forEach((debt) => {
-    if (debt.paymentDueDate) {
-      events.push({
-        id: debt.id,
-        date: debt.paymentDueDate,
-        type: "debt",
-        title: debt.name,
-        amount: debt.minimumPayment,
-      });
-    }
+    events.push({
+      id: debt.id,
+      date: debt.dueDate,
+      type: "debt",
+      title: debt.name,
+      amount: debt.minimumPayment,
+    });
   });
 
   return events.sort((a, b) => a.date.localeCompare(b.date));
