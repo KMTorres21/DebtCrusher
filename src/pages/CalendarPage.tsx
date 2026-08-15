@@ -43,7 +43,8 @@ const events = buildCalendarEvents(
   year={year}
   month={month}
   bills={bills}
-      />
+  income={income}
+/>
     </div>
   );
 }
