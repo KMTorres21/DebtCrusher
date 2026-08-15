@@ -13,20 +13,13 @@ export type BillCategory =
 
 export interface Bill {
   id: string;
-
   name: string;
   amount: number;
-
-  dueDate: string;
-
+  dueDate: string; // YYYY-MM-DD
   category: BillCategory;
-
-  paid: boolean;
   recurring: boolean;
-  autoPay: boolean;
-
+  paid: boolean;
   notes?: string;
-
   createdAt: string;
   updatedAt: string;
 }
