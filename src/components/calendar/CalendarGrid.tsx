@@ -59,6 +59,9 @@ const dayBills = bills.filter(
       >
         {day}
       </div>
+<div className="mt-2">
+  {dayBills.length}
+</div>
     </div>
   );
 }
