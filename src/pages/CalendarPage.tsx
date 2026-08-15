@@ -19,25 +19,11 @@ export default function CalendarPage() {
           ◀
         </button>
 
-        <h1 className="text-3xl font-bold">
-          {new Date(year,month).toLocaleString("default", {
-            month: "long",
-          })}
-        </h1>
+        <h1 className="text-5xl text-red-500">
+  CALENDAR PAGE
+</h1>
 
-        <button
-          onClick={() => setMonth(month + 1)}
-        >
-          ▶
-        </button>
-
-      </div>
-
-      <CalendarGrid
-        year={year}
-        month={month}
-      />
-
-    </div>
-  );
-}
+<CalendarGrid
+  year={year}
+  month={month}
+/>
