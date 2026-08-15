@@ -10,6 +10,15 @@ export default function CalendarPage() {
 
   const [month, setMonth] = useState(today.getMonth());
   const [year, setYear] = useState(today.getFullYear());
+const { bills } = useBills();
+const { income } = useIncome();
+const { debts } = useDebts();
+
+const events = buildCalendarEvents(
+  bills,
+  income,
+  debts
+);
 
   return (
     <div className="space-y-6 px-5 py-6 pb-32">
