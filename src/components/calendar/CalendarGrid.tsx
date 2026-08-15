@@ -35,7 +35,6 @@ export default function CalendarGrid({
 
   const cells = [];
 
-  // Empty cells before the first day
   for (let i = 0; i < startDay; i++) {
     cells.push(
       <div
@@ -45,7 +44,6 @@ export default function CalendarGrid({
     );
   }
 
-  // Calendar days
   for (let day = 1; day <= totalDays; day++) {
     const today = new Date();
 
@@ -98,7 +96,10 @@ export default function CalendarGrid({
                   : "bg-red-500"
               }`}
             >
-              🧾 {bill.name}
+              <div>🧾 {bill.name}</div>
+              <div>
+                ${bill.amount.toFixed(2)}
+              </div>
             </div>
           ))}
         </div>
@@ -110,7 +111,10 @@ export default function CalendarGrid({
               key={item.id}
               className="truncate rounded bg-green-600 px-2 py-1 text-xs font-medium text-white"
             >
-              💵 {item.source}
+              <div>💵 {item.source}</div>
+              <div>
+                ${item.amount.toFixed(2)}
+              </div>
             </div>
           ))}
         </div>
@@ -122,7 +126,10 @@ export default function CalendarGrid({
               key={debt.id}
               className="truncate rounded bg-orange-500 px-2 py-1 text-xs font-medium text-white"
             >
-              💳 {debt.name}
+              <div>💳 {debt.name}</div>
+              <div>
+                ${debt.minimumPayment.toFixed(2)}
+              </div>
             </div>
           ))}
         </div>
