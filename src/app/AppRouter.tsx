@@ -9,12 +9,12 @@ import SettingsPage from "../pages/SettingsPage";
 import CalendarPage from "../pages/CalendarPage";
 import StatementScannerPage from "../pages/StatementScannerPage";
 
-export default function AppRouter() {
+export default function AppRouter()  {
   return (
     <BrowserRouter>
       <Routes>
         <Route element={<AppLayout />}>
-          <Route path="/" element={<DashboardPage />} />
+          <Route path="/" element={<DashboarPage />} />
           <Route path="/bills" element={<BillsPage />} />
           <Route path="/income" element={<IncomePage />} />
           <Route path="/debts" element={<DebtsPage />} />
