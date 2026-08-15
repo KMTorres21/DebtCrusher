@@ -1,9 +1,11 @@
 import { Bill } from "../../types/Bill";
+import { Income } from "../../types/Income";
 
 interface Props {
   year: number;
   month: number;
   bills: Bill[];
+  income: Income[];
 }
 
 export default function CalendarGrid({
