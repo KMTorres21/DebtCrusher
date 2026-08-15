@@ -29,11 +29,7 @@ export default function CalendarGrid({
 
   const cells = [];
 
-  for (let i = 0; i < startDay; i++) {
-    cells.push(<div key={`blank-${i}`} />);
-  }
-
-for (let day = 1; day <= totalDays; day++) {
+  for (let day = 1; day <= totalDays; day++) {
   const isToday = (() => {
     const today = new Date();
 
@@ -43,7 +39,12 @@ for (let day = 1; day <= totalDays; day++) {
       today.getDate() === day
     );
   })();
+const dateString =
+  `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 
+const dayBills = bills.filter(
+  (bill) => bill.dueDate === dateString
+);
   cells.push(
     <div
       key={day}
