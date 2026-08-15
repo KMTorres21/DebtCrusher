@@ -59,8 +59,17 @@ const dayBills = bills.filter(
       >
         {day}
       </div>
-<div className="mt-2">
-  {dayBills.length}
+<div className="mt-2 space-y-1">
+  {dayBills.map((bill) => (
+    <div
+      key={bill.id}
+      className={`truncate rounded px-2 py-1 text-xs text-white ${
+        bill.paid ? "bg-green-500" : "bg-red-500"
+      }`}
+    >
+      {bill.name}
+    </div>
+  ))}
 </div>
     </div>
   );
