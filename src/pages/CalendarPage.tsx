@@ -44,6 +44,7 @@ const events = buildCalendarEvents(
   month={month}
   bills={bills}
   income={income}
+  debts={debts}
 />
     </div>
   );
