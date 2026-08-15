@@ -41,7 +41,7 @@ export default function BillForm({ onSave }: Props) {
       category,
       recurring,
       paid: false,
-    autoPay: false,
+      autoPay: false,
       createdAt: now,
       updatedAt: now,
     };
