@@ -8,22 +8,28 @@ export default function CalendarPage() {
 
   const [year, setYear] = useState(today.getFullYear());
 
-  return (
-    <div className="space-y-6 px-5 py-6 pb-32">
+return (
+  <div className="space-y-6 px-5 py-6 pb-32">
 
-      <div className="flex items-center justify-between">
+    <div className="flex items-center justify-between">
+      <button onClick={() => setMonth(month - 1)}>
+        ◀
+      </button>
 
-        <button
-          onClick={() => setMonth(month - 1)}
-        >
-          ◀
-        </button>
+      <h1 className="text-5xl text-red-500">
+        CALENDAR PAGE
+      </h1>
 
-        <h1 className="text-5xl text-red-500">
-  CALENDAR PAGE
-</h1>
+      <button onClick={() => setMonth(month + 1)}>
+        ▶
+      </button>
+    </div>
 
-<CalendarGrid
-  year={year}
-  month={month}
-/>
+    <CalendarGrid
+      year={year}
+      month={month}
+    />
+
+  </div>
+);
+}
