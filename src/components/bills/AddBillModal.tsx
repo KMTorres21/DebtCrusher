@@ -87,7 +87,7 @@ export default function AddBillModal({
   dueDate,
   category,
   recurring,
-  paid: bill?.paid ?? false,
+  paid: false,
   notes: notes.trim() || undefined,
   createdAt: bill?.createdAt ?? now,
   updatedAt: now,
