@@ -39,10 +39,10 @@ const events = buildCalendarEvents(
         </button>
       </div>
 
-  <CalendarGrid
+<CalendarGrid
   year={year}
   month={month}
-  events={events}
+  bills={bills}
       />
     </div>
   );
