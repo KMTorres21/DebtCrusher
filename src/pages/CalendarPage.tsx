@@ -20,10 +20,9 @@ export default function CalendarPage() {
         </button>
 
         <h1 className="text-3xl font-bold">
-          {today.toLocaleString("default", {
+          {new Date(year,month).toLocaleString("default", {
             month: "long",
-          })}{" "}
-          {year}
+          })}
         </h1>
 
         <button
