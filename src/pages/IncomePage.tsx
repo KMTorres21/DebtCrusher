@@ -17,10 +17,11 @@ import AddIncomeModal from "../components/income/AddIncomeModal";
 
 export default function IncomePage() {
   const {
-    income,
-    addIncome,
-    deleteIncome,
-  } = useIncome();
+  income,
+  addIncome,
+  updateIncome,
+  deleteIncome,
+} = useIncome();
 
   const [search, setSearch] = useState("");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
