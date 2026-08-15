@@ -17,13 +17,13 @@ export interface Bill {
   name: string;
   amount: number;
 
-  dueDate: string; // YYYY-MM-DD
+  dueDate: string;
 
   category: BillCategory;
 
-  recurring: boolean;
-
   paid: boolean;
+  recurring: boolean;
+  autoPay: boolean;
 
   notes?: string;
 
