@@ -1,11 +1,13 @@
 import { Bill } from "../../types/Bill";
 import { Income } from "../../types/Income";
+import { Debt } from "../../types/Debt";
 
 interface Props {
   year: number;
   month: number;
   bills: Bill[];
   income: Income[];
+  debts: Debt[];
 }
 
 export default function CalendarGrid({
@@ -13,6 +15,7 @@ export default function CalendarGrid({
   month,
   bills,
   income,
+  debts,
 }: Props) {
   const weekDays = [
     "Sun",
@@ -32,7 +35,7 @@ export default function CalendarGrid({
 
   const cells = [];
 
-  // Empty cells before the first day of the month
+  // Empty cells before the first day
   for (let i = 0; i < startDay; i++) {
     cells.push(
       <div
@@ -62,6 +65,10 @@ export default function CalendarGrid({
 
     const dayIncome = income.filter(
       (item) => item.nextPayDate === dateString
+    );
+
+    const dayDebts = debts.filter(
+      (debt) => debt.dueDate === dateString
     );
 
     cells.push(
@@ -104,6 +111,18 @@ export default function CalendarGrid({
               className="truncate rounded bg-green-600 px-2 py-1 text-xs font-medium text-white"
             >
               💵 {item.source}
+            </div>
+          ))}
+        </div>
+
+        {/* Debt Payments */}
+        <div className="mt-1 space-y-1">
+          {dayDebts.map((debt) => (
+            <div
+              key={debt.id}
+              className="truncate rounded bg-orange-500 px-2 py-1 text-xs font-medium text-white"
+            >
+              💳 {debt.name}
             </div>
           ))}
         </div>
