@@ -1,4 +1,5 @@
 import { Bill } from "../../types/Bill";
+import { formatCurrency } from "../../utils/formatCurrency";
 
 interface Props {
   bills: Bill[];
