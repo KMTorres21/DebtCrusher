@@ -1,6 +1,9 @@
+import { CalendarEvent } from "../../types/CalendarEvent";
+
 interface Props {
   year: number;
   month: number;
+  events: CalendarEvent[];
 }
 
 export default function CalendarGrid({
