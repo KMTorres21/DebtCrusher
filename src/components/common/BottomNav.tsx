@@ -20,8 +20,8 @@ const navItems = [
     icon: CreditCard,
   },
   {
-  label: "Timeline",
-  path: "/timeline",
+  label: "Calendar",
+  path: "/calendar",
   icon: CalendarDays,
   },
   {
