@@ -34,4 +34,5 @@ return (
       {cells}
     </div>
   </div>
-)
+);
+}
