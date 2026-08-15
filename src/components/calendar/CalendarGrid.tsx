@@ -71,6 +71,9 @@ const dayBills = bills.filter(
         {day}
       </div>
 <div className="mt-1 space-y-1">
+  {dayIncome.map(...)}
+</div>
+<div className="mt-1 space-y-1">
   {dayIncome.map((item) => (
     <div
       key={item.id}
