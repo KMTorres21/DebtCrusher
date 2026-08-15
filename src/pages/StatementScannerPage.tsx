@@ -50,6 +50,7 @@ export default function StatementScannerPage() {
         category: "Utilities" as BillCategory,
         recurring: true,
         paid: false,
+    autoPay: false,
         notes: `Extracted from ${file.name}`,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
