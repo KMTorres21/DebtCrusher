@@ -1,14 +1,15 @@
-import { CalendarEvent } from "../../types/CalendarEvent";
+import { Bill } from "../../types/Bill";
 
 interface Props {
   year: number;
   month: number;
-  events: CalendarEvent[];
+  bills: Bill[];
 }
 
 export default function CalendarGrid({
   year,
   month,
+  bills,
 }: Props) {
   const weekDays = [
     "Sun",
