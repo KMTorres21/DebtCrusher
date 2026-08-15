@@ -7,6 +7,7 @@ import IncomePage from "../pages/IncomePage";
 import DebtsPage from "../pages/DebtsPage";
 import SettingsPage from "../pages/SettingsPage";
 import CalendarPage from "../pages/CalendarPage";
+import StatementScannerPage from "../pages/StatementScannerPage";
 
 export default function AppRouter() {
   return (
