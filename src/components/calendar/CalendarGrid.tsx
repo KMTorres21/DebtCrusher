@@ -12,6 +12,7 @@ export default function CalendarGrid({
   year,
   month,
   bills,
+  income,
 }: Props) {
   const weekDays = [
     "Sun",
@@ -29,7 +30,11 @@ export default function CalendarGrid({
   const startDay = firstDay.getDay();
   const totalDays = lastDay.getDate();
 
-  const cells = [];
+  const cells = []
+
+  for (let i = 0; i < startDay; i++) {
+  cells.push(<div key={`blank-${i}`} />);
+}
 
   for (let day = 1; day <= totalDays; day++) {
   const isToday = (() => {
