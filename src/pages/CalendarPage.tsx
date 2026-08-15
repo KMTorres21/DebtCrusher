@@ -1,5 +1,9 @@
 import { useState } from "react";
 import CalendarGrid from "../components/calendar/CalendarGrid";
+import { useBills } from "../hooks/useBills";
+import { useIncome } from "../hooks/useIncome";
+import { useDebts } from "../hooks/useDebts";
+import { buildCalendarEvents } from "../utils/calendarEvents";
 
 export default function CalendarPage() {
   const today = new Date();
