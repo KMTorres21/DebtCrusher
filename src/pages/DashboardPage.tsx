@@ -11,7 +11,7 @@ import { useBills } from "../hooks/useBills";
 import { useDebts } from "../hooks/useDebts";
 import { useIncome } from "../hooks/useIncome";
 
-import { calculateFinancialSummary } from "../utils/cashflow";
+import { calculateFinancialSummary } from "../utils/cashFlow";
 
 export default function DashboardPage() {
   const { bills } = useBills();
