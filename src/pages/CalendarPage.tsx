@@ -1,19 +1,44 @@
+import { useState } from "react";
+import CalendarGrid from "../components/calendar/CalendarGrid";
+
 export default function CalendarPage() {
+  const today = new Date();
+
+  const [month, setMonth] = useState(today.getMonth());
+
+  const [year, setYear] = useState(today.getFullYear());
+
   return (
     <div className="space-y-6 px-5 py-6 pb-32">
-      <div>
-        <h1 className="text-4xl font-bold text-slate-900">
-          Cash Flow Calendar
+
+      <div className="flex items-center justify-between">
+
+        <button
+          onClick={() => setMonth(month - 1)}
+        >
+          ◀
+        </button>
+
+        <h1 className="text-3xl font-bold">
+          {today.toLocaleString("default", {
+            month: "long",
+          })}{" "}
+          {year}
         </h1>
 
-        <p className="mt-2 text-slate-500">
-          Coming in Sprint 3
-        </p>
+        <button
+          onClick={() => setMonth(month + 1)}
+        >
+          ▶
+        </button>
+
       </div>
 
-      <div className="rounded-2xl bg-white p-6 shadow">
-        Calendar coming soon...
-      </div>
+      <CalendarGrid
+        year={year}
+        month={month}
+      />
+
     </div>
   );
 }
