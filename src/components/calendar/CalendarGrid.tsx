@@ -44,6 +44,10 @@ export default function CalendarGrid({
 const dateString =
   `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 
+const dayIncome = income.filter(
+  (item) => item.nextPayDate === dateString
+);
+
 const dayBills = bills.filter(
   (bill) => bill.dueDate === dateString
 );
