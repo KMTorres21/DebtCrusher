@@ -43,7 +43,7 @@ export default function UpcomingBills({ bills }: Props) {
               </div>
 
               <div className="font-bold">
-                {formatCurrency(totalMonthlyBills)}
+                {formatCurrency(bill.amount)}
               </div>
             </div>
           ))}
