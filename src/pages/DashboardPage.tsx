@@ -65,7 +65,7 @@ export default function DashboardPage() {
       {/* Quick Add */}
       <Button
         type="button"
-        onClick={() => setIsAddBillOpen(true)}
+        onClick={() => setIsAddBillOpen(true)} 
         className="flex w-full items-center justify-center gap-2"
       >
         <Plus size={20} />
