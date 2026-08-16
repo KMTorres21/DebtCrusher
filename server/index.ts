@@ -173,13 +173,6 @@ Rules:
   }
 );
 
-    return res.json({
-      ok: true,
-      bills: [bill],
-    });
-  }
-);
-
 const PORT = 3001;
 
 app.listen(PORT, () => {
