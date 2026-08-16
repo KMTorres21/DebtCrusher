@@ -26,37 +26,55 @@ export default function StatementScannerPage() {
     setBills([]);
   };
 
-  const handleScan = () => {
-    if (!file) return;
+const handleScan = async () => {
+  if (!file) return;
 
-    setIsScanning(true);
+  setIsScanning(true);
 
-    // Mock AI extraction for Sprint 1.
-    // Real statement/OCR processing will replace this later.
-    setTimeout(() => {
-      const today = new Date();
+  try {
+    const formData = new FormData();
+    formData.append("statement", file);
 
-      const dueDate = new Date(
-        today.getFullYear(),
-        today.getMonth(),
-        today.getDate() + 7
+    const response = await fetch(
+      "http://localhost:3001/api/statements/extract",
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Statement scan failed.");
+    }
+
+    const data = await response.json();
+
+    if (!data.ok) {
+      throw new Error(
+        data.message || "No bills were extracted."
       );
+    }
 
-      const extractedBill: ExtractedBill = {
-        id: `scan-${Date.now()}`,
-        name: "Example Utility Bill",
-        amount: 146.32,
-        dueDate: dueDate.toISOString().split("T")[0],
-        category: "Utilities" as BillCategory,
-        recurring: true,
-        paid: false,
-    autoPay: false,
-        notes: `Extracted from ${file.name}`,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        confidence: 96,
+    const extractedBills: ExtractedBill[] =
+      data.bills.map((bill: Bill) => ({
+        ...bill,
+        confidence: bill.confidence ?? 96,
         selected: true,
-      };
+      }));
+
+    setBills(extractedBills);
+    setHasScanned(true);
+  } catch (error) {
+    console.error("Statement scan error:", error);
+    alert(
+      error instanceof Error
+        ? error.message
+        : "Unable to scan statement."
+    );
+  } finally {
+    setIsScanning(false);
+  }
+};
 
       setBills([extractedBill]);
       setHasScanned(true);
