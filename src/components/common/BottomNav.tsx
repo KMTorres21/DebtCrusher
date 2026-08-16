@@ -4,6 +4,7 @@ import {
   Wallet,
   Target,
   Settings,
+  ScanLine,
 } from "lucide-react";
 import { CalendarDays } from "lucide-react";
 import { NavLink } from "react-router-dom";
@@ -18,6 +19,11 @@ const navItems = [
     label: "Bills",
     path: "/bills",
     icon: CreditCard,
+  },
+  {
+    label: "Scan",
+    path: "/statement-scanner",
+    icon: ScanLine,
   },
   {
   label: "Calendar",
