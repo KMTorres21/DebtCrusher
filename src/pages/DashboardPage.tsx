@@ -1,11 +1,17 @@
+import { useState } from "react";
+import { Plus } from "lucide-react";
+
+import { Bill } from "../types/Bill";
 import { formatCurrency } from "../utils/formatCurrency";
 
 import PageContainer from "../components/common/PageContainer";
 import PageHeader from "../components/common/PageHeader";
 import StatCard from "../components/common/StatCard";
 import Card from "../components/common/Card";
+import Button from "../components/common/Button";
 
 import UpcomingBills from "../components/dashboard/UpcomingBills";
+import AddBillModal from "../components/bills/AddBillModal";
 
 import { useBills } from "../hooks/useBills";
 import { useDebts } from "../hooks/useDebts";
@@ -14,9 +20,11 @@ import { useIncome } from "../hooks/useIncome";
 import { calculateFinancialSummary } from "../utils/cashFlow";
 
 export default function DashboardPage() {
-  const { bills } = useBills();
+  const { bills, addBill } = useBills();
   const { debts } = useDebts();
   const { income } = useIncome();
+
+  const [isAddBillOpen, setIsAddBillOpen] = useState(false);
 
   const summary = calculateFinancialSummary(
     bills,
@@ -41,6 +49,11 @@ export default function DashboardPage() {
       ? 0
       : Math.round((paidBills / totalBills) * 100);
 
+  function handleAddBill(bill: Bill) {
+    addBill(bill);
+    setIsAddBillOpen(false);
+  }
+
   return (
     <PageContainer>
 
@@ -48,6 +61,16 @@ export default function DashboardPage() {
         title="Dashboard"
         subtitle="Welcome back! 👋"
       />
+
+      {/* Quick Add */}
+      <Button
+        type="button"
+        onClick={() => setIsAddBillOpen(true)}
+        className="flex w-full items-center justify-center gap-2"
+      >
+        <Plus size={20} />
+        Quick Add Bill
+      </Button>
 
       <div className="grid grid-cols-2 gap-4">
 
@@ -131,6 +154,12 @@ export default function DashboardPage() {
         </p>
 
       </Card>
+
+      <AddBillModal
+        open={isAddBillOpen}
+        onClose={() => setIsAddBillOpen(false)}
+        onSave={handleAddBill}
+      />
 
     </PageContainer>
   );
