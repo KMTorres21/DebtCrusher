@@ -55,17 +55,19 @@ const handleScan = async () => {
       );
     }
 
-    const extractedBills: ExtractedBill[] =
-      data.bills.map((bill: Bill) => ({
+    const extractedBills: ExtractedBill[] = data.bills.map(
+      (bill: Bill) => ({
         ...bill,
         confidence: bill.confidence ?? 96,
         selected: true,
-      }));
+      })
+    );
 
     setBills(extractedBills);
     setHasScanned(true);
   } catch (error) {
     console.error("Statement scan error:", error);
+
     alert(
       error instanceof Error
         ? error.message
@@ -75,25 +77,6 @@ const handleScan = async () => {
     setIsScanning(false);
   }
 };
-
-      setBills([extractedBill]);
-      setHasScanned(true);
-      setIsScanning(false);
-    }, 1200);
-  };
-
-  const toggleBill = (id: string) => {
-    setBills((current) =>
-      current.map((bill) =>
-        bill.id === id
-          ? {
-              ...bill,
-              selected: !bill.selected,
-            }
-          : bill
-      )
-    );
-  };
 
   const addSelectedBills = () => {
     const selectedBills = bills.filter(
