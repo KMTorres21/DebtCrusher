@@ -23,6 +23,7 @@ app.get("/api/health", (_req, res) => {
 });
 
 
+
     return res.json({
       ok: true,
       bills: [bill],
