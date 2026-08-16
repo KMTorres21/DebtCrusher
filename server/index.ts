@@ -2,11 +2,13 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import multer from "multer";
-import OpenAI, { toFile } from "openai";
+import { GoogleGenAI, Type } from "@google/genai";
 
-const openai = new OpenAI({apiKey: process.env.OPENAI_API_KEY});
+const ai = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY,
+});
+
 const app = express();
-
 
 app.use(cors());
 app.use(express.json());
@@ -38,30 +40,11 @@ app.post(
         `Statement received: ${req.file.originalname}`
       );
 
-      const uploadedFile = await openai.files.create({
-        file: await toFile(
-          req.file.buffer,
-          req.file.originalname
-        ),
-        purpose: "user_data",
-      });
+      const prompt = `
+Analyze this financial statement and identify every recurring bill
+or payment obligation.
 
-      const response = await openai.responses.create({
-        model: "gpt-4.1",
-        input: [
-          {
-            role: "user",
-            content: [
-              {
-                type: "input_file",
-                file_id: uploadedFile.id,
-              },
-              {
-                type: "input_text",
-                text: `
-Analyze this financial statement and identify every recurring bill or payment obligation.
-
-Return ONLY the structured JSON requested by the schema.
+Return ONLY JSON matching the requested schema.
 
 For each bill, extract:
 - name
@@ -87,75 +70,94 @@ Rules:
 - confidence should be a number from 0 to 100.
 - Do not invent information.
 - If something cannot be determined, use null.
-                `,
-              },
-            ],
+- Identify actual bills from the document. Do not create example or
+  placeholder bills.
+`;
+
+      const response = await ai.models.generateContent({
+        model: "gemini-3.6-flash",
+        contents: [
+          {
+            text: prompt,
+          },
+          {
+            inlineData: {
+              mimeType: req.file.mimetype || "application/pdf",
+              data: req.file.buffer.toString("base64"),
+            },
           },
         ],
-        text: {
-          format: {
-            type: "json_schema",
-            name: "debtcrusher_statement",
-            strict: true,
-            schema: {
-              type: "object",
-              properties: {
-                bills: {
-                  type: "array",
-                  items: {
-                    type: "object",
-                    properties: {
-                      name: {
-                        type: ["string", "null"],
-                      },
-                      amount: {
-                        type: ["number", "null"],
-                      },
-                      dueDate: {
-                        type: ["string", "null"],
-                      },
-                      category: {
-                        type: ["string", "null"],
-                      },
-                      recurring: {
-                        type: ["boolean", "null"],
-                      },
-                      paid: {
-                        type: ["boolean", "null"],
-                      },
-                      autoPay: {
-                        type: ["boolean", "null"],
-                      },
-                      notes: {
-                        type: ["string", "null"],
-                      },
-                      confidence: {
-                        type: ["number", "null"],
-                      },
+        config: {
+          responseMimeType: "application/json",
+          responseSchema: {
+            type: Type.OBJECT,
+            properties: {
+              bills: {
+                type: Type.ARRAY,
+                items: {
+                  type: Type.OBJECT,
+                  properties: {
+                    name: {
+                      type: Type.STRING,
+                      nullable: true,
                     },
-                    required: [
-                      "name",
-                      "amount",
-                      "dueDate",
-                      "category",
-                      "recurring",
-                      "paid",
-                      "autoPay",
-                      "notes",
-                      "confidence",
-                    ],
-                    additionalProperties: false,
+                    amount: {
+                      type: Type.NUMBER,
+                      nullable: true,
+                    },
+                    dueDate: {
+                      type: Type.STRING,
+                      nullable: true,
+                    },
+                    category: {
+                      type: Type.STRING,
+                      nullable: true,
+                    },
+                    recurring: {
+                      type: Type.BOOLEAN,
+                      nullable: true,
+                    },
+                    paid: {
+                      type: Type.BOOLEAN,
+                      nullable: true,
+                    },
+                    autoPay: {
+                      type: Type.BOOLEAN,
+                      nullable: true,
+                    },
+                    notes: {
+                      type: Type.STRING,
+                      nullable: true,
+                    },
+                    confidence: {
+                      type: Type.NUMBER,
+                      nullable: true,
+                    },
                   },
+                  required: [
+                    "name",
+                    "amount",
+                    "dueDate",
+                    "category",
+                    "recurring",
+                    "paid",
+                    "autoPay",
+                    "notes",
+                    "confidence",
+                  ],
                 },
               },
-              required: ["bills"],
-              additionalProperties: false,
             },
+            required: ["bills"],
           },
         },
       });
 
-      const extracted = JSON.parse(response.output_text);
+      const extracted = JSON.parse(response.text || '{"bills":[]}');
+
+      console.log(
+        `Extracted ${extracted.bills.length} bill(s) from ${req.file.originalname}`
+      );
 
       return res.json({
         ok: true,
