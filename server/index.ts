@@ -74,86 +74,133 @@ Rules:
   placeholder bills.
 `;
 
-      const response = await ai.models.generateContent({
-        model: "gemini-3.6-flash",
-        contents: [
-          {
-            text: prompt,
-          },
-          {
-            inlineData: {
-              mimeType: req.file.mimetype || "application/pdf",
-              data: req.file.buffer.toString("base64"),
-            },
-          },
-        ],
-        config: {
-          responseMimeType: "application/json",
-          responseSchema: {
-            type: Type.OBJECT,
-            properties: {
-              bills: {
-                type: Type.ARRAY,
-                items: {
-                  type: Type.OBJECT,
-                  properties: {
-                    name: {
-                      type: Type.STRING,
-                      nullable: true,
-                    },
-                    amount: {
-                      type: Type.NUMBER,
-                      nullable: true,
-                    },
-                    dueDate: {
-                      type: Type.STRING,
-                      nullable: true,
-                    },
-                    category: {
-                      type: Type.STRING,
-                      nullable: true,
-                    },
-                    recurring: {
-                      type: Type.BOOLEAN,
-                      nullable: true,
-                    },
-                    paid: {
-                      type: Type.BOOLEAN,
-                      nullable: true,
-                    },
-                    autoPay: {
-                      type: Type.BOOLEAN,
-                      nullable: true,
-                    },
-                    notes: {
-                      type: Type.STRING,
-                      nullable: true,
-                    },
-                    confidence: {
-                      type: Type.NUMBER,
-                      nullable: true,
-                    },
-                  },
-                  required: [
-                    "name",
-                    "amount",
-                    "dueDate",
-                    "category",
-                    "recurring",
-                    "paid",
-                    "autoPay",
-                    "notes",
-                    "confidence",
-                  ],
+      let response;
+
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        try {
+          console.log(
+            `Gemini extraction attempt ${attempt} of 3...`
+          );
+
+          response = await ai.models.generateContent({
+            model: "gemini-3.6-flash",
+            contents: [
+              {
+                text: prompt,
+              },
+              {
+                inlineData: {
+                  mimeType:
+                    req.file.mimetype || "application/pdf",
+                  data: req.file.buffer.toString("base64"),
                 },
               },
+            ],
+            config: {
+              responseMimeType: "application/json",
+              responseSchema: {
+                type: Type.OBJECT,
+                properties: {
+                  bills: {
+                    type: Type.ARRAY,
+                    items: {
+                      type: Type.OBJECT,
+                      properties: {
+                        name: {
+                          type: Type.STRING,
+                          nullable: true,
+                        },
+                        amount: {
+                          type: Type.NUMBER,
+                          nullable: true,
+                        },
+                        dueDate: {
+                          type: Type.STRING,
+                          nullable: true,
+                        },
+                        category: {
+                          type: Type.STRING,
+                          nullable: true,
+                        },
+                        recurring: {
+                          type: Type.BOOLEAN,
+                          nullable: true,
+                        },
+                        paid: {
+                          type: Type.BOOLEAN,
+                          nullable: true,
+                        },
+                        autoPay: {
+                          type: Type.BOOLEAN,
+                          nullable: true,
+                        },
+                        notes: {
+                          type: Type.STRING,
+                          nullable: true,
+                        },
+                        confidence: {
+                          type: Type.NUMBER,
+                          nullable: true,
+                        },
+                      },
+                      required: [
+                        "name",
+                        "amount",
+                        "dueDate",
+                        "category",
+                        "recurring",
+                        "paid",
+                        "autoPay",
+                        "notes",
+                        "confidence",
+                      ],
+                    },
+                  },
+                },
+                required: ["bills"],
+              },
             },
-            required: ["bills"],
-          },
-        },
-      });
+          });
 
-      const extracted = JSON.parse(response.text || '{"bills":[]}');
+          break;
+        } catch (error: any) {
+          const status =
+            error?.status ??
+            error?.statusCode ??
+            error?.code;
+
+          console.error(
+            `Gemini attempt ${attempt} failed. Status: ${status}`
+          );
+
+          if (
+            status !== 503 ||
+            attempt === 3
+          ) {
+            throw error;
+          }
+
+          const delay = attempt * 2000;
+
+          console.log(
+            `Gemini temporarily unavailable. Retrying in ${delay / 1000} seconds...`
+          );
+
+          await new Promise((resolve) =>
+            setTimeout(resolve, delay)
+          );
+        }
+      }
+
+      if (!response) {
+        throw new Error(
+          "Gemini did not return a response."
+        );
+      }
+
+      const extracted = JSON.parse(
+        response.text || '{"bills":[]}'
+      );
 
       console.log(
         `Extracted ${extracted.bills.length} bill(s) from ${req.file.originalname}`
@@ -165,11 +212,15 @@ Rules:
         filename: req.file.originalname,
       });
     } catch (error) {
-      console.error("Statement extraction failed:", error);
+      console.error(
+        "Statement extraction failed:",
+        error
+      );
 
       return res.status(500).json({
         ok: false,
-        message: "Unable to extract bills from the statement.",
+        message:
+          "Unable to extract bills from the statement.",
       });
     }
   }
