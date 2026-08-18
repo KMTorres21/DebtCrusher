@@ -22,7 +22,6 @@ export default function StatementScannerPage() {
     const selectedFile = event.target.files?.[0] ?? null;
 
     setFile(selectedFile);
-    setHasScanned(false);
   };
 
 const handleScan = async () => {
@@ -161,7 +160,7 @@ const handleScan = async () => {
       </div>
 
       {/* Scan */}
-      {file && !hasScanned && (
+      {file && !isScanning && (
         <button
           type="button"
           onClick={handleScan}
@@ -170,7 +169,9 @@ const handleScan = async () => {
         >
           {isScanning
             ? "🔎 Scanning Statement..."
-            : "🤖 Scan Statement"}
+            : bills.length > 0
+              ? "🤖 Scan Another Statement"
+              : "🤖 Scan Statement"}
         </button>
       )}
 
