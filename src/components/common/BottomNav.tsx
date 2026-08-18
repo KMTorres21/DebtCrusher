@@ -3,7 +3,6 @@ import {
   CreditCard,
   Wallet,
   Target,
-  Settings,
   ScanLine,
 } from "lucide-react";
 import { CalendarDays } from "lucide-react";
