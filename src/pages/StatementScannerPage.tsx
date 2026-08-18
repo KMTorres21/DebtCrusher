@@ -23,7 +23,6 @@ export default function StatementScannerPage() {
 
     setFile(selectedFile);
     setHasScanned(false);
-    setBills([]);
   };
 
 const handleScan = async () => {
