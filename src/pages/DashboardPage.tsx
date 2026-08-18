@@ -36,6 +36,21 @@ export default function DashboardPage() {
       new Date(bill.dueDate) < new Date()
   ).length;
 
+const today = new Date();
+today.setHours(0, 0, 0, 0);
+
+const sevenDaysFromNow = new Date(today);
+sevenDaysFromNow.setDate(today.getDate() + 7);
+
+const dueSoonBills = bills.filter((bill) => {
+  if (bill.paid) return false;
+
+  const dueDate = new Date(bill.dueDate);
+  dueDate.setHours(0, 0, 0, 0);
+
+  return dueDate >= today && dueDate <= sevenDaysFromNow;
+}).length;
+
   const progress =
     totalBills === 0
       ? 0
