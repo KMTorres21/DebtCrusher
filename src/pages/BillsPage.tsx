@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Plus } from "lucide-react";
 
-import { Bill } from "../types/Bill";
+import { Bill, BillCategory } from "../types/Bill";
 import { useBills } from "../hooks/useBills";
 
 import Button from "../components/common/Button";
@@ -23,15 +23,33 @@ export default function BillsPage() {
   } = useBills();
 
   const [search, setSearch] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState<BillCategory | "All">("All");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingBill, setEditingBill] =
     useState<Bill | null>(null);
+  const categories: (BillCategory[] = [
+    "Housing",
+    "Utilities",
+    "Transportation",
+    "Insurance",
+    "Phone",
+    "Internet",
+    "Medical",
+    "Credit Card",
+    "Loan",
+    "Subscription",
+    "Other",
+  ];
 
-  const filteredBills = bills.filter((bill) =>
-    bill.name
+  const filteredBills = bills.filter((bill) => {
+    const matchesSearch = bill.name
       .toLowerCase()
-      .includes(search.toLowerCase())
-  );
+      .includes(search.toLowerCase());
+    const matchesCategory =
+      categoryFilter === "All" || bill.category === categoryFilter;
+  
+  return matchesSearch && matchesCategory;
+  });
 
   function handleEdit(bill: Bill) {
     setEditingBill(bill);
