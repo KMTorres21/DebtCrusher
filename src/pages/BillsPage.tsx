@@ -70,6 +70,24 @@ export default function BillsPage() {
         placeholder="Search bills..."
       />
 
+<select
+  value={categoryFilter}
+  onChange={(event) =>
+    setCategoryFilter(
+      event.target.value as BillCategory | "All"
+    )
+  }
+  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+>
+  <option value="All">All Categories</option>
+
+  {categories.map((category) => (
+    <option key={category} value={category}>
+      {category}
+    </option>
+  ))}
+</select>
+
 
       {filteredBills.length === 0 ? (
         <EmptyState
