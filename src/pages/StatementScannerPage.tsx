@@ -143,19 +143,21 @@ setHasScanned(true);
         </div>
       </div>
 
-      {/* Scan */}
-      {file && !hasScanned && (
-        <button
-          type="button"
-          onClick={handleScan}
-          disabled={isScanning}
-          className="w-full rounded-xl bg-slate-900 px-5 py-4 font-bold text-white shadow transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          {isScanning
-            ? "🔎 Scanning Statement..."
-            : "🤖 Scan Statement"}
-        </button>
-      )}
+{/* Scan */}
+{file && (
+  <button
+    type="button"
+    onClick={handleScan}
+    disabled={isScanning}
+    className="w-full rounded-xl bg-slate-900 px-5 py-4 font-bold text-white shadow transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
+  >
+    {isScanning
+      ? "🔎 Scanning Statement..."
+      : bills.length > 0
+        ? "➕ Scan Another Statement"
+        : "🤖 Scan Statement"}
+  </button>
+)}
 
       {/* Results */}
       {hasScanned && (
