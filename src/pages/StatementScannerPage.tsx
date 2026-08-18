@@ -65,8 +65,12 @@ const handleScan = async () => {
     })
   );
 
-    setBills(extractedBills);
-    setHasScanned(true);
+    setBills((current) => [
+    ...current,
+    ...extractedBills,
+  ]);
+  setHasScanned(true);
+
   } catch (error) {
     console.error("Statement scan error:", error);
     alert(
