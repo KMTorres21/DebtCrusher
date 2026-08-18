@@ -23,7 +23,6 @@ export default function StatementScannerPage() {
 
     setFile(selectedFile);
     setHasScanned(false);
-    setBills([]);
   };
 
   const handleScan = () => {
@@ -58,10 +57,11 @@ export default function StatementScannerPage() {
         selected: true,
       };
 
-      setBills([extractedBill]);
-      setHasScanned(true);
-      setIsScanning(false);
-    }, 1200);
+ setBills((current) => [
+  ...current,
+  ...extractedBills,
+]);
+setHasScanned(true);
   };
 
   const toggleBill = (id: string) => {
