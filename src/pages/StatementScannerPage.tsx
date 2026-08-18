@@ -55,12 +55,15 @@ const handleScan = async () => {
       );
     }
 
-    const extractedBills: ExtractedBill[] =
-      data.bills.map((bill: Bill & { confidence?: number }) => ({
-        ...bill,
-        confidence: bill.confidence ?? 96,
-        selected: true,
-      }));
+ const extractedBills: ExtractedBill[] =
+  data.bills.map(
+    (bill: Bill & { confidence?: number }, index: number) => ({
+      ...bill,
+      id: bill.id || `scan-${Date.now()}-${index}`,
+      confidence: bill.confidence ?? 0,
+      selected: true,
+    })
+  );
 
     setBills(extractedBills);
     setHasScanned(true);
