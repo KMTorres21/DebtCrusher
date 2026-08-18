@@ -40,11 +40,7 @@ const navItems = [
     path: "/debts",
     icon: Target,
   },
-  {
-    label: "Settings",
-    path: "/settings",
-    icon: Settings,
-  },
+  
 ];
  
 export default function BottomNav() {
