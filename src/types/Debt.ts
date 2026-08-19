@@ -12,6 +12,7 @@ export interface Debt {
   name: string;
   type: DebtType;
   balance: number;
+  originalBalance: number;
   interestRate: number;
   minimumPayment: number;
   dueDate: string;
