@@ -114,7 +114,7 @@ const handleScan = async () => {
   ).length;
 
   return (
-    <div 
+    <>
 {isScanning && (
   <div className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm">
     <div className="mx-5 w-full max-w-sm rounded-3xl bg-white p-8 text-center shadow-2xl">
