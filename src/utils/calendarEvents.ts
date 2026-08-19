@@ -184,7 +184,7 @@ export function buildCalendarEvents(
   debts.forEach((debt) => {
     const dueDate = parseDate(debt.dueDate);
 
-    if (dueDate &&dueDate >= monthStart && dueDate <= monthEnd) {
+    if (dueDate && dueDate >= monthStart && dueDate <= monthEnd) {
       events.push({
         id: debt.id,
         date: debt.dueDate,
