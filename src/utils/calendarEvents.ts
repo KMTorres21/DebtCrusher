@@ -3,10 +3,26 @@ import { Debt } from "../types/Debt";
 import { Income } from "../types/Income";
 import { CalendarEvent } from "../types/CalendarEvent";
 
-function parseDate(dateString: string): Date {
-  const [year, month, day] = dateString
-    .split("-")
-    .map(Number);
+function parseDate(dateString?: string): Date | null {
+  if (!dateString) {
+    return null;
+  }
+
+  const parts = dateString.split("-");
+
+  if (parts.length !== 3) {
+    return null;
+  }
+
+  const [year, month, day] = parts.map(Number);
+
+  if (
+    !Number.isFinite(year) ||
+    !Number.isFinite(month) ||
+    !Number.isFinite(day)
+  ) {
+    return null;
+  }
 
   return new Date(year, month - 1, day);
 }
