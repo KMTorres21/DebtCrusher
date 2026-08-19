@@ -1,6 +1,12 @@
 import { Bill } from "../../types/Bill";
 import { Income } from "../../types/Income";
-import { Debt } from "../../types/Debt";
+
+interface Debt {
+  id: string | number;
+  dueDate: string;
+  name: string;
+  minimumPayment: number;
+}
 
 interface Props {
   year: number;
