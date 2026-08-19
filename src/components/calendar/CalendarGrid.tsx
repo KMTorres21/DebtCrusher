@@ -1,21 +1,15 @@
-import { Bill } from "../../types/Bill";
-import { Income } from "../../types/Income";
-import { Debt } from "../../types/Debt";
+import { CalendarEvent } from "../../types/CalendarEvent";
 
 interface Props {
   year: number;
   month: number;
-  bills: Bill[];
-  income: Income[];
-  debts: Debt[];
+  events: CalendarEvent[];
 }
 
 export default function CalendarGrid({
   year,
   month,
-  bills,
-  income,
-  debts,
+  events,
 }: Props) {
   const weekDays = [
     "Sun",
@@ -57,16 +51,8 @@ export default function CalendarGrid({
       "0"
     )}-${String(day).padStart(2, "0")}`;
 
-    const dayBills = bills.filter(
-      (bill) => bill.dueDate === dateString
-    );
-
-    const dayIncome = income.filter(
-      (item) => item.nextPayDate === dateString
-    );
-
-    const dayDebts = debts.filter(
-      (debt) => debt.dueDate === dateString
+    const dayEvents = events.filter(
+      (event) => event.date === dateString
     );
 
     cells.push(
@@ -85,53 +71,40 @@ export default function CalendarGrid({
           {day}
         </div>
 
-        {/* Bills */}
+        {/* Events */}
         <div className="mt-2 space-y-1">
-          {dayBills.map((bill) => (
-            <div
-              key={bill.id}
-              className={`truncate rounded px-2 py-1 text-xs font-medium text-white ${
-                bill.paid
+          {dayEvents.map((event) => {
+            const eventClass =
+              event.type === "bill"
+                ? event.paid
                   ? "bg-green-500"
                   : "bg-red-500"
-              }`}
-            >
-              <div>🧾 {bill.name}</div>
-              <div>
-                ${bill.amount.toFixed(2)}
-              </div>
-            </div>
-          ))}
-        </div>
+                : event.type === "income"
+                  ? "bg-green-600"
+                  : "bg-orange-500";
 
-        {/* Income */}
-        <div className="mt-1 space-y-1">
-          {dayIncome.map((item) => (
-            <div
-              key={item.id}
-              className="truncate rounded bg-green-600 px-2 py-1 text-xs font-medium text-white"
-            >
-              <div>💵 {item.source}</div>
-              <div>
-                ${item.amount.toFixed(2)}
-              </div>
-            </div>
-          ))}
-        </div>
+            const icon =
+              event.type === "bill"
+                ? "🧾"
+                : event.type === "income"
+                  ? "💵"
+                  : "💳";
 
-        {/* Debt Payments */}
-        <div className="mt-1 space-y-1">
-          {dayDebts.map((debt) => (
-            <div
-              key={debt.id}
-              className="truncate rounded bg-orange-500 px-2 py-1 text-xs font-medium text-white"
-            >
-              <div>💳 {debt.name}</div>
-              <div>
-                ${debt.minimumPayment.toFixed(2)}
+            return (
+              <div
+                key={event.id}
+                className={`truncate rounded px-2 py-1 text-xs font-medium text-white ${eventClass}`}
+              >
+                <div>
+                  {icon} {event.title}
+                </div>
+
+                <div>
+                  ${event.amount.toFixed(2)}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     );
