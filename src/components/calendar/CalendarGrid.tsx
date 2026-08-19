@@ -1,16 +1,28 @@
-import { CalendarEvent } from "../../types/CalendarEvent";
+import { useState } from "react";
+import { Bill } from "../../types/Bill";
+import { Income } from "../../types/Income";
+import { Debt } from "../../types/Debt";
+import { formatCurrency } from "../../utils/formatCurrency";
 
 interface Props {
   year: number;
   month: number;
-  events: CalendarEvent[];
+  bills: Bill[];
+  income: Income[];
+  debts: Debt[];
 }
 
 export default function CalendarGrid({
   year,
   month,
-  events,
+  bills,
+  income,
+  debts,
 }: Props) {
+  const [selectedDate, setSelectedDate] = useState<string | null>(
+    null
+  );
+
   const weekDays = [
     "Sun",
     "Mon",
@@ -27,6 +39,44 @@ export default function CalendarGrid({
   const startDay = firstDay.getDay();
   const totalDays = lastDay.getDate();
 
+  const getDateString = (day: number) =>
+    `${year}-${String(month + 1).padStart(2, "0")}-${String(
+      day
+    ).padStart(2, "0")}`;
+
+  const selectedBills = selectedDate
+    ? bills.filter((bill) => bill.dueDate === selectedDate)
+    : [];
+
+  const selectedIncome = selectedDate
+    ? income.filter((item) => item.nextPayDate === selectedDate)
+    : [];
+
+  const selectedDebts = selectedDate
+    ? debts.filter((debt) => debt.dueDate === selectedDate)
+    : [];
+
+  const selectedIncomeTotal = selectedIncome.reduce(
+    (sum, item) => sum + item.amount,
+    0
+  );
+
+  const selectedBillsTotal = selectedBills.reduce(
+    (sum, bill) => sum + bill.amount,
+    0
+  );
+
+  const selectedDebtTotal = selectedDebts.reduce(
+    (sum, debt) => sum + debt.minimumPayment,
+    0
+  );
+
+  const selectedOutflow =
+    selectedBillsTotal + selectedDebtTotal;
+
+  const selectedNet =
+    selectedIncomeTotal - selectedOutflow;
+
   const cells = [];
 
   for (let i = 0; i < startDay; i++) {
@@ -41,24 +91,46 @@ export default function CalendarGrid({
   for (let day = 1; day <= totalDays; day++) {
     const today = new Date();
 
+    const dateString = getDateString(day);
+
     const isToday =
       today.getFullYear() === year &&
       today.getMonth() === month &&
       today.getDate() === day;
 
-    const dateString = `${year}-${String(month + 1).padStart(
-      2,
-      "0"
-    )}-${String(day).padStart(2, "0")}`;
+    const isSelected = selectedDate === dateString;
 
-    const dayEvents = events.filter(
-      (event) => event.date === dateString
+    const dayBills = bills.filter(
+      (bill) => bill.dueDate === dateString
     );
 
+    const dayIncome = income.filter(
+      (item) => item.nextPayDate === dateString
+    );
+
+    const dayDebts = debts.filter(
+      (debt) => debt.dueDate === dateString
+    );
+
+    const hasEvents =
+      dayBills.length > 0 ||
+      dayIncome.length > 0 ||
+      dayDebts.length > 0;
+
     cells.push(
-      <div
+      <button
         key={day}
-        className="min-h-[90px] rounded-xl border border-slate-200 bg-white p-2"
+        type="button"
+        onClick={() =>
+          setSelectedDate(
+            isSelected ? null : dateString
+          )
+        }
+        className={`min-h-[90px] w-full rounded-xl border bg-white p-2 text-left transition ${
+          isSelected
+            ? "border-blue-500 ring-2 ring-blue-200"
+            : "border-slate-200 hover:border-blue-300"
+        }`}
       >
         {/* Day Number */}
         <div
@@ -71,47 +143,47 @@ export default function CalendarGrid({
           {day}
         </div>
 
-        {/* Events */}
-        <div className="mt-2 space-y-1">
-          {dayEvents.map((event) => {
-            const eventClass =
-              event.type === "bill"
-                ? event.paid
-                  ? "bg-green-500"
-                  : "bg-red-500"
-                : event.type === "income"
-                  ? "bg-green-600"
-                  : "bg-orange-500";
-
-            const icon =
-              event.type === "bill"
-                ? "🧾"
-                : event.type === "income"
-                  ? "💵"
-                  : "💳";
-
-            return (
+        {/* Event Indicators */}
+        {hasEvents && (
+          <div className="mt-2 space-y-1">
+            {dayBills.map((bill) => (
               <div
-                key={event.id}
-                className={`truncate rounded px-2 py-1 text-xs font-medium text-white ${eventClass}`}
+                key={bill.id}
+                className={`truncate rounded px-2 py-1 text-xs font-medium text-white ${
+                  bill.paid
+                    ? "bg-green-500"
+                    : "bg-red-500"
+                }`}
               >
-                <div>
-                  {icon} {event.title}
-                </div>
-
-                <div>
-                  ${event.amount.toFixed(2)}
-                </div>
+                🧾 {bill.name}
               </div>
-            );
-          })}
-        </div>
-      </div>
+            ))}
+
+            {dayIncome.map((item) => (
+              <div
+                key={item.id}
+                className="truncate rounded bg-green-600 px-2 py-1 text-xs font-medium text-white"
+              >
+                💵 {item.source}
+              </div>
+            ))}
+
+            {dayDebts.map((debt) => (
+              <div
+                key={debt.id}
+                className="truncate rounded bg-orange-500 px-2 py-1 text-xs font-medium text-white"
+              >
+                💳 {debt.name}
+              </div>
+            ))}
+          </div>
+        )}
+      </button>
     );
   }
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-4">
       {/* Weekday Headers */}
       <div className="grid grid-cols-7 gap-2">
         {weekDays.map((day) => (
@@ -124,10 +196,186 @@ export default function CalendarGrid({
         ))}
       </div>
 
-      {/* Calendar Grid */}
+      {/* Calendar */}
       <div className="grid grid-cols-7 gap-2">
         {cells}
       </div>
+
+      {/* Selected Day */}
+      {selectedDate && (
+        <div className="rounded-2xl bg-white p-5 shadow">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-bold text-slate-900">
+                {new Date(
+                  `${selectedDate}T12:00:00`
+                ).toLocaleDateString("en-US", {
+                  weekday: "long",
+                  month: "long",
+                  day: "numeric",
+                })}
+              </h2>
+
+              <p className="mt-1 text-sm text-slate-500">
+                Financial activity
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setSelectedDate(null)}
+              className="rounded-full px-3 py-1 text-sm font-semibold text-slate-500 hover:bg-slate-100"
+            >
+              Close
+            </button>
+          </div>
+
+          {/* Summary */}
+          <div className="mt-5 grid grid-cols-3 gap-3">
+            <div className="rounded-xl bg-green-50 p-3">
+              <p className="text-xs font-semibold text-green-700">
+                Income
+              </p>
+              <p className="mt-1 font-bold text-green-700">
+                {formatCurrency(selectedIncomeTotal)}
+              </p>
+            </div>
+
+            <div className="rounded-xl bg-red-50 p-3">
+              <p className="text-xs font-semibold text-red-700">
+                Outflow
+              </p>
+              <p className="mt-1 font-bold text-red-700">
+                {formatCurrency(selectedOutflow)}
+              </p>
+            </div>
+
+            <div
+              className={`rounded-xl p-3 ${
+                selectedNet >= 0
+                  ? "bg-blue-50"
+                  : "bg-orange-50"
+              }`}
+            >
+              <p
+                className={`text-xs font-semibold ${
+                  selectedNet >= 0
+                    ? "text-blue-700"
+                    : "text-orange-700"
+                }`}
+              >
+                Net
+              </p>
+
+              <p
+                className={`mt-1 font-bold ${
+                  selectedNet >= 0
+                    ? "text-blue-700"
+                    : "text-orange-700"
+                }`}
+              >
+                {formatCurrency(selectedNet)}
+              </p>
+            </div>
+          </div>
+
+          {/* Bills */}
+          {selectedBills.length > 0 && (
+            <div className="mt-5">
+              <h3 className="font-bold text-slate-900">
+                Bills
+              </h3>
+
+              <div className="mt-2 space-y-2">
+                {selectedBills.map((bill) => (
+                  <div
+                    key={bill.id}
+                    className="flex items-center justify-between rounded-xl bg-slate-50 p-3"
+                  >
+                    <div>
+                      <p className="font-semibold">
+                        🧾 {bill.name}
+                      </p>
+
+                      <p className="text-xs text-slate-500">
+                        {bill.paid ? "Paid" : "Due"}
+                      </p>
+                    </div>
+
+                    <span className="font-bold">
+                      {formatCurrency(bill.amount)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Income */}
+          {selectedIncome.length > 0 && (
+            <div className="mt-5">
+              <h3 className="font-bold text-slate-900">
+                Income
+              </h3>
+
+              <div className="mt-2 space-y-2">
+                {selectedIncome.map((item) => (
+                  <div
+                    key={item.id}
+                    className="flex items-center justify-between rounded-xl bg-green-50 p-3"
+                  >
+                    <p className="font-semibold">
+                      💵 {item.source}
+                    </p>
+
+                    <span className="font-bold text-green-700">
+                      {formatCurrency(item.amount)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Debt Payments */}
+          {selectedDebts.length > 0 && (
+            <div className="mt-5">
+              <h3 className="font-bold text-slate-900">
+                Debt Payments
+              </h3>
+
+              <div className="mt-2 space-y-2">
+                {selectedDebts.map((debt) => (
+                  <div
+                    key={debt.id}
+                    className="flex items-center justify-between rounded-xl bg-orange-50 p-3"
+                  >
+                    <p className="font-semibold">
+                      💳 {debt.name}
+                    </p>
+
+                    <span className="font-bold text-orange-700">
+                      {formatCurrency(
+                        debt.minimumPayment
+                      )}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {selectedBills.length === 0 &&
+            selectedIncome.length === 0 &&
+            selectedDebts.length === 0 && (
+              <div className="mt-5 rounded-xl bg-slate-50 p-5 text-center">
+                <p className="text-sm text-slate-500">
+                  Nothing scheduled for this day.
+                </p>
+              </div>
+            )}
+        </div>
+      )}
     </div>
   );
 }
