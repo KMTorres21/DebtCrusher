@@ -3,7 +3,6 @@ import CalendarGrid from "../components/calendar/CalendarGrid";
 import { useBills } from "../hooks/useBills";
 import { useIncome } from "../hooks/useIncome";
 import { useDebts } from "../hooks/useDebts";
-import { buildCalendarEvents } from "../utils/calendarEvents";
 
 export default function CalendarPage() {
   const today = new Date();
@@ -14,13 +13,6 @@ const { bills } = useBills();
 const { income } = useIncome();
 const { debts } = useDebts();
 
-const events = buildCalendarEvents(
-  bills,
-  income,
-  debts,
-  year,
-  month
-);
 
   return (
     <div className="space-y-6 px-5 py-6 pb-32">
@@ -44,7 +36,6 @@ const events = buildCalendarEvents(
 <CalendarGrid
   year={year}
   month={month}
-  events={events}
 />
     </div>
   );
