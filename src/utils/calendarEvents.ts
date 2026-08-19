@@ -6,7 +6,9 @@ import { CalendarEvent } from "../types/CalendarEvent";
 export function buildCalendarEvents(
   bills: Bill[],
   income: Income[],
-  debts: Debt[]
+  debts: Debt[],
+  year: number,
+  month: number
 ): CalendarEvent[] {
   const events: CalendarEvent[] = [];
 
