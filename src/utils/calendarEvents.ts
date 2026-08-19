@@ -53,6 +53,9 @@ function addIncomeEvents(
   month: number
 ) {
   let payDate = parseDate(item.nextPayDate);
+    if (!payDate) {
+      return;
+    }
 
   if (item.frequency === "onetime") {
     if (isInMonth(payDate, year, month)) {
@@ -162,11 +165,7 @@ export function buildCalendarEvents(
   bills.forEach((bill) => {
     const dueDate = parseDate(bill.dueDate);
 
-if (
-  dueDate &&
-  dueDate >= monthStart &&
-  dueDate <= monthEnd
-) {
+    if (dueDate >= monthStart && dueDate <= monthEnd) {
       events.push({
         id: bill.id,
         date: bill.dueDate,
@@ -185,11 +184,7 @@ if (
   debts.forEach((debt) => {
     const dueDate = parseDate(debt.dueDate);
 
-if (
-  dueDate &&
-  dueDate >= monthStart &&
-  dueDate <= monthEnd
-) {
+    if (dueDate >= monthStart && dueDate <= monthEnd) {
       events.push({
         id: debt.id,
         date: debt.dueDate,
