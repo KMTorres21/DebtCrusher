@@ -44,7 +44,6 @@ const events = buildCalendarEvents(
 <CalendarGrid
   year={year}
   month={month}
-  bills={bills}
   events={events}
 />
     </div>
