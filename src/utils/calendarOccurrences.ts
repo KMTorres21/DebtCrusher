@@ -86,29 +86,15 @@ export function getIncomeOccurrences(
     return occurrences;
   }
 
-  let intervalDays = 0;
-
-  if (income.frequency === "weekly") {
-    intervalDays = 7;
-  }
-
-  if (income.frequency === "biweekly") {
-    intervalDays = 14;
-  }
-
   if (income.frequency === "monthly") {
     const day = originalDate.getDate();
 
     const occurrence = new Date(
       year,
-      month + 1,
-      0
-    );
-
-    occurrence.setDate(
+      month,
       Math.min(
         day,
-        occurrence.getDate()
+        new Date(year, month + 1, 0).getDate()
       )
     );
 
@@ -123,61 +109,54 @@ export function getIncomeOccurrences(
   }
 
   if (income.frequency === "semimonthly") {
-    const firstDay = originalDate.getDate();
+    let occurrence = new Date(originalDate);
 
-    const firstOccurrence = new Date(
-      year,
-      month,
-      Math.min(firstDay, monthEnd.getDate())
-    );
-
-    if (
-      firstOccurrence >= monthStart &&
-      firstOccurrence <= monthEnd
-    ) {
-      occurrences.push(toDateString(firstOccurrence));
+    while (occurrence < monthStart) {
+      occurrence = addDays(occurrence, 15);
     }
 
-    const secondOccurrence = new Date(
-      year,
-      month,
-      Math.min(firstDay + 15, monthEnd.getDate())
-    );
-
-    if (
-      secondOccurrence >= monthStart &&
-      secondOccurrence <= monthEnd &&
-      toDateString(secondOccurrence) !==
-        toDateString(firstOccurrence)
-    ) {
-      occurrences.push(toDateString(secondOccurrence));
+    while (occurrence <= monthEnd) {
+      occurrences.push(toDateString(occurrence));
+      occurrence = addDays(occurrence, 15);
     }
 
     return occurrences;
   }
 
-  if (intervalDays > 0) {
-    let occurrence = new Date(originalDate);
+  const intervalDays =
+    income.frequency === "weekly"
+      ? 7
+      : income.frequency === "biweekly"
+        ? 14
+        : 0;
 
-    while (occurrence < monthStart) {
-      occurrence = addDays(
-        occurrence,
-        intervalDays
-      );
-    }
+  if (intervalDays === 0) {
+    return [];
+  }
 
-    while (occurrence <= monthEnd) {
-      if (occurrence >= monthStart) {
-        occurrences.push(
-          toDateString(occurrence)
-        );
-      }
+  let occurrence = new Date(originalDate);
 
-      occurrence = addDays(
-        occurrence,
-        intervalDays
-      );
-    }
+  /*
+   * Move forward from the stored next payday until
+   * we reach the selected month.
+   */
+  while (occurrence < monthStart) {
+    occurrence = addDays(
+      occurrence,
+      intervalDays
+    );
+  }
+
+  /*
+   * Generate every payday in the selected month.
+   */
+  while (occurrence <= monthEnd) {
+    occurrences.push(toDateString(occurrence));
+
+    occurrence = addDays(
+      occurrence,
+      intervalDays
+    );
   }
 
   return occurrences;
