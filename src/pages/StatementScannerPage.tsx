@@ -136,7 +136,7 @@ const handleScan = async () => {
     </div>
   </div>
 )}      
-        className="space-y-6 px-5 py-6 pb-32">
+      <div className="space-y-6 px-5 py-6 pb-32">
       <div>
         <h1 className="text-3xl font-bold text-slate-900">
           AI Statement Scanner
@@ -181,21 +181,21 @@ const handleScan = async () => {
         </div>
       </div>
 
-  {/* Scan */}
-{file && (
-  <button
-    type="button"
-    onClick={handleScan}
-    disabled={isScanning}
-    className="w-full rounded-xl bg-slate-900 px-5 py-4 font-bold text-white shadow transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
-  >
-    {isScanning
-      ? "🔎 Scanning Statement..."
-      : bills.length > 0
-        ? "➕ Scan Another Statement"
-        : "🤖 Scan Statement"}
-  </button>
-)}
+      {/* Scan */}
+      {file && !isScanning && (
+        <button
+          type="button"
+          onClick={handleScan}
+          disabled={isScanning}
+          className="w-full rounded-xl bg-slate-900 px-5 py-4 font-bold text-white shadow transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {isScanning
+            ? "🔎 Scanning Statement..."
+            : bills.length > 0
+              ? "🤖 Scan Another Statement"
+              : "🤖 Scan Statement"}
+        </button>
+      )}
 
       {/* Results */}
       {hasScanned && (
@@ -295,5 +295,6 @@ const handleScan = async () => {
         </div>
       )}
     </div>
+    </>
   );
 }
