@@ -165,7 +165,7 @@ export function buildCalendarEvents(
   bills.forEach((bill) => {
     const dueDate = parseDate(bill.dueDate);
 
-    if (dueDate >= monthStart && dueDate <= monthEnd) {
+    if (dueDate &&dueDate >= monthStart && dueDate <= monthEnd) {
       events.push({
         id: bill.id,
         date: bill.dueDate,
@@ -184,7 +184,7 @@ export function buildCalendarEvents(
   debts.forEach((debt) => {
     const dueDate = parseDate(debt.dueDate);
 
-    if (dueDate >= monthStart && dueDate <= monthEnd) {
+    if (dueDate &&dueDate >= monthStart && dueDate <= monthEnd) {
       events.push({
         id: debt.id,
         date: debt.dueDate,
