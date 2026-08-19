@@ -36,6 +36,9 @@ const { debts } = useDebts();
 <CalendarGrid
   year={year}
   month={month}
+  bills={bills}
+  income={income}
+  debts={debts}
 />
     </div>
   );
