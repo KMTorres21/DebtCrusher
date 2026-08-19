@@ -4,6 +4,7 @@ export type DebtType =
   | "Auto Loan"
   | "Student Loan"
   | "Mortgage"
+  | "HELOC"
   | "Medical"
   | "Other";
 
@@ -13,6 +14,7 @@ export interface Debt {
   type: DebtType;
   balance: number;
   originalBalance: number;
+  creditLimit?: number;
   interestRate: number;
   minimumPayment: number;
   dueDate: string;
