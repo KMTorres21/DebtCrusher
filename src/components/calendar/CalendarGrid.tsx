@@ -4,7 +4,7 @@ import { Income } from "../../types/Income";
 import { Debt } from "../../types/Debt";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { getBillOccurrences, getIncomeOccurrences }  
-  from "../../utils/calendarOccurrances";
+  from "../../utils/calendarOccurrences";
 
 interface Props {
   year: number;
