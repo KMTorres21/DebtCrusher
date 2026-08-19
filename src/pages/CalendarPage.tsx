@@ -17,7 +17,9 @@ const { debts } = useDebts();
 const events = buildCalendarEvents(
   bills,
   income,
-  debts
+  debts,
+  year,
+  month
 );
 
   return (
