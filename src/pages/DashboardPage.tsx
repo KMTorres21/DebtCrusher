@@ -98,6 +98,7 @@ const dueSoonBills = bills.filter((bill) => {
           value={formatCurrency(summary.remainingCash)}
           valueClassName="text-blue-600"
         />
+<div className="grid grid-cols-2 gap-4">
 
       </div>
 
