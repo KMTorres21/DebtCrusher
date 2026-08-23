@@ -27,7 +27,8 @@ export default function DebtPlannerPage() {
   const extraAmount = Math.max(0, Number(extraPayment) || 0);
   const summary = calculateFinancialSummary(bills, debts, income);
   const availableAfterObligations = summary.remainingCash;
-  const maxExtraPayment = Math.max(0, availableAfterObligations);
+  const maxExtraPayment = Math.max(0,
+    Math.round(availableAfterObligations * 100) / 100);
   const plan = useMemo(
     () =>
       calculateDebtPayoff(
