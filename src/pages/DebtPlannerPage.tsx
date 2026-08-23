@@ -24,10 +24,10 @@ export default function DebtPlannerPage() {
   const [extraPayment, setExtraPayment] =
     useState("250");
 
-  const extraAmount =
-    Number(extraPayment) || 0;
+  const extraAmount = Math.max(0, Number(extraPayment) || 0);
   const summary = calculateFinancialSummary(bills, debts, income);
   const availableAfterObligations = summary.remainingCash;
+  const maxExtraPayment = Math.max(0, availableAfterObligations);
   const plan = useMemo(
     () =>
       calculateDebtPayoff(
@@ -176,13 +176,29 @@ export default function DebtPlannerPage() {
             id="extra-payment"
             type="number"
             min="0"
+            max={maxExtraPayment}
             step="25"
             value={extraPayment}
-            onChange={(event) =>
-              setExtraPayment(event.target.value)
-            }
+            onChange={(event) => {
+              const value =
+          Number(event.target.value);
+              
+              if (value > maxExtraPayment) {
+                setExtraPayment(String(maxExtraPayment));
+              return;
+              }
+            setExtraPayment(event.target.value);
+              }}
             className="w-full rounded-xl border border-slate-200 py-3 pl-8 pr-4 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
           />
+          <div className="mt-3 flex items-center justify-between text-sm">
+            <span className="text-slate-500">
+              Available after obligations
+            </span>
+            <span className="font-semibold text-green-600">
+              {formatCurrency(maxExtraPayment)}
+            </span>
+          </div>
         </div>
       </Card>
 
@@ -201,7 +217,7 @@ export default function DebtPlannerPage() {
             totalMonthlyPayment
           )}
         />
-        
+
         <StatCard
           title="Available After Obligations"
           value={formatCurrency(availableAfterObligations)}
