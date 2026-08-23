@@ -354,7 +354,7 @@ const dayIncome = income.filter((item) =>
     </button>
   </div>
 </div>
-          )}
+)}
 
           {/* Debt Payments */}
           {selectedDebts.length > 0 && (
