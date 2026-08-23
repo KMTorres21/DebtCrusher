@@ -332,21 +332,28 @@ const dayIncome = income.filter((item) =>
 
               <div className="mt-2 space-y-2">
                 {selectedIncome.map((item) => (
-                  <div
-                    key={item.id}
-                    className="flex items-center justify-between rounded-xl bg-green-50 p-3"
-                  >
-                    <p className="font-semibold">
-                      💵 {item.source}
-                    </p>
+ <div
+  key={item.id}
+  className="flex items-center justify-between gap-3 rounded-xl bg-green-50 p-3"
+>
+  <p className="min-w-0 font-semibold">
+    💵 {item.source}
+  </p>
 
-                    <span className="font-bold text-green-700">
-                      {formatCurrency(item.amount)}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
+  <div className="flex shrink-0 items-center gap-2">
+    <span className="font-bold text-green-700">
+      {formatCurrency(item.amount)}
+    </span>
+
+    <button
+      type="button"
+      onClick={() => onEditIncome(item)}
+      className="rounded-lg border border-green-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-green-50"
+    >
+      Edit
+    </button>
+  </div>
+</div>
           )}
 
           {/* Debt Payments */}
