@@ -36,9 +36,9 @@ const navItems = [
     icon: Wallet,
   },
    {
-    label: "Income",
-    path: "/income",
-    icon: Wallet,
+    label: "Debts",
+    path: "/debts",
+    icon: Target,
   },
   {
     label: "Reports",
