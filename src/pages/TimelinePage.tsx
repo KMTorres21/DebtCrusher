@@ -14,12 +14,15 @@ export default function TimelinePage() {
   const { bills } = useBills();
   const { debts } = useDebts();
   const { income } = useIncome();
+  const today = new Date();
 
-  const events = buildTimeline(
-    bills,
-    debts,
-    income
-  );
+const events = buildTimeline(
+  bills,
+  debts,
+  income,
+  today.getFullYear(),
+  today.getMonth()
+);
 
   return (
     <PageContainer>
