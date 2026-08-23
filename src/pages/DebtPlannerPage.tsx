@@ -5,6 +5,9 @@ import {
   PayoffStrategy,
 } from "../utils/debtPayoff";
 import { formatCurrency } from "../utils/formatCurrency";
+import { useBills } from "../hooks/useBills";
+import { useIncome } from "../hooks/useIncome";
+import { calculateFinancialSummary } from "../utils/cashFlow";
 import PageContainer from "../components/common/PageContainer";
 import PageHeader from "../components/common/PageHeader";
 import Card from "../components/common/Card";
@@ -12,6 +15,8 @@ import StatCard from "../components/common/StatCard";
 
 export default function DebtPlannerPage() {
   const { debts } = useDebts();
+  const { bills } = useBills();
+  const { income } = useIncome();
 
   const [strategy, setStrategy] =
     useState<PayoffStrategy>("avalanche");
@@ -21,7 +26,8 @@ export default function DebtPlannerPage() {
 
   const extraAmount =
     Number(extraPayment) || 0;
-
+  const summary = calculateFinancialSummary(bills, debts, income);
+  const availableAfterObligations = summary.remainingCash;
   const plan = useMemo(
     () =>
       calculateDebtPayoff(
@@ -194,6 +200,15 @@ export default function DebtPlannerPage() {
           value={formatCurrency(
             totalMonthlyPayment
           )}
+        />
+        <StatCard
+          title="Available After Obligations"
+          value={formatCurrency(availableAfterObligations)}
+          valueClassName={
+              availableAfterObligations >= 0 
+              ? "text-green-600"
+              : "text-red-600"
+          }
         />
 
         <StatCard
