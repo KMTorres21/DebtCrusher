@@ -1,5 +1,5 @@
 import { ChangeEvent, useState } from "react";
-import { Bill, BillCategory } from "../types/Bill";
+import { Bill } from "../types/Bill";
 import { useBills } from "../hooks/useBills";
 import { formatCurrency } from "../utils/formatCurrency";
 
