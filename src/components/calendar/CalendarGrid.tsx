@@ -46,11 +46,13 @@ export default function CalendarGrid({
     ).padStart(2, "0")}`;
 
   const selectedBills = selectedDate
-    ? bills.filter((bill) => bill.dueDate === selectedDate)
+    ? bills.filter((bill) => getBillOccurrences(
+      bill, year, month).includes(selectedDate))
     : [];
 
   const selectedIncome = selectedDate
-    ? income.filter((item) => item.nextPayDate === selectedDate)
+    ? income.filter((item) => getIncomeOccurrences(
+      item, year, month).includes(selectedDate))
     : [];
 
   const selectedDebts = selectedDate
