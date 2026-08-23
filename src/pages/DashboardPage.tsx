@@ -12,11 +12,13 @@ import { useIncome } from "../hooks/useIncome";
 import { calculateFinancialSummary } from "../utils/cashFlow";
 import Button from "../components/common/Button";
 import AddBillModal from "../components/bills/AddBillModal";
+import { calculateDebtPayoff } from "../utils/debtPayoff";
 
 export default function DashboardPage() {
   const { bills, addBill } = useBills();
   const { debts } = useDebts();
   const { income } = useIncome();
+  const debtPlan = calculateDebtPayoff(debts, "avalanche", 250);
   const [isAddBillOpen, setIsAddBillOpen] = useState(false);
   const summary = calculateFinancialSummary(
     bills,
@@ -170,74 +172,34 @@ const dueSoonBills = bills.filter((bill) => {
 
       </div>
 
-<Card>
-  <div className="flex items-start justify-between gap-4">
-    <div>
-      <p className="text-sm font-semibold text-slate-500">
-        Debt Payoff
-      </p>
+      <Card>
 
-      <h2 className="mt-1 text-2xl font-bold text-slate-900">
-        {formatCurrency(debtPlan.totalStartingDebt)}
-      </h2>
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-slate-500">
+            Monthly Progress
+          </p>
 
-      <p className="mt-1 text-sm text-slate-500">
-        Total debt remaining
-      </p>
-    </div>
+          <span className="text-sm font-semibold text-blue-600">
+            {progress}%
+          </span>
+        </div>
 
-    <div className="rounded-full bg-blue-100 px-3 py-1 text-sm font-bold text-blue-700">
-      Avalanche
-    </div>
-  </div>
+        <div className="mt-4">
+          <UpcomingBills bills={bills} />
+        </div>
 
-  <div className="mt-5 grid grid-cols-2 gap-3">
-    <div className="rounded-xl bg-slate-50 p-3">
-      <p className="text-xs font-semibold text-slate-500">
-        Minimum Payments
-      </p>
+        <div className="mt-4 h-3 w-full overflow-hidden rounded-full bg-slate-200">
+          <div
+            className="h-full rounded-full bg-blue-600 transition-all duration-500"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
 
-      <p className="mt-1 font-bold text-slate-900">
-        {formatCurrency(summary.totalDebtPayments)}
-      </p>
+        <p className="mt-3 text-sm text-slate-600">
+          {paidBills} of {totalBills} bills paid
+        </p>
 
-      <p className="text-xs text-slate-500">
-        per month
-      </p>
-    </div>
-
-    <div className="rounded-xl bg-slate-50 p-3">
-      <p className="text-xs font-semibold text-slate-500">
-        Extra Payment
-      </p>
-
-      <p className="mt-1 font-bold text-blue-600">
-        {formatCurrency(debtPlan.extraMonthlyPayment)}
-      </p>
-
-      <p className="text-xs text-slate-500">
-        per month
-      </p>
-    </div>
-  </div>
-
-  <div className="mt-4 rounded-xl bg-green-50 p-4">
-    <p className="text-xs font-semibold text-green-700">
-      Estimated Debt-Free Date
-    </p>
-
-    <p className="mt-1 text-xl font-bold text-green-700">
-      {debtPlan.payoffDate
-        ? new Date(
-            `${debtPlan.payoffDate}T12:00:00`
-          ).toLocaleDateString("en-US", {
-            month: "long",
-            year: "numeric",
-          })
-        : "Add a debt to get started"}
-    </p>
-  </div>
-</Card>
+      </Card>
 
       <AddBillModal
         open={isAddBillOpen}
