@@ -101,31 +101,37 @@ const dueSoonBills = bills.filter((bill) => {
 
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+ <div className="grid grid-cols-2 gap-4">
 
-        <StatCard
-          title="Bills Added"
-          value={totalBills}
-        />
+  <StatCard
+    title="Bills Added"
+    value={totalBills}
+  />
 
-        <StatCard
-          title="Bills Paid"
-          value={paidBills}
-        />
+  <StatCard
+    title="Bills Paid"
+    value={paidBills}
+  />
 
-        <StatCard
-          title="Overdue Bills"
-          value={overdueBills}
-          valueClassName="text-red-600"
-        />
+  <StatCard
+    title="Due Soon"
+    value={dueSoonBills}
+    valueClassName="text-orange-600"
+  />
 
-        <StatCard
-          title="Progress"
-          value={`${progress}%`}
-          valueClassName="text-blue-600"
-        />
+  <StatCard
+    title="Overdue Bills"
+    value={overdueBills}
+    valueClassName="text-red-600"
+  />
 
-      </div>
+  <StatCard
+    title="Progress"
+    value={`${progress}%`}
+    valueClassName="text-blue-600"
+  />
+
+</div>
 
       <Card>
 
