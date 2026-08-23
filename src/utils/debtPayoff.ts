@@ -22,7 +22,7 @@ export interface PayoffPlan {
   debts: PayoffDebtResult[];
 }
 
-function calculateMonthlyInterest(
+function monthlyInterest(
   balance: number,
   annualRate: number
 ): number {
@@ -60,27 +60,37 @@ export function calculateDebtPayoff(
     };
   }
 
+  const baseExtraPayment = Math.max(
+    0,
+    extraMonthlyPayment
+  );
+
+  let rolloverPayment = 0;
+  let months = 0;
+  let totalInterest = 0;
+
+  const now = new Date();
+
   function getTargetDebt() {
     const remaining = activeDebts.filter(
       (debt) => debt.balanceRemaining > 0.005
     );
 
+    if (remaining.length === 0) {
+      return undefined;
+    }
+
     if (strategy === "avalanche") {
-      return remaining.sort(
+      return [...remaining].sort(
         (a, b) => b.interestRate - a.interestRate
       )[0];
     }
 
-    return remaining.sort(
+    return [...remaining].sort(
       (a, b) =>
         a.balanceRemaining - b.balanceRemaining
     )[0];
   }
-
-  let months = 0;
-  let totalInterest = 0;
-
-  const now = new Date();
 
   while (
     activeDebts.some(
@@ -98,7 +108,7 @@ export function calculateDebtPayoff(
         return;
       }
 
-      const interest = calculateMonthlyInterest(
+      const interest = monthlyInterest(
         debt.balanceRemaining,
         debt.interestRate
       );
@@ -109,15 +119,10 @@ export function calculateDebtPayoff(
     });
 
     /*
-     * 2. Pay all required minimum payments.
-     *
-     * Any unused portion of a minimum payment
-     * becomes available for the target debt.
+     * 2. Pay minimum payments.
      */
-    let availableExtra = Math.max(
-      0,
-      extraMonthlyPayment
-    );
+    let extraAvailable =
+      baseExtraPayment + rolloverPayment;
 
     activeDebts.forEach((debt) => {
       if (debt.balanceRemaining <= 0.005) {
@@ -131,11 +136,18 @@ export function calculateDebtPayoff(
 
       debt.balanceRemaining -= payment;
 
+      /*
+       * If the minimum payment was larger than
+       * the remaining balance, the unused portion
+       * becomes available immediately.
+       */
+      if (payment < debt.minimumPayment) {
+        extraAvailable +=
+          debt.minimumPayment - payment;
+      }
+
       if (debt.balanceRemaining <= 0.005) {
         debt.balanceRemaining = 0;
-
-        availableExtra +=
-          debt.minimumPayment - payment;
 
         if (debt.payoffMonth === null) {
           debt.payoffMonth = months;
@@ -144,9 +156,9 @@ export function calculateDebtPayoff(
     });
 
     /*
-     * 3. Apply the extra payment to the priority debt.
+     * 3. Apply extra money to the target debt.
      */
-    while (availableExtra > 0.005) {
+    while (extraAvailable > 0.005) {
       const target = getTargetDebt();
 
       if (!target) {
@@ -154,12 +166,12 @@ export function calculateDebtPayoff(
       }
 
       const payment = Math.min(
-        availableExtra,
+        extraAvailable,
         target.balanceRemaining
       );
 
       target.balanceRemaining -= payment;
-      availableExtra -= payment;
+      extraAvailable -= payment;
 
       if (target.balanceRemaining <= 0.005) {
         target.balanceRemaining = 0;
@@ -171,21 +183,22 @@ export function calculateDebtPayoff(
     }
 
     /*
-     * 4. From the next month forward, a paid-off
-     * debt's minimum payment rolls into the snowball.
+     * 4. Recalculate the rollover for the NEXT month.
      *
-     * This is handled automatically by adding the
-     * minimum payment of already-paid debts below.
+     * Once a debt is paid off, its minimum payment
+     * becomes part of the snowball permanently.
      */
-    activeDebts.forEach((debt) => {
-      if (
-        debt.balanceRemaining <= 0.005 &&
-        debt.payoffMonth !== null &&
-        debt.payoffMonth < months
-      ) {
-        extraMonthlyPayment += debt.minimumPayment;
-      }
-    });
+    rolloverPayment = activeDebts
+      .filter(
+        (debt) =>
+          debt.balanceRemaining <= 0.005 &&
+          debt.payoffMonth !== null
+      )
+      .reduce(
+        (sum, debt) =>
+          sum + debt.minimumPayment,
+        0
+      );
   }
 
   const payoffDate = new Date(
