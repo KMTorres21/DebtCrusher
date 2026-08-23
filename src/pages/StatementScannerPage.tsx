@@ -312,7 +312,8 @@ const handleScan = async () => {
                 type="button"
                 onClick={addSelectedBills}
                 disabled={selectedCount === 0}
-                className="w-full rounded-xl bg-green-600 px-5 py-4 font-bold text-white shadow transition hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-50"
+                className="w-full rounded-xl bg-green-600 px-5 py-4 font-bold text-white 
+                  shadow transition hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 ✅ Add {selectedCount} Selected{" "}
                 {selectedCount === 1 ? "Bill" : "Bills"}
