@@ -98,11 +98,9 @@ const dueSoonBills = bills.filter((bill) => {
           value={formatCurrency(summary.remainingCash)}
           valueClassName="text-blue-600"
         />
-<div className="grid grid-cols-2 gap-4">
-
       </div>
 
- <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-4">
 
   <StatCard
     title="Bills Added"
@@ -132,7 +130,7 @@ const dueSoonBills = bills.filter((bill) => {
     valueClassName="text-blue-600"
   />
 
-</div>
+      </div>
 
       <Card>
 
