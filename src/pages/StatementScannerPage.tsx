@@ -2,6 +2,7 @@ import { ChangeEvent, useState } from "react";
 import { Bill } from "../types/Bill";
 import { useBills } from "../hooks/useBills";
 import { formatCurrency } from "../utils/formatCurrency";
+import AddBillModal from "../components/bills/AddBillModal";
 
 interface ExtractedBill extends Bill {
   confidence: number;
@@ -15,6 +16,7 @@ export default function StatementScannerPage() {
   const [isScanning, setIsScanning] = useState(false);
   const [hasScanned, setHasScanned] = useState(false);
   const [bills, setBills] = useState<ExtractedBill[]>([]);
+  const [editingBill, setEditingBill] = useState<ExtractedBill | null>(null);
 
   const handleFileChange = (
     event: ChangeEvent<HTMLInputElement>
@@ -91,6 +93,23 @@ const handleScan = async () => {
           : bill
       )
     );
+  };
+  const handleEditBill = (bill: ExtractedBill) => {
+    setEditingBill(bill);
+  };
+  const handleSaveEditBill = (updatedBill: Bill) => {
+    setBills((current) =>
+      current.map((bill) =>
+        bill.id === updatedBill.id
+          ? { ...updatedBill, confidence: bill.confidence, selected: bill.selected }
+          : bill
+      )
+    );
+    setEditingBill(null);
+  };
+
+  const handleCancelEditBill = () => {
+    setEditingBill(null);
   };
 
   const addSelectedBills = () => {
@@ -274,6 +293,14 @@ const handleScan = async () => {
 
                         <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
                           {bill.confidence}% confidence
+
+                          <button
+                            type="button"
+                            onClick={() => handleEditBill(bill)}
+                            className="mt-3 w-full rounded-xl border border-slate-200 px-4 py-2 
+                              text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                          >Edit Bill
+                          </button>
                         </span>
                       </div>
                     </div>
@@ -295,6 +322,12 @@ const handleScan = async () => {
         </div>
       )}
     </div>
-    </>
+    <AddBillModal
+      open={editingBill !== null}
+      bill={editingBill}
+      onClose={() => setEditingBill(null)}
+      onSave={handleSaveEditBill}
+    />
+  </>
   );
 }
