@@ -199,6 +199,13 @@ export default function DebtPlannerPage() {
               {formatCurrency(maxExtraPayment)}
             </span>
           </div>
+          <button
+            type="button"
+            onClick={() => setExtraPayment(String(maxExtraPayment))}
+            className="mt-3 w-full rounded-xl bg-blue-50 px-4 py-3 text-blue-700 transition hover:bg-blue-100"
+          >
+            Use All Available Cash
+          </button>
         </div>
       </Card>
 
