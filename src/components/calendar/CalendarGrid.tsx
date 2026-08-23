@@ -366,16 +366,41 @@ const dayIncome = income.filter((item) =>
             </div>
           )}
 
-          {selectedBills.length === 0 &&
-            selectedIncome.length === 0 &&
-            selectedDebts.length === 0 && (
-              <div className="mt-5 rounded-xl bg-slate-50 p-5 text-center">
-                <p className="text-sm text-slate-500">
-                  Nothing scheduled for this day.
-                </p>
-              </div>
-            )}
+{/* Debt Payments */}
+{selectedDebts.length > 0 && (
+  <div className="mt-5">
+    <h3 className="font-bold text-slate-900">
+      Debt Payments
+    </h3>
+
+    <div className="mt-2 space-y-2">
+      {selectedDebts.map((debt) => (
+        <div
+          key={debt.id}
+          className="flex items-center justify-between gap-3 rounded-xl bg-orange-50 p-3"
+        >
+          <p className="min-w-0 font-semibold">
+            💳 {debt.name}
+          </p>
+
+          <div className="flex shrink-0 items-center gap-2">
+            <span className="font-bold text-orange-700">
+              {formatCurrency(debt.minimumPayment)}
+            </span>
+
+            <button
+              type="button"
+              onClick={() => onEditDebt(debt)}
+              className="rounded-lg border border-orange-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-orange-50"
+            >
+              Edit
+            </button>
+          </div>
         </div>
+      ))}
+    </div>
+  </div>
+)}
       )}
     </div>
   );
