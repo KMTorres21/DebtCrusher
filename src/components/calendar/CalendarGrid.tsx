@@ -3,8 +3,6 @@ import { Bill } from "../../types/Bill";
 import { Income } from "../../types/Income";
 import { Debt } from "../../types/Debt";
 import { formatCurrency } from "../../utils/formatCurrency";
-import { getBillOccurrences, getIncomeOccurrences }  
-  from "../../utils/calendarOccurrences";
 import { getBillOccurrences, getIncomeOccurrences } from "../../utils/calendarOccurrences";
 
 interface Props {
