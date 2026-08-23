@@ -67,6 +67,18 @@ export default function DebtsPage() {
         />
       </div>
 
+      <Button
+        type="button"
+        onClick={() =>
+          window.location.href = "/debt-planner"
+        }
+        className="w-full"
+      >
+        🎯 Debt Payoff Planner
+      </Button>
+
+      <SearchBar
+
       <SearchBar
         value={search}
         onChange={setSearch}
