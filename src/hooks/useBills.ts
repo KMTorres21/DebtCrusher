@@ -2,8 +2,18 @@ import { useEffect, useState } from "react";
 import { Bill } from "../types/Bill";
 import { loadBills, saveBills } from "../utils/storage";
 
+function sortBills(a: Bill, b: Bill) {
+  return String(a.dueDate ?? "").localeCompare(
+    String(b.dueDate ?? "")
+  );
+}
+
 export function useBills() {
-  const [bills, setBills] = useState<Bill[]>(() => loadBills());
+  const [bills, setBills] = useState<Bill[]>(() => {
+    const loadedBills = loadBills();
+
+    return loadedBills.sort(sortBills);
+  });
 
   useEffect(() => {
     saveBills(bills);
@@ -11,9 +21,7 @@ export function useBills() {
 
   function addBill(bill: Bill) {
     setBills((prev) =>
-      [...prev, bill].sort((a, b) =>
-        a.dueDate.localeCompare(b.dueDate)
-      )
+      [...prev, bill].sort(sortBills)
     );
   }
 
@@ -28,7 +36,7 @@ export function useBills() {
               }
             : bill
         )
-        .sort((a, b) => a.dueDate.localeCompare(b.dueDate))
+        .sort(sortBills)
     );
   }
 
@@ -36,7 +44,7 @@ export function useBills() {
     setBills((prev) =>
       prev
         .filter((bill) => bill.id !== id)
-        .sort((a, b) => a.dueDate.localeCompare(b.dueDate))
+        .sort(sortBills)
     );
   }
 
@@ -52,7 +60,7 @@ export function useBills() {
               }
             : bill
         )
-        .sort((a, b) => a.dueDate.localeCompare(b.dueDate))
+        .sort(sortBills)
     );
   }
 
