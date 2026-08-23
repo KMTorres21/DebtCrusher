@@ -339,46 +339,28 @@ const dayIncome = income.filter((item) =>
 
               <div className="mt-2 space-y-2">
                 {selectedIncome.map((item) => (
-                  <div
-                    key={item.id}
-                    className="flex items-center justify-between rounded-xl bg-green-50 p-3"
-                  >
-                    <p className="font-semibold">
-                      💵 {item.source}
-                    </p>
+ <div
+  key={item.id}
+  className="flex items-center justify-between gap-3 rounded-xl bg-green-50 p-3"
+>
+  <p className="min-w-0 font-semibold">
+    💵 {item.source}
+  </p>
 
-                    <span className="font-bold text-green-700">
-                      {formatCurrency(item.amount)}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+  <div className="flex shrink-0 items-center gap-2">
+    <span className="font-bold text-green-700">
+      {formatCurrency(item.amount)}
+    </span>
 
-          {/* Debt Payments */}
-          {selectedDebts.length > 0 && (
-            <div className="mt-5">
-              <h3 className="font-bold text-slate-900">
-                Debt Payments
-              </h3>
-
-              <div className="mt-2 space-y-2">
-                {selectedDebts.map((debt) => (
-                  <div
-                    key={debt.id}
-                    className="flex items-center justify-between rounded-xl bg-orange-50 p-3"
-                  >
-                    <p className="font-semibold">
-                      💳 {debt.name}
-                    </p>
-
-                    <span className="font-bold text-orange-700">
-                      {formatCurrency(
-                        debt.minimumPayment
-                      )}
-                    </span>
-                  </div>
+    <button
+      type="button"
+      onClick={() => onEditIncome(item)}
+      className="rounded-lg border border-green-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-green-50"
+    >
+      Edit
+    </button>
+  </div>
+</div>
                 ))}
               </div>
             </div>
