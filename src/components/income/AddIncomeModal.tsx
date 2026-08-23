@@ -1,4 +1,4 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { X } from "lucide-react";
 
 import { Income } from "../../types/Income";
@@ -32,7 +32,19 @@ export default function AddIncomeModal({
   const [nextPayDate, setNextPayDate] = useState("");
   const [notes, setNotes] = useState("");
 
-  if (!open) return null;
+  useEffect(() => {
+    if (!open) return;
+
+    if (income) {
+      setSource(income.source);
+      setAmount(String(income.amount));
+      setFrequency(income.frequency);
+      setNextPayDate(income.nextPayDate);
+      setNotes(income.notes ?? "");
+    } else {
+      resetForm();
+    }
+  }, [open, income]);
 
   function resetForm() {
     setSource("");
@@ -47,27 +59,33 @@ export default function AddIncomeModal({
     onClose();
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  function handleSubmit(
+    event: FormEvent<HTMLFormElement>
+  ) {
     event.preventDefault();
 
     const now = new Date().toISOString();
 
-    const income: Income = {
-      id: crypto.randomUUID(),
+    const savedIncome: Income = {
+      id: income?.id ?? crypto.randomUUID(),
       source: source.trim(),
       amount: Number(amount),
       frequency,
       nextPayDate,
       notes: notes.trim() || undefined,
-      createdAt: now,
+      createdAt: income?.createdAt ?? now,
       updatedAt: now,
     };
 
-    onSave(income);
+    onSave(savedIncome);
 
     resetForm();
     onClose();
   }
+
+  const isEditing = Boolean(income);
+
+  if (!open) return null;
 
   return (
     <div className="fixed inset-0 z-[100] flex items-end justify-center bg-black/50 sm:items-center sm:p-4">
@@ -76,17 +94,21 @@ export default function AddIncomeModal({
         <div className="flex items-center justify-between border-b border-slate-100 px-6 py-5">
           <div>
             <h2 className="text-2xl font-bold">
-              Add Income
+              {isEditing ? "Edit Income" : "Add Income"}
             </h2>
 
             <p className="mt-1 text-sm text-slate-500">
-              Add an income source.
+              {isEditing
+                ? "Update your income source."
+                : "Add an income source."}
             </p>
           </div>
 
           <button
+            type="button"
             onClick={handleClose}
             className="rounded-full p-2 hover:bg-slate-100"
+            aria-label="Close"
           >
             <X size={24} />
           </button>
@@ -96,7 +118,6 @@ export default function AddIncomeModal({
           onSubmit={handleSubmit}
           className="space-y-5 p-6"
         >
-
           <input
             type="text"
             placeholder="Employer or Income Source"
@@ -108,6 +129,7 @@ export default function AddIncomeModal({
 
           <input
             type="number"
+            step="0.01"
             placeholder="Amount"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
@@ -163,10 +185,11 @@ export default function AddIncomeModal({
               type="submit"
               className="flex-1"
             >
-              Save Income
+              {isEditing
+                ? "Save Changes"
+                : "Save Income"}
             </Button>
           </div>
-
         </form>
       </div>
     </div>
