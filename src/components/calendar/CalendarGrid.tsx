@@ -297,24 +297,34 @@ const dayIncome = income.filter((item) =>
 
               <div className="mt-2 space-y-2">
                 {selectedBills.map((bill) => (
-                  <div
-                    key={bill.id}
-                    className="flex items-center justify-between rounded-xl bg-slate-50 p-3"
-                  >
-                    <div>
-                      <p className="font-semibold">
-                        🧾 {bill.name}
-                      </p>
+<div
+  key={bill.id}
+  className="flex items-center justify-between gap-3 rounded-xl bg-slate-50 p-3"
+>
+  <div className="min-w-0">
+    <p className="font-semibold">
+      🧾 {bill.name}
+    </p>
 
-                      <p className="text-xs text-slate-500">
-                        {bill.paid ? "Paid" : "Due"}
-                      </p>
-                    </div>
+    <p className="text-xs text-slate-500">
+      {bill.paid ? "Paid" : "Due"}
+    </p>
+  </div>
 
-                    <span className="font-bold">
-                      {formatCurrency(bill.amount)}
-                    </span>
-                  </div>
+  <div className="flex shrink-0 items-center gap-2">
+    <span className="font-bold">
+      {formatCurrency(bill.amount)}
+    </span>
+
+    <button
+      type="button"
+      onClick={() => onEditBill(bill)}
+      className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+    >
+      Edit
+    </button>
+  </div>
+</div>
                 ))}
               </div>
             </div>
