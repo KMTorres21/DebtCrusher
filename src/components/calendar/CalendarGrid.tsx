@@ -21,7 +21,10 @@ export default function CalendarGrid({
   month,
   bills,
   income,
-  debts
+  debts,
+  onEditBill,
+  onEditIncome,
+  onEditDebt,
 }: Props) {
   const [selectedDate, setSelectedDate] = useState<string | null>(
     null
