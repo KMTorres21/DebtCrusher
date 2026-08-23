@@ -11,6 +11,9 @@ interface Props {
   bills: Bill[];
   income: Income[];
   debts: Debt[];
+  onEditBill: (bill: Bill) => void;
+  onEditIncome: (income: Income) => void;
+  onEditDebt: (debt: Debt) => void;
 }
 
 export default function CalendarGrid({
@@ -18,7 +21,7 @@ export default function CalendarGrid({
   month,
   bills,
   income,
-  debts,
+  debts
 }: Props) {
   const [selectedDate, setSelectedDate] = useState<string | null>(
     null
@@ -282,47 +285,38 @@ const dayIncome = income.filter((item) =>
             </div>
           </div>
 
-{/* Bills */}
-{selectedBills.length > 0 && (
-  <div className="mt-5">
-    <h3 className="font-bold text-slate-900">
-      Bills
-    </h3>
+          {/* Bills */}
+          {selectedBills.length > 0 && (
+            <div className="mt-5">
+              <h3 className="font-bold text-slate-900">
+                Bills
+              </h3>
 
-    <div className="mt-2 space-y-2">
-      {selectedBills.map((bill) => (
-        <div
-          key={bill.id}
-          className="flex items-center justify-between gap-3 rounded-xl bg-slate-50 p-3"
-        >
-          <div className="min-w-0">
-            <p className="font-semibold">
-              🧾 {bill.name}
-            </p>
+              <div className="mt-2 space-y-2">
+                {selectedBills.map((bill) => (
+                  <div
+                    key={bill.id}
+                    className="flex items-center justify-between rounded-xl bg-slate-50 p-3"
+                  >
+                    <div>
+                      <p className="font-semibold">
+                        🧾 {bill.name}
+                      </p>
 
-            <p className="text-xs text-slate-500">
-              {bill.paid ? "Paid" : "Due"}
-            </p>
-          </div>
+                      <p className="text-xs text-slate-500">
+                        {bill.paid ? "Paid" : "Due"}
+                      </p>
+                    </div>
 
-          <div className="flex shrink-0 items-center gap-2">
-            <span className="font-bold">
-              {formatCurrency(bill.amount)}
-            </span>
+                    <span className="font-bold">
+                      {formatCurrency(bill.amount)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
-            <button
-              type="button"
-              onClick={() => onEditBill(bill)}
-              className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50"
-            >
-              Edit
-            </button>
-          </div>
-        </div>
-      ))}
-    </div>
-  </div>
-)}
           {/* Income */}
           {selectedIncome.length > 0 && (
             <div className="mt-5">
@@ -332,32 +326,22 @@ const dayIncome = income.filter((item) =>
 
               <div className="mt-2 space-y-2">
                 {selectedIncome.map((item) => (
- <div
-  key={item.id}
-  className="flex items-center justify-between gap-3 rounded-xl bg-green-50 p-3"
->
-  <p className="min-w-0 font-semibold">
-    💵 {item.source}
-  </p>
+                  <div
+                    key={item.id}
+                    className="flex items-center justify-between rounded-xl bg-green-50 p-3"
+                  >
+                    <p className="font-semibold">
+                      💵 {item.source}
+                    </p>
 
-  <div className="flex shrink-0 items-center gap-2">
-    <span className="font-bold text-green-700">
-      {formatCurrency(item.amount)}
-    </span>
-
-    <button
-      type="button"
-      onClick={() => onEditIncome(item)}
-      className="rounded-lg border border-green-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-green-50"
-    >
-              Edit
-            </button>
-          </div>
-        </div>
-      ))}
-    </div>
-  </div>
-)}
+                    <span className="font-bold text-green-700">
+                      {formatCurrency(item.amount)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Debt Payments */}
           {selectedDebts.length > 0 && (
@@ -368,28 +352,20 @@ const dayIncome = income.filter((item) =>
 
               <div className="mt-2 space-y-2">
                 {selectedDebts.map((debt) => (
- <div
-  key={debt.id}
-  className="flex items-center justify-between gap-3 rounded-xl bg-orange-50 p-3"
->
-  <p className="min-w-0 font-semibold">
-    💳 {debt.name}
-  </p>
+                  <div
+                    key={debt.id}
+                    className="flex items-center justify-between rounded-xl bg-orange-50 p-3"
+                  >
+                    <p className="font-semibold">
+                      💳 {debt.name}
+                    </p>
 
-  <div className="flex shrink-0 items-center gap-2">
-    <span className="font-bold text-orange-700">
-      {formatCurrency(debt.minimumPayment)}
-    </span>
-
-    <button
-      type="button"
-      onClick={() => onEditDebt(debt)}
-      className="rounded-lg border border-orange-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-orange-50"
-    >
-      Edit
-    </button>
-  </div>
-</div>
+                    <span className="font-bold text-orange-700">
+                      {formatCurrency(
+                        debt.minimumPayment
+                      )}
+                    </span>
+                  </div>
                 ))}
               </div>
             </div>
