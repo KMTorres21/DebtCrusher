@@ -201,6 +201,7 @@ export default function DebtPlannerPage() {
             totalMonthlyPayment
           )}
         />
+        
         <StatCard
           title="Available After Obligations"
           value={formatCurrency(availableAfterObligations)}
