@@ -78,8 +78,6 @@ export default function DebtsPage() {
       </Button>
 
       <SearchBar
-
-      <SearchBar
         value={search}
         onChange={setSearch}
         placeholder="Search debts..."
