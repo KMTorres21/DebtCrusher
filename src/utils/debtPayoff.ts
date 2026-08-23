@@ -40,6 +40,7 @@ export function calculateDebtPayoff(
       ...debt,
       balanceRemaining: debt.balance,
       totalInterest: 0,
+      payoffMonth: null as number | null,
     }));
 
   const totalStartingDebt = activeDebts.reduce(
@@ -59,15 +60,22 @@ export function calculateDebtPayoff(
     };
   }
 
-  const orderedDebts = () => {
-    return [...activeDebts].sort((a, b) => {
-      if (strategy === "avalanche") {
-        return b.interestRate - a.interestRate;
-      }
+  function getTargetDebt() {
+    const remaining = activeDebts.filter(
+      (debt) => debt.balanceRemaining > 0.005
+    );
 
-      return a.balanceRemaining - b.balanceRemaining;
-    });
-  };
+    if (strategy === "avalanche") {
+      return remaining.sort(
+        (a, b) => b.interestRate - a.interestRate
+      )[0];
+    }
+
+    return remaining.sort(
+      (a, b) =>
+        a.balanceRemaining - b.balanceRemaining
+    )[0];
+  }
 
   let months = 0;
   let totalInterest = 0;
@@ -83,10 +91,10 @@ export function calculateDebtPayoff(
     months++;
 
     /*
-     * Apply monthly interest first.
+     * 1. Apply monthly interest.
      */
     activeDebts.forEach((debt) => {
-      if (debt.balanceRemaining <= 0) {
+      if (debt.balanceRemaining <= 0.005) {
         return;
       }
 
@@ -101,7 +109,10 @@ export function calculateDebtPayoff(
     });
 
     /*
-     * Pay every debt's minimum payment.
+     * 2. Pay all required minimum payments.
+     *
+     * Any unused portion of a minimum payment
+     * becomes available for the target debt.
      */
     let availableExtra = Math.max(
       0,
@@ -109,40 +120,34 @@ export function calculateDebtPayoff(
     );
 
     activeDebts.forEach((debt) => {
-      if (debt.balanceRemaining <= 0) {
+      if (debt.balanceRemaining <= 0.005) {
         return;
       }
 
-      const minimumPayment = Math.min(
+      const payment = Math.min(
         debt.minimumPayment,
         debt.balanceRemaining
       );
 
-      debt.balanceRemaining -= minimumPayment;
-    });
+      debt.balanceRemaining -= payment;
 
-    /*
-     * Apply extra payment to the highest-priority
-     * remaining debt.
-     *
-     * If a debt is paid off, its minimum payment
-     * becomes available for the next target.
-     */
-    let rolloverPayment = 0;
-
-    activeDebts.forEach((debt) => {
       if (debt.balanceRemaining <= 0.005) {
         debt.balanceRemaining = 0;
-        rolloverPayment += debt.minimumPayment;
+
+        availableExtra +=
+          debt.minimumPayment - payment;
+
+        if (debt.payoffMonth === null) {
+          debt.payoffMonth = months;
+        }
       }
     });
 
-    availableExtra += rolloverPayment;
-
+    /*
+     * 3. Apply the extra payment to the priority debt.
+     */
     while (availableExtra > 0.005) {
-      const target = orderedDebts().find(
-        (debt) => debt.balanceRemaining > 0.005
-      );
+      const target = getTargetDebt();
 
       if (!target) {
         break;
@@ -158,8 +163,29 @@ export function calculateDebtPayoff(
 
       if (target.balanceRemaining <= 0.005) {
         target.balanceRemaining = 0;
+
+        if (target.payoffMonth === null) {
+          target.payoffMonth = months;
+        }
       }
     }
+
+    /*
+     * 4. From the next month forward, a paid-off
+     * debt's minimum payment rolls into the snowball.
+     *
+     * This is handled automatically by adding the
+     * minimum payment of already-paid debts below.
+     */
+    activeDebts.forEach((debt) => {
+      if (
+        debt.balanceRemaining <= 0.005 &&
+        debt.payoffMonth !== null &&
+        debt.payoffMonth < months
+      ) {
+        extraMonthlyPayment += debt.minimumPayment;
+      }
+    });
   }
 
   const payoffDate = new Date(
@@ -169,15 +195,28 @@ export function calculateDebtPayoff(
   );
 
   const results: PayoffDebtResult[] =
-    activeDebts.map((debt) => ({
-      debtId: debt.id,
-      name: debt.name,
-      startingBalance: debt.balance,
-      totalInterest: debt.totalInterest,
-      monthsToPayoff: months,
-      payoffMonth: payoffDate.getMonth() + 1,
-      payoffYear: payoffDate.getFullYear(),
-    }));
+    activeDebts.map((debt) => {
+      const payoffMonth =
+        debt.payoffMonth ?? months;
+
+      const debtPayoffDate = new Date(
+        now.getFullYear(),
+        now.getMonth() + payoffMonth,
+        1
+      );
+
+      return {
+        debtId: debt.id,
+        name: debt.name,
+        startingBalance: debt.balance,
+        totalInterest: debt.totalInterest,
+        monthsToPayoff: payoffMonth,
+        payoffMonth:
+          debtPayoffDate.getMonth() + 1,
+        payoffYear:
+          debtPayoffDate.getFullYear(),
+      };
+    });
 
   return {
     strategy,
