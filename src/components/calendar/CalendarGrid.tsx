@@ -401,6 +401,7 @@ const dayIncome = income.filter((item) =>
     </div>
   </div>
 )}
+        </div>
       )}
     </div>
   );
