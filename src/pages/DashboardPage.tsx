@@ -102,6 +102,44 @@ const dueSoonBills = bills.filter((bill) => {
 
       <div className="grid grid-cols-2 gap-4">
 
+<Card>
+  <div className="flex items-center justify-between">
+    <div>
+      <p className="text-sm font-semibold text-slate-500">
+        Monthly Cash Flow
+      </p>
+
+      <p
+        className={`mt-1 text-2xl font-bold ${
+          summary.remainingCash >= 0
+            ? "text-green-600"
+            : "text-red-600"
+        }`}
+      >
+        {formatCurrency(summary.remainingCash)}
+      </p>
+    </div>
+
+    <div
+      className={`rounded-full px-3 py-1 text-sm font-bold ${
+        summary.remainingCash >= 0
+          ? "bg-green-100 text-green-700"
+          : "bg-red-100 text-red-700"
+      }`}
+    >
+      {summary.remainingCash >= 0
+        ? "Positive"
+        : "Negative"}
+    </div>
+  </div>
+
+  <p className="mt-3 text-sm text-slate-500">
+    {summary.remainingCash >= 0
+      ? "You have money remaining after this month's planned obligations."
+      : "Your planned obligations exceed your income this month."}
+  </p>
+</Card>
+
   <StatCard
     title="Bills Added"
     value={totalBills}
