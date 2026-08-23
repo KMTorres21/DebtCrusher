@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { CalendarDays } from "lucide-react";
 import { NavLink } from "react-router-dom";
+import { BarChart3 } from "lucide-react";
  
 const navItems = [
   {
@@ -34,10 +35,15 @@ const navItems = [
     path: "/income",
     icon: Wallet,
   },
+   {
+    label: "Income",
+    path: "/income",
+    icon: Wallet,
+  },
   {
-    label: "Debts",
-    path: "/debts",
-    icon: Target,
+    label: "Reports",
+    path: "/reports",
+    icon: BarChart3,
   },
   
 ];
