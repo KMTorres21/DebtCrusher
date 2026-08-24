@@ -186,7 +186,13 @@ export default function ReportsPage() {
       </Card>
 {/* Debt Payoff Plan */}
 <Card>
-  <div className="flex items-start justify-between gap-4">
+<button
+  type="button"
+  onClick={() => navigate("/debt-planner")}
+  className="w-full text-left"
+>
+  <Card>
+    <div className="flex items-start justify-between gap-4">
     <div>
       <h2 className="text-lg font-bold text-slate-900">
         Debt Payoff Plan
