@@ -119,6 +119,32 @@ const paidBills = bills.filter(
         subtitle="Track and manage your bills"
       />
 
+<div className="grid grid-cols-2 gap-4">
+  <StatCard
+    title="Monthly Bills"
+    value={formatCurrency(monthlyBills)}
+    valueClassName="text-red-600"
+  />
+
+  <StatCard
+    title="Paid"
+    value={paidBills}
+    valueClassName="text-green-600"
+  />
+
+  <StatCard
+    title="Due Soon"
+    value={dueSoonBills}
+    valueClassName="text-orange-600"
+  />
+
+  <StatCard
+    title="Overdue"
+    value={overdueBills}
+    valueClassName="text-red-600"
+  />
+</div>
+
       <SearchBar
         value={search}
         onChange={setSearch}
