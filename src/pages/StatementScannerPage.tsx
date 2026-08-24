@@ -57,18 +57,11 @@ const handleScan = async () => {
 
  const extractedBills: ExtractedBill[] =
   data.bills.map(
-<<<<<<< HEAD
-    (bill: Bill & { confidence?: number; apr?: number | null }, index: number) => ({
-      ...bill,
-      id: bill.id || `scan-${Date.now()}-${index}`,
-      confidence: bill.confidence ?? 0,
-      selected: true,
-    })
-=======
     (
       bill: {
         name?: string | null;
         amount?: number | null;
+        apr?: number | null;
         dueDate?: string | null;
         category?: string | null;
         recurring?: boolean | null;
@@ -106,6 +99,10 @@ const handleScan = async () => {
           typeof bill.amount === "number"
             ? bill.amount
             : 0,
+        apr: 
+          typeof bill.apr === "number"
+            ? bill.apr
+            : null,
         dueDate: bill.dueDate ?? "",
         category,
         paid: bill.paid ?? false,
@@ -117,7 +114,6 @@ const handleScan = async () => {
         selected: true,
       };
     }
->>>>>>> eb41ac2e8744819ad95d80570ed561fb3dc616cc
   );
 
     setBills((current) => [
