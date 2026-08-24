@@ -41,6 +41,61 @@ export default function BillsPage() {
     "Other",
   ];
 
+const today = new Date();
+const currentYear = today.getFullYear();
+const currentMonth = today.getMonth();
+
+const monthlyBills = bills.reduce((sum, bill) => {
+  const occurrences = getBillOccurrences(
+    bill,
+    currentYear,
+    currentMonth
+  );
+
+  return sum + bill.amount * occurrences.length;
+}, 0);
+
+const todayStart = new Date();
+todayStart.setHours(0, 0, 0, 0);
+
+const sevenDaysFromNow = new Date(todayStart);
+sevenDaysFromNow.setDate(
+  todayStart.getDate() + 7
+);
+
+const dueSoonBills = bills.filter((bill) => {
+  if (bill.paid) return false;
+
+  const occurrences = getBillOccurrences(
+    bill,
+    currentYear,
+    currentMonth
+  );
+
+  return occurrences.some((date) => {
+    const dueDate = new Date(`${date}T12:00:00`);
+
+    return (
+      dueDate >= todayStart &&
+      dueDate <= sevenDaysFromNow
+    );
+  });
+}).length;
+
+const overdueBills = bills.filter((bill) => {
+  if (bill.paid) return false;
+
+  const dueDate = new Date(
+    `${bill.dueDate}T12:00:00`
+  );
+
+  return dueDate < todayStart;
+}).length;
+
+const paidBills = bills.filter(
+  (bill) => bill.paid
+).length;
+
   const filteredBills = bills.filter((bill) => {
     const matchesSearch = bill.name
       .toLowerCase()
