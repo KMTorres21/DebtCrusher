@@ -160,8 +160,12 @@ const handleScan = async () => {
 
   const addSelectedBills = () => {
     const selectedBills = bills.filter(
-      (bill) => bill.selected
-    );
+  (bill) =>
+    bill.selected &&
+    bill.name.trim() &&
+    bill.amount > 0 &&
+    bill.dueDate
+);
 
     selectedBills.forEach((bill) => {
       const { confidence, selected, ...newBill } = bill;
