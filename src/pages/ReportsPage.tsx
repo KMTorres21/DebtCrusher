@@ -1,5 +1,6 @@
 import { calculateDebtPayoff } from "../utils/debtPayoff";
 import { useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import PageContainer from "../components/common/PageContainer";
 import PageHeader from "../components/common/PageHeader";
 import StatCard from "../components/common/StatCard";
@@ -13,6 +14,7 @@ import { calculateFinancialSummary } from "../utils/cashFlow";
 import { formatCurrency } from "../utils/formatCurrency";
 
 export default function ReportsPage() {
+  const navigate = useNavigate();
   const { bills } = useBills();
   const { debts } = useDebts();
   const debtPlan = calculateDebtPayoff(debts, "avalanche", 250);
@@ -185,14 +187,13 @@ export default function ReportsPage() {
         </div>
       </Card>
 {/* Debt Payoff Plan */}
-<Card>
 <button
   type="button"
   onClick={() => navigate("/debt-planner")}
-  className="w-full text-left"
->
-  <Card>
-    <div className="flex items-start justify-between gap-4">
+      className="w-full text-left">
+    <Card>
+      <div className="flex items-start justify-between gap-4">
+
     <div>
       <h2 className="text-lg font-bold text-slate-900">
         Debt Payoff Plan
@@ -251,6 +252,7 @@ export default function ReportsPage() {
     </div>
   )}
 </Card>
+</button>
 
 
       {/* Bill Progress */}
