@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Plus } from "lucide-react";
-import { getIncomeOccurrences } from "../utils/getIncomeOccurrences";
+import { getIncomeOccurrences } from "../utils/calendarOccurrences";
 import { Income } from "../types/Income";
 import { useIncome } from "../hooks/useIncome";
 import { formatCurrency } from "../utils/formatCurrency";
