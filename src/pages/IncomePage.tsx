@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Plus } from "lucide-react";
-
+import { getIncomeOccurrences } from "../utils/getIncomeOccurrences";
 import { Income } from "../types/Income";
 import { useIncome } from "../hooks/useIncome";
 import { formatCurrency } from "../utils/formatCurrency";
@@ -32,10 +32,15 @@ export default function IncomePage() {
     item.source.toLowerCase().includes(search.toLowerCase())
   );
 
-  const totalIncome = income.reduce(
-    (sum, item) => sum + item.amount,
-    0
-  );
+  const today = new Date();
+  const totalIncome = income.reduce((sum,item) => {
+      const occurrences = getIncomeOccurrences(
+        item,
+        today.getFullYear(),
+        today.getMonth()
+      );
+      return sum + item.amount * occurrences.length;
+  }, 0);
 
   const nextPayday =
     income.length > 0
