@@ -300,75 +300,90 @@ const handleScan = async () => {
             </div>
           ) : (
             <>
-              {bills.map((bill) => (
-                <div
-                  key={bill.id}
-                  className={`rounded-2xl border-2 bg-white p-5 shadow ${
-                    bill.selected
-                      ? "border-blue-500"
-                      : "border-slate-200"
-                  }`}
-                >
-                  <div className="flex items-start gap-4">
-                    <input
-                      type="checkbox"
-                      checked={bill.selected}
-                      onChange={() =>
-                        toggleBill(bill.id)
-                      }
-                      className="mt-1 h-5 w-5"
-                    />
-
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-start justify-between gap-3">
-                        <div>
-                          <h3 className="font-bold">
-                            {bill.name}
-                          </h3>
-
-                          <p className="mt-1 text-sm text-slate-500">
-                            Due {bill.dueDate}
-                          </p>
-                        </div>
-
-                        <div className="text-right font-bold">
-                          {formatCurrency(bill.amount)}
-                        </div>
-                      </div>
-
-  <div className="mt-4 flex flex-wrap gap-2">
-  <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold">
-    {bill.category}
-  </span>
-
-  {bill.recurring && (
-    <span className="rounded-full bg-purple-100 px-3 py-1 text-xs font-semibold text-purple-700">
-      Recurring
-    </span>
-  )}
-
-  <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
-    {bill.confidence}% confidence
-    {bill.apr !== null && bill.apr !== undefined && (
-      <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700">
-        {bill.apr.toFixed(2)}% APR
-      </span>
-    )}
-  </span>
-
-  <button
-    type="button"
-    onClick={() => handleEditBill(bill)}
-    className="mt-3 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+   {bills.map((bill) => (
+  <div
+    key={bill.id}
+    className={`rounded-2xl border-2 bg-white p-5 shadow-sm transition ${
+      bill.selected
+        ? "border-blue-500"
+        : "border-slate-200"
+    }`}
   >
-    Edit Bill
-  </button>
-</div>
-                    </div>
-                  </div>
-                </div>
-              ))}
+    {/* Bill Header */}
+    <div className="flex items-start gap-4">
+      {/* Checkbox */}
+      <input
+        type="checkbox"
+        checked={bill.selected}
+        onChange={() => toggleBill(bill.id)}
+        className="mt-1 h-5 w-5 shrink-0"
+      />
 
+      {/* Main Information */}
+      <div className="min-w-0 flex-1">
+        <div className="flex items-start justify-between gap-4">
+          <div className="min-w-0">
+            <h3 className="text-lg font-bold text-slate-900">
+              {bill.name}
+            </h3>
+
+            <p className="mt-1 text-sm text-slate-500">
+              Due {bill.dueDate}
+            </p>
+          </div>
+
+          <div className="shrink-0 text-right">
+            <p className="text-xl font-bold text-slate-900">
+              {formatCurrency(bill.amount)}
+            </p>
+          </div>
+        </div>
+
+        {/* Information Badges */}
+        <div className="mt-4 flex flex-wrap gap-2">
+          <span className="rounded-full bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-700">
+            {bill.category}
+          </span>
+
+          {bill.recurring && (
+            <span className="rounded-full bg-purple-100 px-3 py-1.5 text-xs font-semibold text-purple-700">
+              ↻ Recurring
+            </span>
+          )}
+
+          <span className="rounded-full bg-green-100 px-3 py-1.5 text-xs font-semibold text-green-700">
+            {bill.confidence}% confidence
+          </span>
+
+          {bill.apr !== null &&
+            typeof bill.apr === "number" && (
+              <span className="rounded-full bg-blue-100 px-3 py-1.5 text-xs font-semibold text-blue-700">
+                ↗ {bill.apr.toFixed(2)}% APR
+              </span>
+            )}
+        </div>
+
+        {/* Notes */}
+        {bill.notes && (
+          <div className="mt-4 rounded-xl bg-slate-50 px-4 py-3">
+            <p className="text-sm text-slate-600">
+              {bill.notes}
+            </p>
+          </div>
+        )}
+
+        {/* Edit Button */}
+        <button
+          type="button"
+          onClick={() => handleEditBill(bill)}
+          className="mt-4 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+        >
+          Edit Bill
+        </button>
+      </div>
+    </div>
+  </div>
+))}
               <button
                 type="button"
                 onClick={addSelectedBills}
