@@ -46,26 +46,56 @@ export default function AddDebtModal({
   const [notes, setNotes] = useState("");
 
   useEffect(() => {
-    if (!open) return;
+  if (!open) return;
 
-    if (debt) {
-      setName(debt.name);
-      setType(debt.type);
-      setBalance(String(debt.balance));
-      setOriginalBalance(String(debt.originalBalance));
-      setInterestRate(String(debt.interestRate));
-      setMinimumPayment(String(debt.minimumPayment));
-      setDueDate(debt.dueDate);
-      setCreditLimit(
-        debt.creditLimit !== undefined
-          ? String(debt.creditLimit)
-          : ""
-      );
-      setNotes(debt.notes ?? "");
-    } else {
-      resetForm();
-    }
-  }, [open, debt]);
+  if (debt) {
+    setName(debt.name);
+    setType(debt.type);
+    setBalance(String(debt.balance));
+    setOriginalBalance(String(debt.originalBalance));
+    setInterestRate(String(debt.interestRate));
+    setMinimumPayment(String(debt.minimumPayment));
+    setDueDate(debt.dueDate);
+    setCreditLimit(
+      debt.creditLimit !== undefined
+        ? String(debt.creditLimit)
+        : ""
+    );
+    setNotes(debt.notes ?? "");
+  } else if (prefill) {
+    setName(prefill.name ?? "");
+    setType(prefill.type ?? "Credit Card");
+    setBalance(
+      prefill.balance !== undefined
+        ? String(prefill.balance)
+        : ""
+    );
+    setOriginalBalance(
+      prefill.originalBalance !== undefined
+        ? String(prefill.originalBalance)
+        : ""
+    );
+    setInterestRate(
+      prefill.interestRate !== undefined
+        ? String(prefill.interestRate)
+        : ""
+    );
+    setMinimumPayment(
+      prefill.minimumPayment !== undefined
+        ? String(prefill.minimumPayment)
+        : ""
+    );
+    setDueDate(prefill.dueDate ?? "");
+    setCreditLimit(
+      prefill.creditLimit !== undefined
+        ? String(prefill.creditLimit)
+        : ""
+    );
+    setNotes(prefill.notes ?? "");
+  } else {
+    resetForm();
+  }
+}, [open, debt, prefill]);
 
   function resetForm() {
     setName("");
