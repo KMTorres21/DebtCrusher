@@ -83,16 +83,30 @@ const weightedAverageAPR =
       />
 
       <div className="grid grid-cols-2 gap-4">
-        <StatCard
-          title="Total Debt"
-          value={formatCurrency(totalDebt)}
-        />
+  <StatCard
+    title="Total Debt"
+    value={formatCurrency(totalDebt)}
+    valueClassName="text-red-600"
+  />
 
-        <StatCard
-          title="Monthly Minimum"
-          value={formatCurrency(totalMinimumPayments)}
-        />
-      </div>
+  <StatCard
+    title="Monthly Minimum"
+    value={formatCurrency(totalMinimumPayments)}
+    valueClassName="text-orange-600"
+  />
+
+  <StatCard
+    title="Debt Paid"
+    value={formatCurrency(totalDebtPaid)}
+    valueClassName="text-green-600"
+  />
+
+  <StatCard
+    title="Average APR"
+    value={`${weightedAverageAPR.toFixed(2)}%`}
+    valueClassName="text-blue-600"
+  />
+</div>
 
       <Button
         type="button"
