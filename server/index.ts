@@ -210,7 +210,11 @@ Rules:
       const extracted = JSON.parse(
         response.text || '{"bills":[]}'
       );
-
+      
+      console.log("GEMINI EXTRACTED DATA:",
+        JSON.stringify(extracted, null, 2)
+      );
+      
       console.log(
         `Extracted ${extracted.bills.length} bill(s) from ${req.file.originalname}`
       );
