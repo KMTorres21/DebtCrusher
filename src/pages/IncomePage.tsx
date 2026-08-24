@@ -42,13 +42,48 @@ export default function IncomePage() {
       return sum + item.amount * occurrences.length;
   }, 0);
 
-  const nextPayday =
-    income.length > 0
-      ? [...income]
-          .sort((a, b) =>
-            a.nextPayDate.localeCompare(b.nextPayDate)
-          )[0].nextPayDate
-      : "None";
+const nextPayday = (() => {
+  if (income.length === 0) {
+    return "None";
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const dates: string[] = [];
+
+  for (let offset = 0; offset <= 12; offset++) {
+    const targetDate = new Date(
+      today.getFullYear(),
+      today.getMonth() + offset,
+      1
+    );
+
+    const occurrences = income.flatMap((item) =>
+      getIncomeOccurrences(
+        item,
+        targetDate.getFullYear(),
+        targetDate.getMonth()
+      )
+    );
+
+    dates.push(...occurrences);
+  }
+
+  const futureDates = dates
+    .filter((date) => {
+      const occurrenceDate = new Date(
+        `${date}T12:00:00`
+      );
+
+      return occurrenceDate >= today;
+    })
+    .sort();
+
+  return futureDates.length > 0
+    ? futureDates[0]
+    : "None";
+})();
 
   const handleEdit = (item: Income) => {
     setEditingIncome(item);
