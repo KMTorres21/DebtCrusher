@@ -50,6 +50,7 @@ For each bill, extract:
 - name
 - amount
 - dueDate
+- apr
 - category
 - recurring
 - paid
@@ -63,6 +64,9 @@ Rules:
 - category should be a reasonable category such as Utilities, Insurance,
   Mortgage, Rent, Credit Card, Loan, Subscription, Phone, Internet,
   Medical, or Other.
+- apr should be a number representing the annual percentage rate when explicitly stated on the statement, expressed as a number such as 24.99 for 24.99%. 
+- do not calculate or infer APR
+- If APR is not explicityl stated, return null.
 - recurring should be true only when the payment appears recurring.
 - paid should reflect whether the statement indicates the bill was already paid.
 - autoPay should be true only when the statement explicitly indicates
@@ -114,6 +118,10 @@ Rules:
                           type: Type.NUMBER,
                           nullable: true,
                         },
+                        apr: {
+                          type: Type.NUMBER,
+                          nullable: true,
+                        },
                         dueDate: {
                           type: Type.STRING,
                           nullable: true,
@@ -153,6 +161,7 @@ Rules:
                         "autoPay",
                         "notes",
                         "confidence",
+                        "apr",
                       ],
                     },
                   },

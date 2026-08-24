@@ -57,7 +57,7 @@ const handleScan = async () => {
 
  const extractedBills: ExtractedBill[] =
   data.bills.map(
-    (bill: Bill & { confidence?: number }, index: number) => ({
+    (bill: Bill & { confidence?: number; apr?: number | null }, index: number) => ({
       ...bill,
       id: bill.id || `scan-${Date.now()}-${index}`,
       confidence: bill.confidence ?? 0,
