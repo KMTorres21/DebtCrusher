@@ -361,7 +361,16 @@ const handleScan = async () => {
               <button
                 type="button"
                 onClick={addSelectedBills}
-                disabled={selectedCount === 0}
+       disabled={
+  selectedCount === 0 ||
+  bills.some(
+    (bill) =>
+      bill.selected &&
+      (!bill.name.trim() ||
+        bill.amount <= 0 ||
+        !bill.dueDate)
+  )
+}
                 className="w-full rounded-xl bg-green-600 px-5 py-4 font-bold text-white 
                   shadow transition hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-50"
               >
