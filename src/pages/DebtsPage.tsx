@@ -108,7 +108,36 @@ const weightedAverageAPR =
   />
 </div>
 
- {/* Progress Bar */}
+    {/* Progress Bar */}
+  <div className="rounded-2xl bg-white p-5 shadow-md">
+  <div className="flex items-center justify-between">
+    <div>
+      <h2 className="font-bold text-slate-900">
+        Overall Debt Progress
+      </h2>
+
+      <p className="mt-1 text-sm text-slate-500">
+        {debtPaidPercent}% of your original debt paid off
+      </p>
+    </div>
+
+    <span className="text-lg font-bold text-green-600">
+      {debtPaidPercent}%
+    </span>
+  </div>
+
+  <div className="mt-4 h-3 overflow-hidden rounded-full bg-slate-200">
+    <div
+      className="h-full rounded-full bg-green-500 transition-all"
+      style={{
+        width: `${Math.min(
+          Math.max(debtPaidPercent, 0),
+          100
+        )}%`,
+      }}
+    />
+  </div>
+</div>
 
       <Button
         type="button"
