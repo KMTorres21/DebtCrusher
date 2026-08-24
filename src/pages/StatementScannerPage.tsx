@@ -380,7 +380,7 @@ const handleScan = async () => {
                 >
                   Edit Bill
                 </button>
-                {bill.category === "Credit Card"} && (
+                {bill.category === "Credit Card" && (
                   <button
                     type="button"
                     onClick={() => handleAddDebt(bill)}
@@ -424,6 +424,16 @@ const handleScan = async () => {
       bill={editingBill}
       onClose={() => setEditingBill(null)}
       onSave={handleSaveEditBill}
+    />
+    <AddDebtModal
+      open={debtPrefill !== null}
+      prefill={debtPrefill}
+      onClose={() => setDebtPrefill(null)}
+      onSave={(debt) => {
+        addDebt(debt);
+        setDebtPrefill(null);
+        // Handle saving the debt here
+      }}
     />
   </>
   );
