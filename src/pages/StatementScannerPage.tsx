@@ -57,12 +57,67 @@ const handleScan = async () => {
 
  const extractedBills: ExtractedBill[] =
   data.bills.map(
+<<<<<<< HEAD
     (bill: Bill & { confidence?: number; apr?: number | null }, index: number) => ({
       ...bill,
       id: bill.id || `scan-${Date.now()}-${index}`,
       confidence: bill.confidence ?? 0,
       selected: true,
     })
+=======
+    (
+      bill: {
+        name?: string | null;
+        amount?: number | null;
+        dueDate?: string | null;
+        category?: string | null;
+        recurring?: boolean | null;
+        paid?: boolean | null;
+        autoPay?: boolean | null;
+        notes?: string | null;
+        confidence?: number | null;
+      },
+      index: number
+    ) => {
+      const validCategories = [
+        "Housing",
+        "Utilities",
+        "Insurance",
+        "Phone",
+        "Internet",
+        "Credit Card",
+        "Loan",
+        "Subscription",
+        "Medical",
+        "Transportation",
+        "Other",
+      ] as const;
+
+      const category = validCategories.includes(
+        bill.category as (typeof validCategories)[number]
+      )
+        ? (bill.category as Bill["category"])
+        : "Other";
+
+      return {
+        id: `scan-${Date.now()}-${index}`,
+        name: bill.name ?? "",
+        amount:
+          typeof bill.amount === "number"
+            ? bill.amount
+            : 0,
+        dueDate: bill.dueDate ?? "",
+        category,
+        paid: bill.paid ?? false,
+        recurring: bill.recurring ?? false,
+        autoPay: bill.autoPay ?? false,
+        notes: bill.notes ?? undefined,
+        createdAt: new Date().toISOString(),
+        confidence: bill.confidence ?? 0,
+        selected: true,
+      };
+    }
+>>>>>>> eb41ac2e8744819ad95d80570ed561fb3dc616cc
   );
 
     setBills((current) => [
@@ -114,8 +169,12 @@ const handleScan = async () => {
 
   const addSelectedBills = () => {
     const selectedBills = bills.filter(
-      (bill) => bill.selected
-    );
+  (bill) =>
+    bill.selected &&
+    bill.name.trim() &&
+    bill.amount > 0 &&
+    bill.dueDate
+);
 
     selectedBills.forEach((bill) => {
       const { confidence, selected, ...newBill } = bill;
@@ -311,7 +370,16 @@ const handleScan = async () => {
               <button
                 type="button"
                 onClick={addSelectedBills}
-                disabled={selectedCount === 0}
+       disabled={
+  selectedCount === 0 ||
+  bills.some(
+    (bill) =>
+      bill.selected &&
+      (!bill.name.trim() ||
+        bill.amount <= 0 ||
+        !bill.dueDate)
+  )
+}
                 className="w-full rounded-xl bg-green-600 px-5 py-4 font-bold text-white 
                   shadow transition hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-50"
               >
