@@ -7,6 +7,7 @@ import AddBillModal from "../components/bills/AddBillModal";
 interface ExtractedBill extends Bill {
   confidence: number;
   selected: boolean;
+  apr?: number | null;
 }
 
 export default function StatementScannerPage() {
@@ -348,6 +349,11 @@ const handleScan = async () => {
 
   <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
     {bill.confidence}% confidence
+    {bill.apr !== null && bill.apr !== undefined && (
+      <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700">
+        {bill.apr.toFixed(2)}% APR
+      </span>
+    )}
   </span>
 
   <button
