@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom"; 
 import { Plus } from  "lucide-react"
 import { formatCurrency } from "../utils/formatCurrency";
 import PageContainer from "../components/common/PageContainer";
@@ -19,6 +20,7 @@ export default function DashboardPage() {
   const { debts } = useDebts();
   const { income } = useIncome();
   const debtPlan = calculateDebtPayoff(debts, "avalanche", 250);
+  const navigate = useNavigate();
   const [isAddBillOpen, setIsAddBillOpen] = useState(false);
   const summary = calculateFinancialSummary(
     bills,
