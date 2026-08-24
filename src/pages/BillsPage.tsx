@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Plus } from "lucide-react";
-
+import { getBillOccurrences } from "../utils/calendarOccurrences";
 import { Bill, BillCategory } from "../types/Bill";
 import { useBills } from "../hooks/useBills";
-
+import StatCard from "../components/common/StatCard";
+import { formatCurrency } from "../utils/formatCurrency";
 import Button from "../components/common/Button";
 import BillCard from "../components/bills/BillCard";
 import AddBillModal from "../components/bills/AddBillModal";
@@ -41,61 +42,6 @@ export default function BillsPage() {
     "Other",
   ];
 
-const today = new Date();
-const currentYear = today.getFullYear();
-const currentMonth = today.getMonth();
-
-const monthlyBills = bills.reduce((sum, bill) => {
-  const occurrences = getBillOccurrences(
-    bill,
-    currentYear,
-    currentMonth
-  );
-
-  return sum + bill.amount * occurrences.length;
-}, 0);
-
-const todayStart = new Date();
-todayStart.setHours(0, 0, 0, 0);
-
-const sevenDaysFromNow = new Date(todayStart);
-sevenDaysFromNow.setDate(
-  todayStart.getDate() + 7
-);
-
-const dueSoonBills = bills.filter((bill) => {
-  if (bill.paid) return false;
-
-  const occurrences = getBillOccurrences(
-    bill,
-    currentYear,
-    currentMonth
-  );
-
-  return occurrences.some((date) => {
-    const dueDate = new Date(`${date}T12:00:00`);
-
-    return (
-      dueDate >= todayStart &&
-      dueDate <= sevenDaysFromNow
-    );
-  });
-}).length;
-
-const overdueBills = bills.filter((bill) => {
-  if (bill.paid) return false;
-
-  const dueDate = new Date(
-    `${bill.dueDate}T12:00:00`
-  );
-
-  return dueDate < todayStart;
-}).length;
-
-const paidBills = bills.filter(
-  (bill) => bill.paid
-).length;
-
   const filteredBills = bills.filter((bill) => {
     const matchesSearch = bill.name
       .toLowerCase()
@@ -118,32 +64,6 @@ const paidBills = bills.filter(
         title="Bills"
         subtitle="Track and manage your bills"
       />
-
-<div className="grid grid-cols-2 gap-4">
-  <StatCard
-    title="Monthly Bills"
-    value={formatCurrency(monthlyBills)}
-    valueClassName="text-red-600"
-  />
-
-  <StatCard
-    title="Paid"
-    value={paidBills}
-    valueClassName="text-green-600"
-  />
-
-  <StatCard
-    title="Due Soon"
-    value={dueSoonBills}
-    valueClassName="text-orange-600"
-  />
-
-  <StatCard
-    title="Overdue"
-    value={overdueBills}
-    valueClassName="text-red-600"
-  />
-</div>
 
       <SearchBar
         value={search}
