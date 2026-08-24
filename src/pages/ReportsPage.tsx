@@ -184,6 +184,68 @@ export default function ReportsPage() {
           </p>
         </div>
       </Card>
+{/* Debt Payoff Plan */}
+<Card>
+  <div className="flex items-start justify-between gap-4">
+    <div>
+      <h2 className="text-lg font-bold text-slate-900">
+        Debt Payoff Plan
+      </h2>
+
+      <p className="mt-1 text-sm text-slate-500">
+        Avalanche strategy with $250 extra per month.
+      </p>
+    </div>
+
+    <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-bold text-blue-700">
+      Avalanche
+    </span>
+  </div>
+
+  {debtPlan.totalStartingDebt === 0 ? (
+    <p className="mt-5 text-sm text-slate-500">
+      Add debts to see your projected payoff plan.
+    </p>
+  ) : (
+    <div className="mt-5 grid grid-cols-2 gap-4">
+      <StatCard
+        title="Debt-Free Date"
+        value={
+          debtPlan.payoffDate
+            ? new Date(
+                `${debtPlan.payoffDate}T12:00:00`
+              ).toLocaleDateString("en-US", {
+                month: "short",
+                year: "numeric",
+              })
+            : "—"
+        }
+      />
+
+      <StatCard
+        title="Months"
+        value={debtPlan.totalMonths}
+      />
+
+      <StatCard
+        title="Projected Interest"
+        value={formatCurrency(
+          debtPlan.totalInterest
+        )}
+        valueClassName="text-orange-600"
+      />
+
+      <StatCard
+        title="Extra Payment"
+        value={formatCurrency(
+          debtPlan.extraMonthlyPayment
+        )}
+        valueClassName="text-blue-600"
+      />
+    </div>
+  )}
+</Card>
+
 
       {/* Bill Progress */}
       <Card>
