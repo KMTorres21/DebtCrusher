@@ -42,6 +42,33 @@ export default function DebtsPage() {
     0
   );
 
+const totalOriginalDebt = debts.reduce(
+  (sum, debt) => sum + debt.originalBalance,
+  0
+);
+
+const totalDebtPaid = Math.max(
+  0,
+  totalOriginalDebt - totalDebt
+);
+
+const debtPaidPercent =
+  totalOriginalDebt > 0
+    ? Math.round(
+        (totalDebtPaid / totalOriginalDebt) * 100
+      )
+    : 0;
+
+const weightedAverageAPR =
+  totalDebt > 0
+    ? debts.reduce(
+        (sum, debt) =>
+          sum +
+          debt.interestRate * debt.balance,
+        0
+      ) / totalDebt
+    : 0;
+
   function handleEdit(debt: Debt) {
     setEditingDebt(debt);
     setIsAddModalOpen(true); // Open the modal for editing
