@@ -105,10 +105,19 @@ const nextPayday = (() => {
           valueClassName="text-green-600"
         />
 
-        <StatCard
-          title="Next Payday"
-          value={nextPayday}
-        />
+ <StatCard
+  title="Next Payday"
+  value={
+    nextPayday === "None"
+      ? "None"
+      : new Date(
+          `${nextPayday}T12:00:00`
+        ).toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+        })
+  }
+/>
       </div>
 
       <SearchBar
