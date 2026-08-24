@@ -175,74 +175,69 @@ const dueSoonBills = bills.filter((bill) => {
       </div>
 
       {/* Debt Payoff */}
-      <Card>
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <p className="text-sm font-semibold text-slate-500">
-              Debt Payoff
-            </p>
+<button
+  type="button"
+  onClick={() => {
+    if (overdueBills > 0 || dueSoonBills > 0) {
+      navigate("/bills");
+    } else if (debts.length > 0) {
+      navigate("/debts");
+    } else {
+      navigate("/calendar");
+    }
+  }}
+  className="w-full text-left"
+>
+  <Card>
+    <p className="text-sm font-semibold text-slate-500">
+      What's Next
+    </p>
 
-            <h2 className="mt-1 text-2xl font-bold text-slate-900">
-              {formatCurrency(debtPlan.totalStartingDebt)}
-            </h2>
+    {overdueBills > 0 ? (
+      <>
+        <h2 className="mt-2 text-xl font-bold text-red-600">
+          🔴 {overdueBills}{" "}
+          {overdueBills === 1 ? "bill is" : "bills are"} overdue
+        </h2>
 
-            <p className="mt-1 text-sm text-slate-500">
-              Total debt remaining
-            </p>
-          </div>
+        <p className="mt-1 text-sm text-slate-500">
+          Tap to review your overdue bills.
+        </p>
+      </>
+    ) : dueSoonBills > 0 ? (
+      <>
+        <h2 className="mt-2 text-xl font-bold text-orange-600">
+          🟠 {dueSoonBills}{" "}
+          {dueSoonBills === 1 ? "bill is" : "bills are"} due soon
+        </h2>
 
-          <div className="rounded-full bg-blue-100 px-3 py-1 text-sm font-bold text-blue-700">
-            Avalanche
-          </div>
-        </div>
+        <p className="mt-1 text-sm text-slate-500">
+          Tap to review your upcoming payments.
+        </p>
+      </>
+    ) : debts.length > 0 ? (
+      <>
+        <h2 className="mt-2 text-xl font-bold text-blue-600">
+          🎯 Stay focused on your debt
+        </h2>
 
-        <div className="mt-5 grid grid-cols-2 gap-3">
-          <div className="rounded-xl bg-slate-50 p-3">
-            <p className="text-xs font-semibold text-slate-500">
-              Minimum Payments
-            </p>
+        <p className="mt-1 text-sm text-slate-500">
+          Tap to review your debts.
+        </p>
+      </>
+    ) : (
+      <>
+        <h2 className="mt-2 text-xl font-bold text-green-600">
+          🟢 You're on track
+        </h2>
 
-            <p className="mt-1 font-bold text-slate-900">
-              {formatCurrency(summary.totalDebtPayments)}
-            </p>
-
-            <p className="text-xs text-slate-500">
-              per month
-            </p>
-          </div>
-
-          <div className="rounded-xl bg-slate-50 p-3">
-            <p className="text-xs font-semibold text-slate-500">
-              Extra Payment
-            </p>
-
-            <p className="mt-1 font-bold text-blue-600">
-              {formatCurrency(debtPlan.extraMonthlyPayment)}
-            </p>
-
-            <p className="text-xs text-slate-500">
-              per month
-            </p>
-          </div>
-        </div>
-
-        <div className="mt-4 rounded-xl bg-green-50 p-4">
-          <p className="text-xs font-semibold text-green-700">
-            Estimated Debt-Free Date
-          </p>
-
-          <p className="mt-1 text-xl font-bold text-green-700">
-            {debtPlan.payoffDate
-              ? new Date(
-                  `${debtPlan.payoffDate}T12:00:00`
-                ).toLocaleDateString("en-US", {
-                  month: "long",
-                  year: "numeric",
-                })
-              : "Add a debt to get started"}
-          </p>
-        </div>
-      </Card>
+        <p className="mt-1 text-sm text-slate-500">
+          Tap to review your calendar.
+        </p>
+      </>
+    )}
+  </Card>
+</button>
 
       <AddBillModal
         open={isAddBillOpen}
