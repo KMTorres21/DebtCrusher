@@ -108,6 +108,8 @@ const weightedAverageAPR =
   />
 </div>
 
+ {/* Progress Bar */}
+
       <Button
         type="button"
         onClick={() =>
