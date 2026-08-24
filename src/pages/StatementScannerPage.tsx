@@ -427,7 +427,7 @@ const handleScan = async () => {
     />
     <AddDebtModal
       open={debtPrefill !== null}
-      prefill={debtPrefill}
+      prefill={debtPrefill ?? undefined}
       onClose={() => setDebtPrefill(null)}
       onSave={(debt) => {
         addDebt(debt);
