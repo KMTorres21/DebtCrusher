@@ -1,8 +1,11 @@
 import { ChangeEvent, useState } from "react";
 import { Bill } from "../types/Bill";
+import { Debt } from "../types/Debt";
+import { useDebts } from "../hooks/useDebts";
 import { useBills } from "../hooks/useBills";
 import { formatCurrency } from "../utils/formatCurrency";
 import AddBillModal from "../components/bills/AddBillModal";
+import AddDebtModal from "../components/debts/AddDebtModal";
 
 interface ExtractedBill extends Bill {
   confidence: number;
@@ -12,12 +15,13 @@ interface ExtractedBill extends Bill {
 
 export default function StatementScannerPage() {
   const { addBill } = useBills();
-
+  const { addDebt } = useDebts();
   const [file, setFile] = useState<File | null>(null);
   const [isScanning, setIsScanning] = useState(false);
   const [hasScanned, setHasScanned] = useState(false);
   const [bills, setBills] = useState<ExtractedBill[]>([]);
   const [editingBill, setEditingBill] = useState<ExtractedBill | null>(null);
+  const [debtPrefill, setDebtPrefill] = useState<Partial<Debt> | null>(null);
 
   const handleFileChange = (
     event: ChangeEvent<HTMLInputElement>
@@ -148,6 +152,19 @@ const handleScan = async () => {
   };
   const handleEditBill = (bill: ExtractedBill) => {
     setEditingBill(bill);
+  };
+  const handleAddDebt = (bill: ExtractedBill) => {
+    setDebtPrefill({
+      name: bill.name,
+      type: "Credit Card",
+      interestRate:
+        typeof bill.apr === "number"
+          ? bill.apr
+          : undefined,
+      minimumPayment: bill.amount,
+      dueDate: bill.dueDate,
+      notes: bill.notes,
+    });
   };
   const handleSaveEditBill = (updatedBill: Bill) => {
     setBills((current) =>
@@ -300,90 +317,84 @@ const handleScan = async () => {
             </div>
           ) : (
             <>
-   {bills.map((bill) => (
-  <div
-    key={bill.id}
-    className={`rounded-2xl border-2 bg-white p-5 shadow-sm transition ${
-      bill.selected
-        ? "border-blue-500"
-        : "border-slate-200"
-    }`}
-  >
-    {/* Bill Header */}
-    <div className="flex items-start gap-4">
-      {/* Checkbox */}
-      <input
-        type="checkbox"
-        checked={bill.selected}
-        onChange={() => toggleBill(bill.id)}
-        className="mt-1 h-5 w-5 shrink-0"
-      />
+              {bills.map((bill) => (
+                <div
+                  key={bill.id}
+                  className={`rounded-2xl border-2 bg-white p-5 shadow ${
+                    bill.selected
+                      ? "border-blue-500"
+                      : "border-slate-200"
+                  }`}
+                >
+                  <div className="flex items-start gap-4">
+                    <input
+                      type="checkbox"
+                      checked={bill.selected}
+                      onChange={() =>
+                        toggleBill(bill.id)
+                      }
+                      className="mt-1 h-5 w-5"
+                    />
 
-      {/* Main Information */}
-      <div className="min-w-0 flex-1">
-        <div className="flex items-start justify-between gap-4">
-          <div className="min-w-0">
-            <h3 className="text-lg font-bold text-slate-900">
-              {bill.name}
-            </h3>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <h3 className="font-bold">
+                            {bill.name}
+                          </h3>
 
-            <p className="mt-1 text-sm text-slate-500">
-              Due {bill.dueDate}
-            </p>
-          </div>
+                          <p className="mt-1 text-sm text-slate-500">
+                            Due {bill.dueDate}
+                          </p>
+                        </div>
 
-          <div className="shrink-0 text-right">
-            <p className="text-xl font-bold text-slate-900">
-              {formatCurrency(bill.amount)}
-            </p>
-          </div>
+                        <div className="text-right font-bold">
+                          {formatCurrency(bill.amount)}
+                        </div>
+                      </div>
+
+                <div className="mt-4 flex flex-wrap gap-2">
+                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold">
+                 {bill.category}
+                </span>
+
+                {bill.recurring && (
+               <span className="rounded-full bg-purple-100 px-3 py-1 text-xs font-semibold text-purple-700">
+                Recurring
+               </span>
+                )}
+
+               <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
+                 {bill.confidence}% confidence
+                 {bill.apr !== null && bill.apr !== undefined && (
+                   <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700">
+                 {bill.apr.toFixed(2)}% APR
+                   </span>
+                 )}
+                  </span>
+
+                <button
+                  type="button"
+                  onClick={() => handleEditBill(bill)}
+                  className="mt-3 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                >
+                  Edit Bill
+                </button>
+                {bill.category === "Credit Card"} && (
+                  <button
+                    type="button"
+                    onClick={() => handleAddDebt(bill)}
+                    className="mt-2 w-full rounded-xl bg-orange-50 px-4 py-3 text-sm font-semibold text-orange-700 transition hover:bg-orange-100"
+                  >
+                    Add as Debt
+                  </button>
+                )}
+              </div>
+            </div>
+           </div>
         </div>
+              ))}
 
-        {/* Information Badges */}
-        <div className="mt-4 flex flex-wrap gap-2">
-          <span className="rounded-full bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-700">
-            {bill.category}
-          </span>
-
-          {bill.recurring && (
-            <span className="rounded-full bg-purple-100 px-3 py-1.5 text-xs font-semibold text-purple-700">
-              ↻ Recurring
-            </span>
-          )}
-
-          <span className="rounded-full bg-green-100 px-3 py-1.5 text-xs font-semibold text-green-700">
-            {bill.confidence}% confidence
-          </span>
-
-          {bill.apr !== null &&
-            typeof bill.apr === "number" && (
-              <span className="rounded-full bg-blue-100 px-3 py-1.5 text-xs font-semibold text-blue-700">
-                ↗ {bill.apr.toFixed(2)}% APR
-              </span>
-            )}
-        </div>
-
-        {/* Notes */}
-        {bill.notes && (
-          <div className="mt-4 rounded-xl bg-slate-50 px-4 py-3">
-            <p className="text-sm text-slate-600">
-              {bill.notes}
-            </p>
-          </div>
-        )}
-
-        {/* Edit Button */}
-        <button
-          type="button"
-          onClick={() => handleEditBill(bill)}
-          className="mt-4 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-        >
-          Edit Bill
-        </button>
-      </div>
-    </div>
-  </div>
-))}
               <button
                 type="button"
                 onClick={addSelectedBills}
