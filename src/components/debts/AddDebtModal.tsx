@@ -7,6 +7,7 @@ import Button from "../common/Button";
 interface AddDebtModalProps {
   open: boolean;
   debt?: Debt | null;
+  prefill?: Partial<Debt>;
   onClose: () => void;
   onSave: (debt: Debt) => void;
 }
@@ -25,6 +26,7 @@ const debtTypes: DebtType[] = [
 export default function AddDebtModal({
   open,
   debt,
+  prefill,
   onClose,
   onSave,
 }: AddDebtModalProps) {
