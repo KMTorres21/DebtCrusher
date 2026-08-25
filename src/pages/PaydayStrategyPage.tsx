@@ -2,7 +2,7 @@ import { Bill } from "../types/Bill";
 import { Income } from "../types/Income";
 import {
   getBillOccurrences,
-} from "./calendarOccurrences";
+} from "../utils/calendarOccurrences";
 
 export interface PaydayBill {
   bill: Bill;
