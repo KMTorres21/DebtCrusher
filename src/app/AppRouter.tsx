@@ -4,6 +4,7 @@ import TimelinePage from "../pages/TimelinePage";
 import DashboardPage from "../pages/DashboardPage";
 import BillsPage from "../pages/BillsPage";
 import IncomePage from "../pages/IncomePage";
+import PaydayStrategyPage from "../pages/PaydayStrategyPage";
 import DebtsPage from "../pages/DebtsPage";
 import DebtPlannerPage from "../pages/DebtPlannerPage";
 import SettingsPage from "../pages/SettingsPage";
@@ -21,6 +22,7 @@ export default function AppRouter() {
           <Route path="/income" element={<IncomePage />} />
           <Route path="/debts" element={<DebtsPage />} />
           <Route path="/debt-planner" element={<DebtPlannerPage />} />
+          <Route path="/payday-strategy" element={<PaydayStrategyPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/timeline" element={<TimelinePage />} />
           <Route path="/calendar" element={<CalendarPage />} />
