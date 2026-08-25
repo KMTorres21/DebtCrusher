@@ -105,7 +105,11 @@ const handleScan = async () => {
             ? bill.amount
             : 0,
         apr: 
-          typeof bill.apr === "number"
+          typeof bill.apr === "number" && (
+            <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700">
+              {bill.apr.toFixed(2)}% APR
+            </span>
+          )
             ? bill.apr
             : null,
         dueDate: bill.dueDate ?? "",
