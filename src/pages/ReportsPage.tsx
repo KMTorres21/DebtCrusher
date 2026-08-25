@@ -245,7 +245,7 @@ export default function ReportsPage() {
       <StatCard
         title="Extra Payment"
         value={formatCurrency(
-          debtPlan.extraMonthlyPayment
+          extraPayment
         )}
         valueClassName="text-blue-600"
       />
