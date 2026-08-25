@@ -368,7 +368,7 @@ const handleScan = async () => {
                </span>
                 )}
 
-               <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
+               <span className="rounded-full bg-green-100px-3 py-1 text-xs font-semibold text-green-700">
                  {bill.confidence}% confidence
                  {bill.apr !== null && bill.apr !== undefined && (
                    <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700">
