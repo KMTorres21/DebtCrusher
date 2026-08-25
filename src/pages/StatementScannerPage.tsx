@@ -7,10 +7,9 @@ import { formatCurrency } from "../utils/formatCurrency";
 import AddBillModal from "../components/bills/AddBillModal";
 import AddDebtModal from "../components/debts/AddDebtModal";
 
-interface ExtractedBill extends Bill {
+interface ExtractedBill extends Omit<Bill, "apr"> {
   confidence: number;
   selected: boolean;
-  apr?: number | null;
 }
 
 export default function StatementScannerPage() {
