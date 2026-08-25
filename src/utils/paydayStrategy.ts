@@ -202,10 +202,19 @@ export function buildAllPaydayPlans(
   incomes: Income[],
   bills: Bill[]
 ): PaydayPlan[] {
+  /*
+   * First build the individual paycheck schedules.
+   * We use these only to discover all paydays and
+   * bill occurrences.
+   */
   const individualPlans = incomes.flatMap((income) =>
     buildPaydayPlan(income, bills)
   );
 
+  /*
+   * Combine paychecks that occur on the same
+   * calendar date.
+   */
   const grouped = new Map<string, PaydayPlan>();
 
   for (const plan of individualPlans) {
@@ -220,59 +229,88 @@ export function buildAllPaydayPlans(
           source: "Combined Income",
           amount: plan.amount,
         },
-        bills: [...plan.bills],
+        bills: [],
+        totalBills: 0,
+        remaining: plan.amount,
       });
 
       continue;
     }
 
-    /*
-     * Combine the income from both paychecks.
-     */
     existing.amount += plan.amount;
+  }
 
-    /*
-     * Add bills only if this exact bill occurrence
-     * has not already been added.
-     *
-     * bill.id + dueDate uniquely identifies a
-     * particular occurrence of a bill.
-     */
-    for (const bill of plan.bills) {
-      const alreadyIncluded =
-        existing.bills.some(
-          (existingBill) =>
-            existingBill.bill.id ===
-              bill.bill.id &&
-            existingBill.dueDate ===
-              bill.dueDate
-        );
+  const combinedPlans = Array.from(
+    grouped.values()
+  ).sort((a, b) =>
+    a.payday.localeCompare(b.payday)
+  );
 
-      if (!alreadyIncluded) {
-        existing.bills.push(bill);
+  /*
+   * Collect every unique bill occurrence from
+   * the individual plans.
+   *
+   * The same bill may have appeared in multiple
+   * income schedules, so deduplicate by:
+   *
+   * bill ID + due date
+   */
+  const billOccurrences = new Map<
+    string,
+    PaydayBill
+  >();
+
+  for (const plan of individualPlans) {
+    for (const item of plan.bills) {
+      const key = `${item.bill.id}-${item.dueDate}`;
+
+      if (!billOccurrences.has(key)) {
+        billOccurrences.set(key, item);
+      }
+    }
+  }
+
+  /*
+   * Assign each bill occurrence to exactly ONE
+   * combined paycheck.
+   *
+   * Preferred paycheck:
+   *   1. Paycheck on the due date
+   *   2. Otherwise latest paycheck before due date
+   */
+  for (const item of billOccurrences.values()) {
+    const dueDate = parseDate(item.dueDate);
+
+    let assignedPlan: PaydayPlan | undefined;
+
+    for (const plan of combinedPlans) {
+      const payday = parseDate(plan.payday);
+
+      if (payday <= dueDate) {
+        assignedPlan = plan;
       }
     }
 
-    existing.bills.sort((a, b) =>
-      a.dueDate.localeCompare(b.dueDate)
-    );
+    if (!assignedPlan) {
+      continue;
+    }
 
-    existing.totalBills =
-      existing.bills.reduce(
-        (sum, item) =>
-          sum + item.bill.amount,
-        0
-      );
-
-    existing.remaining =
-      existing.amount -
-      existing.totalBills;
+    assignedPlan.bills.push(item);
   }
 
-  return Array.from(grouped.values())
+  /*
+   * Recalculate totals and remaining amounts
+   * after the global bill assignment.
+   */
+  return combinedPlans
     .map((plan) => {
+      const sortedBills = [...plan.bills].sort(
+        (a, b) =>
+          a.dueDate.localeCompare(b.dueDate)
+      );
+
       const totalBills =
-        plan.bills.reduce(
+        sortedBills.reduce(
           (sum, item) =>
             sum + item.bill.amount,
           0
@@ -280,6 +318,7 @@ export function buildAllPaydayPlans(
 
       return {
         ...plan,
+        bills: sortedBills,
         totalBills,
         remaining:
           plan.amount - totalBills,
