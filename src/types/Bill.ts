@@ -15,6 +15,7 @@ export interface Bill {
   id: string;
   name: string;
   amount: number;
+  apr?: number;  
   dueDate: string;
   category: BillCategory;
   paid: boolean;
