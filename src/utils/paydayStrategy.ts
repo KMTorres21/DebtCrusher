@@ -5,6 +5,7 @@ import { getBillOccurrences } from "./calendarOccurrences";
 export interface PaydayBill {
   bill: Bill;
   dueDate: string;
+  allocatedAmount: number;
 }
 
 export interface PaydayPlan {
@@ -80,7 +81,7 @@ function getNextPayday(
   return null;
 }
 
-function getBillsBetweenDates(
+function getBillOccurrencesBetweenDates(
   bills: Bill[],
   startDate: Date,
   endDate: Date
@@ -120,6 +121,7 @@ function getBillsBetweenDates(
           results.push({
             bill,
             dueDate: occurrence,
+            allocatedAmount: 0,
           });
         }
       }
@@ -132,406 +134,225 @@ function getBillsBetweenDates(
     );
   }
 
-  return results.sort((a, b) =>
-    a.dueDate.localeCompare(b.dueDate)
-  );
+  return results;
 }
 
-export function buildPaydayPlan(
-  income: Income,
-  bills: Bill[]
-): PaydayPlan[] {
-  const firstPayday = parseDate(
-    income.nextPayDate
-  );
+function getPaydayDates(
+  incomes: Income[],
+  count = 12
+): string[] {
+  const dates = new Set<string>();
 
-  if (Number.isNaN(firstPayday.getTime())) {
-    return [];
-  }
-
-  const plans: PaydayPlan[] = [];
-
-  let payday = firstPayday;
-
-  for (let index = 0; index < 6; index++) {
-    const nextPayday = getNextPayday(
-      payday,
-      income.frequency
+  for (const income of incomes) {
+    let payday = parseDate(
+      income.nextPayDate
     );
 
-    const paydayBills =
-      nextPayday === null
-        ? []
-        : getBillsBetweenDates(
-            bills,
-            payday,
-            nextPayday
+    if (Number.isNaN(payday.getTime())) {
+      continue;
+    }
+
+    for (let index = 0; index < count; index++) {
+      dates.add(formatDate(payday));
+
+      const next = getNextPayday(
+        payday,
+        income.frequency
+      );
+
+      if (!next) {
+        break;
+      }
+
+      payday = next;
+    }
+  }
+
+  return Array.from(dates).sort();
+}
+
+function buildCombinedPaydays(
+  incomes: Income[]
+): PaydayPlan[] {
+  const dates = getPaydayDates(incomes);
+
+  return dates.map((payday) => {
+    const amount = incomes.reduce(
+      (total, income) => {
+        let current = parseDate(
+          income.nextPayDate
+        );
+
+        if (Number.isNaN(current.getTime())) {
+          return total;
+        }
+
+        for (let index = 0; index < 12; index++) {
+          if (
+            formatDate(current) === payday
+          ) {
+            return total + income.amount;
+          }
+
+          const next = getNextPayday(
+            current,
+            income.frequency
           );
 
+          if (!next) {
+            break;
+          }
+
+          current = next;
+        }
+
+        return total;
+      },
+      0
+    );
+
+    return {
+      income: {
+        id: `combined-${payday}`,
+        source: "Combined Income",
+        amount,
+        frequency: "onetime",
+        nextPayDate: payday,
+        createdAt: "",
+        updatedAt: "",
+      },
+      payday,
+      amount,
+      nextPayday: null,
+      bills: [],
+      totalBills: 0,
+      remaining: amount,
+    };
+  });
+}
+
+function allocateBills(
+  bills: Bill[],
+  paydayPlans: PaydayPlan[]
+): PaydayPlan[] {
+  const occurrences =
+    getBillOccurrencesBetweenDates(
+      bills,
+      parseDate(
+        paydayPlans[0]?.payday ??
+          formatDate(new Date())
+      ),
+      parseDate(
+        paydayPlans[
+          paydayPlans.length - 1
+        ]?.payday ??
+          formatDate(new Date())
+      )
+    );
+
+  for (const occurrence of occurrences) {
+    const dueDate = parseDate(
+      occurrence.dueDate
+    );
+
+    const eligiblePaydays =
+      paydayPlans.filter((plan) => {
+        const payday = parseDate(
+          plan.payday
+        );
+
+        return payday < dueDate;
+      });
+
+    if (eligiblePaydays.length === 0) {
+      /*
+       * If there is no paycheck before the
+       * due date, put the bill on the first
+       * available paycheck so it is not lost.
+       */
+      const firstPlan = paydayPlans.find(
+        (plan) =>
+          parseDate(plan.payday) <=
+          dueDate
+      );
+
+      if (firstPlan) {
+        firstPlan.bills.push({
+          ...occurrence,
+          allocatedAmount:
+            occurrence.bill.amount,
+        });
+      }
+
+      continue;
+    }
+
+    /*
+     * Spread the actual bill amount evenly
+     * across every paycheck before the due date.
+     *
+     * The final paycheck receives any rounding
+     * difference so the allocations always add
+     * up exactly to the bill amount.
+     */
+    const baseAmount =
+      Math.floor(
+        (occurrence.bill.amount /
+          eligiblePaydays.length) *
+          100
+      ) / 100;
+
+    let allocated = 0;
+
+    eligiblePaydays.forEach(
+      (plan, index) => {
+        const amount =
+          index ===
+          eligiblePaydays.length - 1
+            ? Math.round(
+                (occurrence.bill.amount -
+                  allocated) *
+                  100
+              ) / 100
+            : baseAmount;
+
+        allocated += amount;
+
+        plan.bills.push({
+          bill: occurrence.bill,
+          dueDate: occurrence.dueDate,
+          allocatedAmount: amount,
+        });
+      }
+    );
+  }
+
+  return paydayPlans.map((plan) => {
     const totalBills =
-      paydayBills.reduce(
+      plan.bills.reduce(
         (sum, item) =>
-          sum + item.bill.amount,
+          sum + item.allocatedAmount,
         0
       );
 
-    plans.push({
-      income,
-      payday: formatDate(payday),
-      amount: income.amount,
-      nextPayday: nextPayday
-        ? formatDate(nextPayday)
-        : null,
-      bills: paydayBills,
+    return {
+      ...plan,
       totalBills,
       remaining:
-        income.amount - totalBills,
-    });
-
-    if (!nextPayday) {
-      break;
-    }
-
-    payday = nextPayday;
-  }
-
-  return plans;
+        plan.amount - totalBills,
+    };
+  });
 }
 
 export function buildAllPaydayPlans(
   incomes: Income[],
   bills: Bill[]
 ): PaydayPlan[] {
-  /*
-   * First build the individual paycheck schedules.
-   * We use these only to discover all paydays and
-   * bill occurrences.
-   */
-  const individualPlans = incomes.flatMap((income) =>
-    buildPaydayPlan(income, bills)
+  const paydayPlans =
+    buildCombinedPaydays(incomes);
+
+  return allocateBills(
+    bills,
+    paydayPlans
   );
-
-  /*
-   * Combine paychecks that occur on the same
-   * calendar date.
-   */
-  const grouped = new Map<string, PaydayPlan>();
-
-  for (const plan of individualPlans) {
-    const existing = grouped.get(plan.payday);
-
-    if (!existing) {
-      grouped.set(plan.payday, {
-        ...plan,
-        income: {
-          ...plan.income,
-          id: `combined-${plan.payday}`,
-          source: "Combined Income",
-          amount: plan.amount,
-        },
-        bills: [],
-        totalBills: 0,
-        remaining: plan.amount,
-      });
-
-      continue;
-    }
-
-    existing.amount += plan.amount;
-  }
-
-  const combinedPlans = Array.from(
-    grouped.values()
-  ).sort((a, b) =>
-    a.payday.localeCompare(b.payday)
-  );
-
-  /*
-   * Collect every unique bill occurrence from
-   * the individual plans.
-   *
-   * The same bill may have appeared in multiple
-   * income schedules, so deduplicate by:
-   *
-   * bill ID + due date
-   */
-  const billOccurrences = new Map<
-    string,
-    PaydayBill
-  >();
-
-  for (const plan of individualPlans) {
-    for (const item of plan.bills) {
-      const key = `${item.bill.id}-${item.dueDate}`;
-
-      if (!billOccurrences.has(key)) {
-        billOccurrences.set(key, item);
-      }
-    }
-  }
-
-  /*
-   * Assign each bill occurrence to exactly ONE
-   * combined paycheck.
-   *
-   * Preferred paycheck:
-   *   1. Paycheck on the due date
-   *   2. Otherwise latest paycheck before due date
-   */
-  for (const item of billOccurrences.values()) {
-    const dueDate = parseDate(item.dueDate);
-
-    let assignedPlan: PaydayPlan | undefined;
-
-    for (const plan of combinedPlans) {
-      const payday = parseDate(plan.payday);
-
-      if (payday <= dueDate) {
-        assignedPlan = plan;
-      }
-    }
-
-    if (!assignedPlan) {
-      continue;
-    }
-
-    assignedPlan.bills.push(item);
-  }
-
-  /*
-   * Recalculate totals and remaining amounts
-   * after the global bill assignment.
-   */
-  return combinedPlans
-    .map((plan) => {
-      const sortedBills = [...plan.bills].sort(
-        (a, b) =>
-          a.dueDate.localeCompare(b.dueDate)
-      );
-
-      const totalBills =
-        sortedBills.reduce(
-          (sum, item) =>
-            sum + item.bill.amount,
-          0
-        );
-
-      return {
-        ...plan,
-        bills: sortedBills,
-        totalBills,
-        remaining:
-          plan.amount - totalBills,
-      };
-    })
-    .sort((a, b) =>
-      a.payday.localeCompare(b.payday)
-    );
-}
-
-/*Separate Large Bills*/
-  export interface PaydayFunding {
-  bill: Bill;
-  dueDate: string;
-  payday: string;
-  amount: number;
-}
-
-export function buildSinkingFundPlan(
-  bills: Bill[],
-  paydayPlans: PaydayPlan[]
-): PaydayFunding[] {
-  const funding: PaydayFunding[] = [];
-
-  for (const bill of bills) {
-    /*
-     * Find all occurrences of this bill
-     * that are represented in our projected
-     * payday plans.
-     */
-    const occurrences: PaydayBill[] = [];
-
-    for (const plan of paydayPlans) {
-      for (const item of plan.bills) {
-        if (
-          item.bill.id === bill.id &&
-          !occurrences.some(
-            (existing) =>
-              existing.dueDate ===
-              item.dueDate
-          )
-        ) {
-          occurrences.push(item);
-        }
-      }
-    }
-
-    for (const occurrence of occurrences) {
-      const dueDate = parseDate(
-        occurrence.dueDate
-      );
-
-      /*
-       * Find the previous occurrence of this
-       * recurring bill.
-       */
-      let previousDueDate: Date | null = null;
-
-      if (bill.recurring) {
-        for (const plan of paydayPlans) {
-          for (const item of plan.bills) {
-            if (
-              item.bill.id === bill.id &&
-              item.dueDate !==
-                occurrence.dueDate
-            ) {
-              const candidate =
-                parseDate(item.dueDate);
-
-              if (
-                candidate < dueDate &&
-                (
-                  previousDueDate === null ||
-                  candidate >
-                    previousDueDate
-                )
-              ) {
-                previousDueDate =
-                  candidate;
-              }
-            }
-          }
-        }
-      }
-
-      /*
-       * If we don't have a previous occurrence
-       * in the projection, use the beginning
-       * of our projected payday schedule.
-       */
-      const fundingStart =
-        previousDueDate ??
-        parseDate(
-          paydayPlans[0]?.payday ??
-            occurrence.dueDate
-        );
-
-      /*
-       * Find every paycheck available during
-       * this funding cycle.
-       */
-      const availablePaydays =
-        paydayPlans.filter((plan) => {
-          const payday = parseDate(
-            plan.payday
-          );
-
-          return (
-            payday >= fundingStart &&
-            payday < dueDate
-          );
-        });
-
-      if (availablePaydays.length === 0) {
-        continue;
-      }
-
-      /*
-       * Spread the bill evenly across the
-       * available paychecks.
-       */
-      const amountPerPaycheck =
-        occurrence.bill.amount /
-        availablePaydays.length;
-
-      for (const plan of availablePaydays) {
-        funding.push({
-          bill: occurrence.bill,
-          dueDate: occurrence.dueDate,
-          payday: plan.payday,
-          amount: amountPerPaycheck,
-        });
-      }
-    }
-  }
-
-  return funding;
-}
-
-/* Sinking Fund */
-export interface BillFunding {
-  bill: Bill;
-  dueDate: string;
-  amount: number;
-  payday: string;
-}
-
-export function buildBillFundingPlan(
-  bills: Bill[],
-  paydayPlans: PaydayPlan[]
-): BillFunding[] {
-  const funding: BillFunding[] = [];
-
-  for (const bill of bills) {
-    /*
-     * Find every occurrence of this bill
-     * represented in the current payday plan.
-     */
-    const occurrences: PaydayBill[] = [];
-
-    for (const plan of paydayPlans) {
-      for (const paydayBill of plan.bills) {
-        if (
-          paydayBill.bill.id === bill.id
-        ) {
-          occurrences.push(paydayBill);
-        }
-      }
-    }
-
-    /*
-     * Process each bill occurrence separately.
-     */
-    for (const occurrence of occurrences) {
-      const dueDate = parseDate(
-        occurrence.dueDate
-      );
-
-      /*
-       * Find paychecks occurring before
-       * this bill's due date.
-       */
-      const availablePaydays =
-        paydayPlans.filter((plan) => {
-          const payday = parseDate(
-            plan.payday
-          );
-
-          return payday < dueDate;
-        });
-
-      if (availablePaydays.length === 0) {
-        continue;
-      }
-
-      /*
-       * Spread the bill evenly across the
-       * available paychecks.
-       */
-      const amountPerPaycheck =
-        occurrence.bill.amount /
-        availablePaydays.length;
-
-      for (const plan of availablePaydays) {
-        funding.push({
-          bill: occurrence.bill,
-          dueDate: occurrence.dueDate,
-          amount: amountPerPaycheck,
-          payday: plan.payday,
-        });
-      }
-    }
-  }
-
-  return funding;
 }
