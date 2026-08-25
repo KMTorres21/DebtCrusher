@@ -27,6 +27,12 @@ function formatDisplayDate(dateString: string): string {
   });
 }
 
+function parseDate(dateString: string): Date {
+  return new Date(
+    `${dateString}T12:00:00`
+  );
+}
+
 function PaydayCard({
   plan,
 }: {
@@ -136,21 +142,91 @@ export default function PaydayStrategyPage() {
     [income, bills]
   );
 
-  const totalUpcomingBills = paydayPlans.reduce(
-    (sum, plan) =>
-      sum + plan.totalBills,
-    0
-  );
+  /*
+   * The summary cards use a 30-day window.
+   *
+   * The detailed payday strategy below still
+   * shows the full projected plan.
+   */
+  const summary = useMemo(() => {
+    const today = new Date();
 
-  const totalUpcomingIncome = paydayPlans.reduce(
-    (sum, plan) =>
-      sum + plan.amount,
-    0
-  );
+    today.setHours(0, 0, 0, 0);
 
-  const projectedRemaining =
-    totalUpcomingIncome -
-    totalUpcomingBills;
+    const cutoff = new Date(today);
+    cutoff.setDate(
+      cutoff.getDate() + 30
+    );
+
+    const upcomingPlans = paydayPlans.filter(
+      (plan) => {
+        const payday = parseDate(
+          plan.payday
+        );
+
+        return (
+          payday >= today &&
+          payday <= cutoff
+        );
+      }
+    );
+
+    const totalUpcomingIncome =
+      upcomingPlans.reduce(
+        (sum, plan) =>
+          sum + plan.amount,
+        0
+      );
+
+    /*
+     * Bills are counted only once and only if
+     * their due date falls inside the same
+     * 30-day window.
+     */
+    const upcomingBills = new Map<
+      string,
+      number
+    >();
+
+    for (const plan of paydayPlans) {
+      for (const item of plan.bills) {
+        const dueDate = parseDate(
+          item.dueDate
+        );
+
+        if (
+          dueDate >= today &&
+          dueDate <= cutoff
+        ) {
+          const key = `${item.bill.id}-${item.dueDate}`;
+
+          if (!upcomingBills.has(key)) {
+            upcomingBills.set(
+              key,
+              item.bill.amount
+            );
+          }
+        }
+      }
+    }
+
+    const totalUpcomingBills =
+      Array.from(
+        upcomingBills.values()
+      ).reduce(
+        (sum, amount) =>
+          sum + amount,
+        0
+      );
+
+    return {
+      totalUpcomingIncome,
+      totalUpcomingBills,
+      projectedRemaining:
+        totalUpcomingIncome -
+        totalUpcomingBills,
+    };
+  }, [paydayPlans]);
 
   return (
     <PageContainer>
@@ -163,7 +239,7 @@ export default function PaydayStrategyPage() {
         <StatCard
           title="Upcoming Income"
           value={formatCurrency(
-            totalUpcomingIncome
+            summary.totalUpcomingIncome
           )}
           valueClassName="text-green-600"
         />
@@ -171,7 +247,7 @@ export default function PaydayStrategyPage() {
         <StatCard
           title="Upcoming Bills"
           value={formatCurrency(
-            totalUpcomingBills
+            summary.totalUpcomingBills
           )}
           valueClassName="text-red-600"
         />
@@ -184,43 +260,50 @@ export default function PaydayStrategyPage() {
 
         <p
           className={`mt-2 text-3xl font-bold ${
-            projectedRemaining >= 0
+            summary.projectedRemaining >= 0
               ? "text-blue-600"
               : "text-red-600"
           }`}
         >
-          {formatCurrency(projectedRemaining)}
+          {formatCurrency(
+            summary.projectedRemaining
+          )}
         </p>
 
         <p className="mt-2 text-sm text-slate-500">
-          Projected income remaining after the bills
-          assigned to the upcoming paychecks.
+          Projected income remaining after
+          bills due in the next 30 days.
         </p>
       </Card>
 
       {paydayPlans.length === 0 ? (
         <Card>
           <div className="py-6 text-center">
-            <div className="text-5xl">💰</div>
+            <div className="text-5xl">
+              💰
+            </div>
 
             <h2 className="mt-4 text-xl font-bold text-slate-900">
               No upcoming paychecks
             </h2>
 
             <p className="mt-2 text-sm text-slate-500">
-              Add an income source with a valid payday
-              to build your strategy.
+              Add an income source with a
+              valid payday to build your
+              strategy.
             </p>
           </div>
         </Card>
       ) : (
         <div className="space-y-5">
-          {paydayPlans.map((plan, index) => (
-            <PaydayCard
-              key={`${plan.income.id}-${plan.payday}-${index}`}
-              plan={plan}
-            />
-          ))}
+          {paydayPlans.map(
+            (plan, index) => (
+              <PaydayCard
+                key={`${plan.income.id}-${plan.payday}-${index}`}
+                plan={plan}
+              />
+            )
+          )}
         </div>
       )}
     </PageContainer>
