@@ -261,4 +261,3 @@ export function buildAllPaydayPlans(
       a.payday.localeCompare(b.payday)
     );
 }
-}
