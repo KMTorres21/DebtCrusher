@@ -71,6 +71,9 @@ export default function DebtPlannerPage() {
   const interestSaved =
     snowballPlan.totalInterest -
     avalanchePlan.totalInterest;
+  const monthsSaved =
+    snowballPlan.totalMonths - 
+    avalanchePlan.totalMonths;
 
   if (debts.length === 0) {
     return (
@@ -272,102 +275,50 @@ export default function DebtPlannerPage() {
 
       {/* Strategy Comparison */}
       <Card>
-  <h2 className="text-lg font-bold">
-    Strategy Comparison
-  </h2>
+        <h2 className="text-lg font-bold">
+          Strategy Comparison
+        </h2>
 
-  <div className="mt-4 grid grid-cols-2 gap-3">
-    <div
-      className={`rounded-xl border-2 p-4 ${
-        strategy === "avalanche"
-          ? "border-blue-500 bg-blue-50"
-          : "border-slate-200 bg-white"
-      }`}
-    >
-      <p className="font-bold text-slate-900">
-        Avalanche
-      </p>
+        <div className="mt-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-slate-600">
+              Avalanche Interest
+            </span>
 
-      <p className="mt-3 text-sm text-slate-500">
-        Total Interest
-      </p>
+            <span className="font-bold">
+              {formatCurrency(
+                avalanchePlan.totalInterest
+              )}
+            </span>
+          </div>
 
-      <p className="font-bold text-slate-900">
-        {formatCurrency(
-          avalanchePlan.totalInterest
-        )}
-      </p>
+          <div className="flex items-center justify-between">
+            <span className="text-slate-600">
+              Snowball Interest
+            </span>
 
-      <p className="mt-2 text-sm text-slate-500">
-        Debt-Free
-      </p>
+            <span className="font-bold">
+              {formatCurrency(
+                snowballPlan.totalInterest
+              )}
+            </span>
+          </div>
 
-      <p className="font-bold text-green-600">
-        {avalanchePlan.totalMonths} months
-      </p>
-    </div>
+          <div className="border-t pt-3">
+            <div className="flex items-center justify-between">
+              <span className="font-semibold">
+                Avalanche Interest Savings
+              </span>
 
-    <div
-      className={`rounded-xl border-2 p-4 ${
-        strategy === "snowball"
-          ? "border-blue-500 bg-blue-50"
-          : "border-slate-200 bg-white"
-      }`}
-    >
-      <p className="font-bold text-slate-900">
-        Snowball
-      </p>
-
-      <p className="mt-3 text-sm text-slate-500">
-        Total Interest
-      </p>
-
-      <p className="font-bold text-slate-900">
-        {formatCurrency(
-          snowballPlan.totalInterest
-        )}
-      </p>
-
-      <p className="mt-2 text-sm text-slate-500">
-        Debt-Free
-      </p>
-
-      <p className="font-bold text-green-600">
-        {snowballPlan.totalMonths} months
-      </p>
-    </div>
-  </div>
-
-  <div className="mt-4 rounded-xl bg-green-50 p-4">
-    <p className="font-semibold text-green-800">
-      Avalanche Advantage
-    </p>
-
-    <div className="mt-2 grid grid-cols-2 gap-3">
-      <div>
-        <p className="text-xs text-green-700">
-          Interest Saved
-        </p>
-
-        <p className="font-bold text-green-800">
-          {formatCurrency(
-            Math.max(0, interestSaved)
-          )}
-        </p>
-      </div>
-
-      <div>
-        <p className="text-xs text-green-700">
-          Months Saved
-        </p>
-
-        <p className="font-bold text-green-800">
-          {Math.max(0, monthsSaved)}
-        </p>
-      </div>
-    </div>
-  </div>
-</Card>
+              <span className="font-bold text-green-600">
+                {formatCurrency(
+                  Math.max(0, interestSaved)
+                )}
+              </span>
+            </div>
+          </div>
+        </div>
+      </Card>
 
       {/* Payoff Order */}
       <Card>
