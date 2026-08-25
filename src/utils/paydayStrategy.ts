@@ -262,6 +262,135 @@ export function buildAllPaydayPlans(
     );
 }
 
+/*Separate Large Bills*/
+  export interface PaydayFunding {
+  bill: Bill;
+  dueDate: string;
+  payday: string;
+  amount: number;
+}
+
+export function buildSinkingFundPlan(
+  bills: Bill[],
+  paydayPlans: PaydayPlan[]
+): PaydayFunding[] {
+  const funding: PaydayFunding[] = [];
+
+  for (const bill of bills) {
+    /*
+     * Find all occurrences of this bill
+     * that are represented in our projected
+     * payday plans.
+     */
+    const occurrences: PaydayBill[] = [];
+
+    for (const plan of paydayPlans) {
+      for (const item of plan.bills) {
+        if (
+          item.bill.id === bill.id &&
+          !occurrences.some(
+            (existing) =>
+              existing.dueDate ===
+              item.dueDate
+          )
+        ) {
+          occurrences.push(item);
+        }
+      }
+    }
+
+    for (const occurrence of occurrences) {
+      const dueDate = parseDate(
+        occurrence.dueDate
+      );
+
+      /*
+       * Find the previous occurrence of this
+       * recurring bill.
+       */
+      let previousDueDate: Date | null = null;
+
+      if (bill.recurring) {
+        for (const plan of paydayPlans) {
+          for (const item of plan.bills) {
+            if (
+              item.bill.id === bill.id &&
+              item.dueDate !==
+                occurrence.dueDate
+            ) {
+              const candidate =
+                parseDate(item.dueDate);
+
+              if (
+                candidate < dueDate &&
+                (
+                  previousDueDate === null ||
+                  candidate >
+                    previousDueDate
+                )
+              ) {
+                previousDueDate =
+                  candidate;
+              }
+            }
+          }
+        }
+      }
+
+      /*
+       * If we don't have a previous occurrence
+       * in the projection, use the beginning
+       * of our projected payday schedule.
+       */
+      const fundingStart =
+        previousDueDate ??
+        parseDate(
+          paydayPlans[0]?.payday ??
+            occurrence.dueDate
+        );
+
+      /*
+       * Find every paycheck available during
+       * this funding cycle.
+       */
+      const availablePaydays =
+        paydayPlans.filter((plan) => {
+          const payday = parseDate(
+            plan.payday
+          );
+
+          return (
+            payday >= fundingStart &&
+            payday < dueDate
+          );
+        });
+
+      if (availablePaydays.length === 0) {
+        continue;
+      }
+
+      /*
+       * Spread the bill evenly across the
+       * available paychecks.
+       */
+      const amountPerPaycheck =
+        occurrence.bill.amount /
+        availablePaydays.length;
+
+      for (const plan of availablePaydays) {
+        funding.push({
+          bill: occurrence.bill,
+          dueDate: occurrence.dueDate,
+          payday: plan.payday,
+          amount: amountPerPaycheck,
+        });
+      }
+    }
+  }
+
+  return funding;
+}
+
 /* Sinking Fund */
 export interface BillFunding {
   bill: Bill;
