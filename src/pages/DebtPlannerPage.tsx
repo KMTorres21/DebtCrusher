@@ -325,9 +325,9 @@ export default function DebtPlannerPage() {
 
               <span className="font-bold text-green-600">
   {interestSaved > 0
-    ? `{formatCurrency(interestSaved)} less interest`
+    ? `${formatCurrency(interestSaved)} less interest`
     : interestSaved < 0
-      ? `{formatCurrency(Math.abs(interestSaved))} more interest`
+      ? `${formatCurrency(Math.abs(interestSaved))} more interest`
       : "Same interest"}
 </span>
             </div>
