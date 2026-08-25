@@ -343,6 +343,9 @@ function allocateBills(
 
   /*
    * Process bills in due-date order.
+   *
+   * Earlier bills get first access to available
+   * paycheck money.
    */
   occurrences.sort((a, b) =>
     a.dueDate.localeCompare(b.dueDate)
@@ -354,10 +357,8 @@ function allocateBills(
     );
 
     /*
-     * Find the latest paycheck BEFORE the
-     * bill's due date.
-     *
-     * A paycheck on the due date is NOT used.
+     * Only paychecks BEFORE the due date
+     * can fund this bill.
      */
     const eligiblePaydays =
       paydayPlans.filter((plan) => {
@@ -373,45 +374,93 @@ function allocateBills(
     }
 
     /*
-     * The latest paycheck before the due date
-     * gets the ENTIRE bill.
+     * Work backward from the latest paycheck
+     * before the due date.
+     *
+     * This preserves the normal behavior:
+     *
+     *     one bill → one paycheck
+     *
+     * unless that paycheck cannot cover it.
      */
-    const assignedPlan =
-      eligiblePaydays[
-        eligiblePaydays.length - 1
-      ];
+    const candidates = [
+      ...eligiblePaydays,
+    ].reverse();
 
-    /*
-     * Prevent the same bill occurrence from
-     * being added more than once.
-     */
-    const alreadyAssigned =
-      assignedPlan.bills.some(
-        (item) =>
-          item.bill.id ===
-            occurrence.bill.id &&
-          item.dueDate ===
-            occurrence.dueDate
-      );
+    let remainingBill =
+      Math.round(
+        occurrence.bill.amount * 100
+      ) / 100;
 
-    if (alreadyAssigned) {
-      continue;
+    for (const plan of candidates) {
+      if (remainingBill <= 0) {
+        break;
+      }
+
+      /*
+       * Determine how much of this paycheck has
+       * already been committed to earlier bills.
+       */
+      const alreadyAllocated =
+        plan.bills.reduce(
+          (sum, item) =>
+            sum + item.allocatedAmount,
+          0
+        );
+
+      const available =
+        Math.max(
+          0,
+          Math.round(
+            (plan.amount -
+              alreadyAllocated) *
+              100
+          ) / 100
+        );
+
+      if (available <= 0) {
+        continue;
+      }
+
+      /*
+       * Normally this will be the entire bill.
+       *
+       * We only split when the paycheck cannot
+       * cover the entire remaining bill.
+       */
+      const allocation =
+        Math.min(
+          available,
+          remainingBill
+        );
+
+      const roundedAllocation =
+        Math.round(
+          allocation * 100
+        ) / 100;
+
+      plan.bills.push({
+        bill: occurrence.bill,
+        dueDate: occurrence.dueDate,
+        allocatedAmount:
+          roundedAllocation,
+      });
+
+      remainingBill =
+        Math.round(
+          (remainingBill -
+            roundedAllocation) *
+            100
+        ) / 100;
     }
-
-    assignedPlan.bills.push({
-      bill: occurrence.bill,
-      dueDate: occurrence.dueDate,
-      allocatedAmount:
-        occurrence.bill.amount,
-    });
   }
 
   /*
-   * Recalculate each paycheck's totals.
+   * Recalculate totals and remaining cash.
    */
   return paydayPlans.map(
     (plan) => {
-      const sortedBills = [
+      const bills = [
         ...plan.bills,
       ].sort((a, b) =>
         a.dueDate.localeCompare(
@@ -420,16 +469,15 @@ function allocateBills(
       );
 
       const totalBills =
-        sortedBills.reduce(
+        bills.reduce(
           (sum, item) =>
-            sum +
-            item.allocatedAmount,
+            sum + item.allocatedAmount,
           0
         );
 
       return {
         ...plan,
-        bills: sortedBills,
+        bills,
         totalBills,
         remaining:
           Math.round(
