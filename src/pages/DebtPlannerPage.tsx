@@ -130,7 +130,7 @@ export default function DebtPlannerPage() {
             onClick={() =>
               setStrategy("avalanche")
             }
-            className={`rounded-xl border-2 p-4 text-left transition {
+            className={`rounded-xl border-2 p-4 text-left transition ${
               strategy === "avalanche"
                 ? "border-blue-600 bg-blue-50"
                 : "border-slate-200"
@@ -183,7 +183,7 @@ export default function DebtPlannerPage() {
 
         <div className="relative mt-4">
           <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-            $
+            
           </span>
 
           <input
