@@ -334,10 +334,6 @@ function allocateBills(
     paydayPlans[paydayPlans.length - 1].payday
   );
 
-  /*
-   * Get every bill occurrence in the projected
-   * payday window.
-   */
   const occurrences =
     getBillOccurrencesBetweenDates(
       bills,
@@ -347,10 +343,6 @@ function allocateBills(
 
   /*
    * Process bills in due-date order.
-   *
-   * This is important because earlier bills
-   * should consume available paycheck money
-   * before later bills are considered.
    */
   occurrences.sort((a, b) =>
     a.dueDate.localeCompare(b.dueDate)
@@ -362,24 +354,10 @@ function allocateBills(
     );
 
     /*
-     * Find the previous occurrence of this
-     * recurring bill.
-     */
-    const previousDueDate =
-      getPreviousBillOccurrence(
-        occurrence.bill,
-        dueDate,
-        bills,
-        firstPayday
-      );
-
-    /*
-     * The bill can be funded only from
-     * paychecks after its previous occurrence
-     * and before its current due date.
+     * Find the latest paycheck BEFORE the
+     * bill's due date.
      *
-     * For a non-recurring bill, use every
-     * available paycheck before the due date.
+     * A paycheck on the due date is NOT used.
      */
     const eligiblePaydays =
       paydayPlans.filter((plan) => {
@@ -387,18 +365,7 @@ function allocateBills(
           plan.payday
         );
 
-        if (payday >= dueDate) {
-          return false;
-        }
-
-        if (
-          previousDueDate !== null &&
-          payday <= previousDueDate
-        ) {
-          return false;
-        }
-
-        return true;
+        return payday < dueDate;
       });
 
     if (eligiblePaydays.length === 0) {
@@ -406,96 +373,45 @@ function allocateBills(
     }
 
     /*
-     * Start with the LAST paycheck before
-     * the due date.
-     *
-     * This means a bill normally stays on
-     * the paycheck immediately preceding it.
+     * The latest paycheck before the due date
+     * gets the ENTIRE bill.
      */
-    const candidates = [
-      ...eligiblePaydays,
-    ].sort(
-      (a, b) =>
-        parseDate(b.payday).getTime() -
-        parseDate(a.payday).getTime()
-    );
-
-    let remainingBill =
-      Math.round(
-        occurrence.bill.amount * 100
-      ) / 100;
+    const assignedPlan =
+      eligiblePaydays[
+        eligiblePaydays.length - 1
+      ];
 
     /*
-     * Work backward only when necessary.
-     *
-     * If the latest paycheck has enough money,
-     * the entire bill stays on that paycheck.
-     *
-     * If it does not, use its available amount
-     * and continue backward for the remainder.
+     * Prevent the same bill occurrence from
+     * being added more than once.
      */
-    for (const plan of candidates) {
-      if (remainingBill <= 0) {
-        break;
-      }
+    const alreadyAssigned =
+      assignedPlan.bills.some(
+        (item) =>
+          item.bill.id ===
+            occurrence.bill.id &&
+          item.dueDate ===
+            occurrence.dueDate
+      );
 
-      const alreadyAllocated =
-        plan.bills.reduce(
-          (sum, item) =>
-            sum + item.allocatedAmount,
-          0
-        );
-
-      const available =
-        Math.max(
-          0,
-          plan.amount -
-            alreadyAllocated
-        );
-
-      if (available <= 0) {
-        continue;
-      }
-
-      const allocation =
-        Math.min(
-          available,
-          remainingBill
-        );
-
-      const roundedAllocation =
-        Math.round(
-          allocation * 100
-        ) / 100;
-
-      if (
-        roundedAllocation <= 0
-      ) {
-        continue;
-      }
-
-      plan.bills.push({
-        bill: occurrence.bill,
-        dueDate: occurrence.dueDate,
-        allocatedAmount:
-          roundedAllocation,
-      });
-
-      remainingBill =
-        Math.round(
-          (remainingBill -
-            roundedAllocation) *
-            100
-        ) / 100;
+    if (alreadyAssigned) {
+      continue;
     }
+
+    assignedPlan.bills.push({
+      bill: occurrence.bill,
+      dueDate: occurrence.dueDate,
+      allocatedAmount:
+        occurrence.bill.amount,
+    });
   }
 
   /*
-   * Recalculate totals after all allocations.
+   * Recalculate each paycheck's totals.
    */
   return paydayPlans.map(
     (plan) => {
-      const bills = [
+      const sortedBills = [
         ...plan.bills,
       ].sort((a, b) =>
         a.dueDate.localeCompare(
@@ -504,15 +420,16 @@ function allocateBills(
       );
 
       const totalBills =
-        bills.reduce(
+        sortedBills.reduce(
           (sum, item) =>
-            sum + item.allocatedAmount,
+            sum +
+            item.allocatedAmount,
           0
         );
 
       return {
         ...plan,
-        bills,
+        bills: sortedBills,
         totalBills,
         remaining:
           Math.round(
