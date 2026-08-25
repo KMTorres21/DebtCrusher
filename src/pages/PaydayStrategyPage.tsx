@@ -200,15 +200,6 @@ export function buildPaydayPlan(
   return plans;
 }
 
-export function buildAllPaydayPlans(
-  incomes: Income[],
-  bills: Bill[]
-): PaydayPlan[] {
-  return incomes
-    .flatMap((income) =>
-      buildPaydayPlan(income, bills)
-    )
-    .sort((a, b) =>
-      a.payday.localeCompare(b.payday)
-    );
+export default function PaydayStrategyPage() {
+ 
 }
