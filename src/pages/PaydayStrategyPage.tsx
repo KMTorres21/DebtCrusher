@@ -203,10 +203,6 @@ export default function PaydayStrategyPage() {
           <div className="py-6 text-center">
             <div className="text-5xl">💰</div>
 
-<<<<<<< HEAD
-export default function PaydayStrategyPage() {
- 
-=======
             <h2 className="mt-4 text-xl font-bold text-slate-900">
               No upcoming paychecks
             </h2>
@@ -229,5 +225,4 @@ export default function PaydayStrategyPage() {
       )}
     </PageContainer>
   );
->>>>>>> e11c86b1d043c812db38341a4646527bde6a2d3c
 }
