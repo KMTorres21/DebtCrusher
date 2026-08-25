@@ -71,6 +71,7 @@ export default function DebtPlannerPage() {
   const interestSaved =
     snowballPlan.totalInterest -
     avalanchePlan.totalInterest;
+    
   const monthsSaved =
     snowballPlan.totalMonths - 
     avalanchePlan.totalMonths;
