@@ -202,10 +202,61 @@ export function buildAllPaydayPlans(
   incomes: Income[],
   bills: Bill[]
 ): PaydayPlan[] {
-  return incomes
-    .flatMap((income) =>
-      buildPaydayPlan(income, bills)
-    )
+  const individualPlans = incomes.flatMap((income) =>
+    buildPaydayPlan(income, bills)
+  );
+
+  const grouped = new Map<string, PaydayPlan>();
+
+  for (const plan of individualPlans) {
+    const existing = grouped.get(plan.payday);
+
+    if (!existing) {
+      grouped.set(plan.payday, {
+        ...plan,
+        income: {
+          ...plan.income,
+          id: `combined-${plan.payday}`,
+          source: "Combined Income",
+          amount: plan.amount,
+        },
+        bills: [...plan.bills],
+      });
+
+      continue;
+    }
+
+    existing.amount += plan.amount;
+
+    existing.bills.push(...plan.bills);
+
+    existing.bills.sort((a, b) =>
+      a.dueDate.localeCompare(b.dueDate)
+    );
+
+    existing.totalBills = existing.bills.reduce(
+      (sum, item) => sum + item.bill.amount,
+      0
+    );
+
+    existing.remaining =
+      existing.amount - existing.totalBills;
+  }
+
+  return Array.from(grouped.values())
+    .map((plan) => ({
+      ...plan,
+      totalBills: plan.bills.reduce(
+        (sum, item) => sum + item.bill.amount,
+        0
+      ),
+      remaining:
+        plan.amount -
+        plan.bills.reduce(
+          (sum, item) => sum + item.bill.amount,
+          0
+        ),
+    }))
     .sort((a, b) =>
       a.payday.localeCompare(b.payday)
     );
