@@ -59,6 +59,26 @@ const handleScan = async () => {
       );
     }
 
+const extractedBills: ExtractedBill[] =
+  data.bills.map(
+    (
+      bill: Bill & {
+        confidence?: number;
+        apr?: number | null;
+      },
+      index: number
+    ) => ({
+      ...bill,
+      id: bill.id || `scan-${Date.now()}-${index}`,
+      apr:
+        typeof bill.apr === "number"
+          ? bill.apr
+          : undefined,
+      confidence: bill.confidence ?? 0,
+      selected: true,
+    })
+  );
+
  const extractedBills: ExtractedBill[] =
   data.bills.map(
     (
