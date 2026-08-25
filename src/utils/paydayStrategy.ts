@@ -226,37 +226,65 @@ export function buildAllPaydayPlans(
       continue;
     }
 
+    /*
+     * Combine the income from both paychecks.
+     */
     existing.amount += plan.amount;
 
-    existing.bills.push(...plan.bills);
+    /*
+     * Add bills only if this exact bill occurrence
+     * has not already been added.
+     *
+     * bill.id + dueDate uniquely identifies a
+     * particular occurrence of a bill.
+     */
+    for (const bill of plan.bills) {
+      const alreadyIncluded =
+        existing.bills.some(
+          (existingBill) =>
+            existingBill.bill.id ===
+              bill.bill.id &&
+            existingBill.dueDate ===
+              bill.dueDate
+        );
+
+      if (!alreadyIncluded) {
+        existing.bills.push(bill);
+      }
+    }
 
     existing.bills.sort((a, b) =>
       a.dueDate.localeCompare(b.dueDate)
     );
 
-    existing.totalBills = existing.bills.reduce(
-      (sum, item) => sum + item.bill.amount,
-      0
-    );
+    existing.totalBills =
+      existing.bills.reduce(
+        (sum, item) =>
+          sum + item.bill.amount,
+        0
+      );
 
     existing.remaining =
-      existing.amount - existing.totalBills;
+      existing.amount -
+      existing.totalBills;
   }
 
   return Array.from(grouped.values())
-    .map((plan) => ({
-      ...plan,
-      totalBills: plan.bills.reduce(
-        (sum, item) => sum + item.bill.amount,
-        0
-      ),
-      remaining:
-        plan.amount -
+    .map((plan) => {
+      const totalBills =
         plan.bills.reduce(
-          (sum, item) => sum + item.bill.amount,
+          (sum, item) =>
+            sum + item.bill.amount,
           0
-        ),
-    }))
+        );
+
+      return {
+        ...plan,
+        totalBills,
+        remaining:
+          plan.amount - totalBills,
+      };
+    })
     .sort((a, b) =>
       a.payday.localeCompare(b.payday)
     );
