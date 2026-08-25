@@ -66,7 +66,7 @@ function PaydayCard({
 
       <div className="mt-5">
         <h3 className="text-sm font-bold uppercase tracking-wide text-slate-500">
-          Bills to Cover
+          Bills to Fund
         </h3>
 
         {plan.bills.length === 0 ? (
@@ -92,9 +92,14 @@ function PaydayCard({
                   </p>
                 </div>
 
-                <p className="ml-4 shrink-0 font-bold text-slate-900">
-                  {formatCurrency(item.bill.amount)}
-                </p>
+                <div className="ml-4 shrink-0 text-right">
+                  <p className="font-bold text-slate-900">
+                    {formatCurrency(item.allocatedAmount)}
+                  </p>
+                  <p className="text-sm text-slate-500">
+                    Reserved
+                  </p>
+                </div>
               </div>
             ))}
           </div>
@@ -103,7 +108,7 @@ function PaydayCard({
 
       <div className="mt-5 grid grid-cols-2 gap-4">
         <StatCard
-          title="Bills to Cover"
+          title="Reserved"
           value={formatCurrency(plan.totalBills)}
           valueClassName="text-red-600"
         />
