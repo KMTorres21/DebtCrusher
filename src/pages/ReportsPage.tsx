@@ -266,6 +266,122 @@ const monthsSaved = Math.max(
         }
       />
 
+     <Card>
+  <h2 className="text-lg font-bold text-slate-900">
+    Payoff Strategy Comparison
+  </h2>
+
+  <p className="mt-1 text-sm text-slate-500">
+    Compare how each strategy affects your payoff.
+  </p>
+
+  <div className="mt-5 space-y-4">
+    <div className="rounded-xl bg-blue-50 p-4">
+      <div className="flex items-center justify-between">
+        <span className="font-bold text-slate-900">
+          Avalanche
+        </span>
+
+        <span className="text-sm font-semibold text-blue-700">
+          Highest APR first
+        </span>
+      </div>
+
+      <div className="mt-3 grid grid-cols-2 gap-3">
+        <div>
+          <p className="text-xs text-slate-500">
+            Debt-Free
+          </p>
+          <p className="font-bold">
+            {debtPlan.payoffDate
+              ? new Date(
+                  `${debtPlan.payoffDate}T12:00:00`
+                ).toLocaleDateString("en-US", {
+                  month: "short",
+                  year: "numeric",
+                })
+              : "—"}
+          </p>
+        </div>
+
+        <div>
+          <p className="text-xs text-slate-500">
+            Interest
+          </p>
+          <p className="font-bold">
+            {formatCurrency(debtPlan.totalInterest)}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div className="rounded-xl bg-slate-50 p-4">
+      <div className="flex items-center justify-between">
+        <span className="font-bold text-slate-900">
+          Snowball
+        </span>
+
+        <span className="text-sm font-semibold text-slate-600">
+          Smallest balance first
+        </span>
+      </div>
+
+      <div className="mt-3 grid grid-cols-2 gap-3">
+        <div>
+          <p className="text-xs text-slate-500">
+            Debt-Free
+          </p>
+          <p className="font-bold">
+            {snowballPlan.payoffDate
+              ? new Date(
+                  `${snowballPlan.payoffDate}T12:00:00`
+                ).toLocaleDateString("en-US", {
+                  month: "short",
+                  year: "numeric",
+                })
+              : "—"}
+          </p>
+        </div>
+
+        <div>
+          <p className="text-xs text-slate-500">
+            Interest
+          </p>
+          <p className="font-bold">
+            {formatCurrency(snowballPlan.totalInterest)}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div className="border-t pt-4">
+      <div className="flex items-center justify-between">
+        <span className="font-semibold">
+          Avalanche Interest Advantage
+        </span>
+
+        <span className="font-bold text-green-600">
+          {interestSaved > 0
+            ? `${formatCurrency(interestSaved)} less`
+            : "Same interest"}
+        </span>
+      </div>
+
+      <div className="mt-2 flex items-center justify-between">
+        <span className="font-semibold">
+          Time Advantage
+        </span>
+
+        <span className="font-bold text-blue-600">
+          {monthsSaved > 0
+            ? `${monthsSaved} months`
+            : "Same payoff time"}
+        </span>
+      </div>
+    </div>
+  </div>
+</Card>
+
       <StatCard
         title="Months"
         value={debtPlan.totalMonths}
