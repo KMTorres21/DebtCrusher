@@ -7,7 +7,7 @@ import { formatCurrency } from "../utils/formatCurrency";
 import AddBillModal from "../components/bills/AddBillModal";
 import AddDebtModal from "../components/debts/AddDebtModal";
 
-interface ExtractedBill extends Omit<Bill, "apr"> {
+interface ExtractedBill extends Bill{
   confidence: number;
   selected: boolean;
 }
