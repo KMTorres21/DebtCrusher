@@ -325,10 +325,12 @@ export default function DebtPlannerPage() {
               </span>
 
               <span className="font-bold text-green-600">
-                {formatCurrency(
-                  Math.max(0, interestSaved)
-                )}
-              </span>
+  {interestSaved > 0
+    ? `${formatCurrency(interestSaved)} less interest`
+    : interestSaved < 0
+      ? `${formatCurrency(Math.abs(interestSaved))} more interest`
+      : "Same interest"}
+</span>
             </div>
           </div>
         </div>
