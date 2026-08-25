@@ -17,7 +17,29 @@ export default function ReportsPage() {
   const navigate = useNavigate();
   const { bills } = useBills();
   const { debts } = useDebts();
-  const debtPlan = calculateDebtPayoff(debts, "avalanche", 250);
+  const extraPayment = 250;
+
+const debtPlan = calculateDebtPayoff(
+  debts,
+  "avalanche",
+  extraPayment
+);
+
+const snowballPlan = calculateDebtPayoff(
+  debts,
+  "snowball",
+  extraPayment
+);
+
+const interestSaved = Math.max(
+  0,
+  snowballPlan.totalInterest - debtPlan.totalInterest
+);
+
+const monthsSaved = Math.max(
+  0,
+  snowballPlan.totalMonths - debtPlan.totalMonths
+);
   const { income } = useIncome();
   const summary = calculateFinancialSummary(
     bills,
@@ -39,6 +61,15 @@ export default function ReportsPage() {
     (sum, debt) => sum + debt.minimumPayment,
     0
   );
+
+  const weightedApr =
+  totalDebt > 0
+    ? debts.reduce(
+        (sum, debt) =>
+          sum + debt.balance * debt.interestRate,
+        0
+      ) / totalDebt
+    : 0;
 
   const debtPaidPercent =
     totalOriginalDebt > 0
@@ -132,6 +163,12 @@ export default function ReportsPage() {
           />
 
           <StatCard
+  title="Average APR"
+  value={`${weightedApr.toFixed(2)}%`}
+  valueClassName="text-blue-600"
+/>
+
+          <StatCard
             title="Monthly Minimums"
             value={formatCurrency(
               totalMinimumPayments
@@ -200,7 +237,7 @@ export default function ReportsPage() {
       </h2>
 
       <p className="mt-1 text-sm text-slate-500">
-        Avalanche strategy with $250 extra per month.
+        Avalanche strategy with {formatCurrency(extraPayment)} extra per month.
       </p>
     </div>
 
