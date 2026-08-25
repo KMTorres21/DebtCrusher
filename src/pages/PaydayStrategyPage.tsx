@@ -1,140 +1,215 @@
-import { useMemo } from "react";
-import PageContainer from "../components/common/PageContainer";
-import PageHeader from "../components/common/PageHeader";
-import Card from "../components/common/Card";
-import StatCard from "../components/common/StatCard";
+import { Bill } from "../types/Bill";
+import { Income } from "../types/Income";
+import {
+  getBillOccurrences,
+  getIncomeOccurrences,
+} from "./calendarOccurrences";
 
-import { useBills } from "../hooks/useBills";
-import { useIncome } from "../hooks/useIncome";
-import { formatCurrency } from "../utils/formatCurrency";
+export interface PaydayBill {
+  bill: Bill;
+  dueDate: string;
+}
 
-export default function PaydayStrategyPage() {
-  const { bills } = useBills();
-  const { income } = useIncome();
+export interface PaydayPlan {
+  income: Income;
+  payday: string;
+  amount: number;
+  nextPayday: string | null;
+  bills: PaydayBill[];
+  totalBills: number;
+  remaining: number;
+}
 
-  const monthlyIncome = useMemo(() => {
-    return income.reduce((total, item) => {
-      switch (item.frequency) {
-        case "weekly":
-          return total + item.amount * 52 / 12;
+function parseDate(dateString: string): Date {
+  return new Date(`${dateString}T12:00:00`);
+}
 
-        case "biweekly":
-          return total + item.amount * 26 / 12;
+function formatDate(date: Date): string {
+  return `${date.getFullYear()}-${String(
+    date.getMonth() + 1
+  ).padStart(2, "0")}-${String(
+    date.getDate()
+  ).padStart(2, "0")}`;
+}
 
-        case "semimonthly":
-          return total + item.amount * 2;
+function getNextPayday(
+  payday: Date,
+  frequency: Income["frequency"]
+): Date | null {
+  if (frequency === "onetime") {
+    return null;
+  }
 
-        case "monthly":
-          return total + item.amount;
+  if (frequency === "weekly") {
+    const next = new Date(payday);
+    next.setDate(next.getDate() + 7);
+    return next;
+  }
 
-        default:
-          return total;
-      }
-    }, 0);
-  }, [income]);
+  if (frequency === "biweekly") {
+    const next = new Date(payday);
+    next.setDate(next.getDate() + 14);
+    return next;
+  }
 
-  const monthlyBills = useMemo(() => {
-    return bills.reduce(
-      (total, bill) => total + bill.amount,
-      0
+  if (frequency === "semimonthly") {
+    const next = new Date(payday);
+    next.setDate(next.getDate() + 15);
+    return next;
+  }
+
+  if (frequency === "monthly") {
+    const originalDay = payday.getDate();
+
+    const next = new Date(
+      payday.getFullYear(),
+      payday.getMonth() + 1,
+      1
     );
-  }, [bills]);
 
-  const remainingAfterBills =
-    monthlyIncome - monthlyBills;
+    const lastDay = new Date(
+      next.getFullYear(),
+      next.getMonth() + 1,
+      0
+    ).getDate();
 
-  return (
-    <PageContainer>
-      <PageHeader
-        title="Payday Strategy"
-        subtitle="Plan which bills get paid from each paycheck."
-      />
+    next.setDate(
+      Math.min(originalDay, lastDay)
+    );
 
-      <div className="grid grid-cols-2 gap-4">
-        <StatCard
-          title="Monthly Income"
-          value={formatCurrency(monthlyIncome)}
-          valueClassName="text-green-600"
-        />
+    return next;
+  }
 
-        <StatCard
-          title="Monthly Bills"
-          value={formatCurrency(monthlyBills)}
-          valueClassName="text-red-600"
-        />
-      </div>
+  return null;
+}
 
-      <Card>
-        <h2 className="text-lg font-bold text-slate-900">
-          Available After Bills
-        </h2>
+function getBillsBetweenDates(
+  bills: Bill[],
+  startDate: Date,
+  endDate: Date
+): PaydayBill[] {
+  const results: PaydayBill[] = [];
 
-        <p
-          className={`mt-2 text-3xl font-bold ${
-            remainingAfterBills >= 0
-              ? "text-blue-600"
-              : "text-red-600"
-          }`}
-        >
-          {formatCurrency(remainingAfterBills)}
-        </p>
-
-        <p className="mt-2 text-sm text-slate-500">
-          This is the amount remaining after the
-          currently listed bills.
-        </p>
-      </Card>
-
-      <Card>
-        <h2 className="text-lg font-bold text-slate-900">
-          Bill Payment Schedule
-        </h2>
-
-        <p className="mt-2 text-sm text-slate-500">
-          Your paycheck-to-bill assignments will appear
-          here.
-        </p>
-
-        {bills.length === 0 ? (
-          <div className="mt-5 rounded-xl bg-slate-50 p-4 text-center">
-            <p className="font-semibold text-slate-700">
-              No bills added yet.
-            </p>
-
-            <p className="mt-1 text-sm text-slate-500">
-              Add bills to build your payday strategy.
-            </p>
-          </div>
-        ) : (
-          <div className="mt-5 space-y-3">
-            {bills
-              .slice()
-              .sort((a, b) =>
-                a.dueDate.localeCompare(b.dueDate)
-              )
-              .map((bill) => (
-                <div
-                  key={bill.id}
-                  className="flex items-center justify-between rounded-xl bg-slate-50 p-4"
-                >
-                  <div>
-                    <p className="font-semibold text-slate-900">
-                      {bill.name}
-                    </p>
-
-                    <p className="text-sm text-slate-500">
-                      Due {bill.dueDate}
-                    </p>
-                  </div>
-
-                  <p className="font-bold text-slate-900">
-                    {formatCurrency(bill.amount)}
-                  </p>
-                </div>
-              ))}
-          </div>
-        )}
-      </Card>
-    </PageContainer>
+  let cursor = new Date(
+    startDate.getFullYear(),
+    startDate.getMonth(),
+    1
   );
+
+  const lastMonth = new Date(
+    endDate.getFullYear(),
+    endDate.getMonth(),
+    1
+  );
+
+  while (cursor <= lastMonth) {
+    const year = cursor.getFullYear();
+    const month = cursor.getMonth();
+
+    for (const bill of bills) {
+      const occurrences = getBillOccurrences(
+        bill,
+        year,
+        month
+      );
+
+      for (const occurrence of occurrences) {
+        const dueDate = parseDate(occurrence);
+
+        if (
+          dueDate > startDate &&
+          dueDate <= endDate
+        ) {
+          results.push({
+            bill,
+            dueDate: occurrence,
+          });
+        }
+      }
+    }
+
+    cursor = new Date(
+      year,
+      month + 1,
+      1
+    );
+  }
+
+  return results.sort((a, b) =>
+    a.dueDate.localeCompare(b.dueDate)
+  );
+}
+
+export function buildPaydayPlan(
+  income: Income,
+  bills: Bill[]
+): PaydayPlan[] {
+  const firstPayday = parseDate(
+    income.nextPayDate
+  );
+
+  if (Number.isNaN(firstPayday.getTime())) {
+    return [];
+  }
+
+  const plans: PaydayPlan[] = [];
+
+  let payday = firstPayday;
+
+  for (let index = 0; index < 6; index++) {
+    const nextPayday = getNextPayday(
+      payday,
+      income.frequency
+    );
+
+    const paydayBills =
+      nextPayday === null
+        ? []
+        : getBillsBetweenDates(
+            bills,
+            payday,
+            nextPayday
+          );
+
+    const totalBills =
+      paydayBills.reduce(
+        (sum, item) =>
+          sum + item.bill.amount,
+        0
+      );
+
+    plans.push({
+      income,
+      payday: formatDate(payday),
+      amount: income.amount,
+      nextPayday: nextPayday
+        ? formatDate(nextPayday)
+        : null,
+      bills: paydayBills,
+      totalBills,
+      remaining:
+        income.amount - totalBills,
+    });
+
+    if (!nextPayday) {
+      break;
+    }
+
+    payday = nextPayday;
+  }
+
+  return plans;
+}
+
+export function buildAllPaydayPlans(
+  incomes: Income[],
+  bills: Bill[]
+): PaydayPlan[] {
+  return incomes
+    .flatMap((income) =>
+      buildPaydayPlan(income, bills)
+    )
+    .sort((a, b) =>
+      a.payday.localeCompare(b.payday)
+    );
 }
