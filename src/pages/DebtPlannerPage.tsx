@@ -227,7 +227,7 @@ export default function DebtPlannerPage() {
       </Card>
 
       {/* Summary */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <StatCard
           title="Total Debt"
           value={formatCurrency(
