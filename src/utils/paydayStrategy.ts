@@ -262,5 +262,81 @@ export function buildAllPaydayPlans(
     );
 
     {/* Sinking Fund */}
+export interface BillFunding {
+  bill: Bill;
+  dueDate: string;
+  amount: number;
+  payday: string;
+}
+
+export function buildBillFundingPlan(
+  bills: Bill[],
+  paydayPlans: PaydayPlan[]
+): BillFunding[] {
+  const funding: BillFunding[] = [];
+
+  for (const bill of bills) {
+    /*
+     * Find every occurrence of this bill
+     * represented in the current payday plan.
+     */
+    const occurrences: PaydayBill[] = [];
+
+    for (const plan of paydayPlans) {
+      for (const paydayBill of plan.bills) {
+        if (
+          paydayBill.bill.id === bill.id
+        ) {
+          occurrences.push(paydayBill);
+        }
+      }
+    }
+
+    /*
+     * Process each bill occurrence separately.
+     */
+    for (const occurrence of occurrences) {
+      const dueDate = parseDate(
+        occurrence.dueDate
+      );
+
+      /*
+       * Find paychecks occurring before
+       * this bill's due date.
+       */
+      const availablePaydays =
+        paydayPlans.filter((plan) => {
+          const payday = parseDate(
+            plan.payday
+          );
+
+          return payday < dueDate;
+        });
+
+      if (availablePaydays.length === 0) {
+        continue;
+      }
+
+      /*
+       * Spread the bill evenly across the
+       * available paychecks.
+       */
+      const amountPerPaycheck =
+        occurrence.bill.amount /
+        availablePaydays.length;
+
+      for (const plan of availablePaydays) {
+        funding.push({
+          bill: occurrence.bill,
+          dueDate: occurrence.dueDate,
+          amount: amountPerPaycheck,
+          payday: plan.payday,
+        });
+      }
+    }
+  }
+
+  return funding;
+}
     
 }
