@@ -338,4 +338,4 @@ export function buildBillFundingPlan(
   }
 
   return funding;
-}}
+}
