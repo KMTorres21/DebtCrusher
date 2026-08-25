@@ -1,4 +1,6 @@
-import { useMemo, useState } from "react";
+import { useEffect,
+         useMemo, 
+         useState } from "react";
 import { useDebts } from "../hooks/useDebts";
 import {
   calculateDebtPayoff,
@@ -22,13 +24,20 @@ export default function DebtPlannerPage() {
     useState<PayoffStrategy>("avalanche");
 
   const [extraPayment, setExtraPayment] =
-    useState("250");
+    useState("0");
 
   const extraAmount = Math.max(0, Number(extraPayment) || 0);
   const summary = calculateFinancialSummary(bills, debts, income);
   const availableAfterObligations = summary.remainingCash;
   const maxExtraPayment = Math.max(0,
     Math.round(availableAfterObligations * 100) / 100);
+    useEffect(() => {
+      const currentAmount =
+        Number(extraPayment) || 0;
+      if (currentAmount > maxExtraPayment) {
+        setExtraPayment(String(extraPayment));
+      } 
+    }, [maxExtraPayment, extraPayment]);
   const plan = useMemo(
     () =>
       calculateDebtPayoff(
