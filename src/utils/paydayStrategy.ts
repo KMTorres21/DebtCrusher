@@ -260,8 +260,9 @@ export function buildAllPaydayPlans(
     .sort((a, b) =>
       a.payday.localeCompare(b.payday)
     );
+}
 
-    /* Sinking Fund */
+/* Sinking Fund */
 export interface BillFunding {
   bill: Bill;
   dueDate: string;
@@ -337,4 +338,4 @@ export function buildBillFundingPlan(
   }
 
   return funding;
-}
+}}
