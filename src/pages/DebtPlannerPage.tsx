@@ -194,17 +194,18 @@ export default function DebtPlannerPage() {
             step="25"
             value={extraPayment}
             onChange={(event) => {
-              const value = event.target.value;
-
+              const value =
+              event.target.value;
+              
               if (value === "") {
                 setExtraPayment("");
-                return;
+              return;
               }
-
               const numericValue = Number(value);
-              setExtraPayment(
-                String(Math.min(Math.max(0, numericValue), maxExtraPayment)),
-              );
+              setExtraPayment((String(Math.min(Math.max(0, numericValue), maxExtraPayment
+            )
+          )
+        );
               }}
             className="w-full rounded-xl border border-slate-200 py-3 pl-8 pr-4 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
           />
@@ -320,7 +321,7 @@ export default function DebtPlannerPage() {
           <div className="border-t pt-3">
             <div className="flex items-center justify-between">
               <span className="font-semibold">
-                Avalanche Interest Savings
+                Avalanche Advantage
               </span>
 
               <span className="font-bold text-green-600">
