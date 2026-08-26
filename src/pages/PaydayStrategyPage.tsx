@@ -15,19 +15,26 @@ import {
 
 import { formatCurrency } from "../utils/formatCurrency";
 
-function formatDisplayDate(dateString: string): string {
+function formatDisplayDate(
+  dateString: string
+): string {
   const date = new Date(
     `${dateString}T12:00:00`
   );
 
-  return date.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
+  return date.toLocaleDateString(
+    "en-US",
+    {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    }
+  );
 }
 
-function parseDate(dateString: string): Date {
+function parseDate(
+  dateString: string
+): Date {
   return new Date(
     `${dateString}T12:00:00`
   );
@@ -38,7 +45,8 @@ function PaydayCard({
 }: {
   plan: PaydayPlan;
 }) {
-  const isPositive = plan.remaining >= 0;
+  const isPositive =
+    plan.remaining >= 0;
 
   return (
     <Card>
@@ -49,7 +57,9 @@ function PaydayCard({
           </p>
 
           <h2 className="mt-1 text-2xl font-bold text-slate-900">
-            {formatDisplayDate(plan.payday)}
+            {formatDisplayDate(
+              plan.payday
+            )}
           </h2>
         </div>
 
@@ -59,7 +69,9 @@ function PaydayCard({
           </p>
 
           <p className="text-xl font-bold text-green-600">
-            {formatCurrency(plan.amount)}
+            {formatCurrency(
+              plan.amount
+            )}
           </p>
         </div>
       </div>
@@ -72,50 +84,87 @@ function PaydayCard({
         {plan.bills.length === 0 ? (
           <div className="mt-3 rounded-xl bg-slate-50 p-4">
             <p className="text-sm font-semibold text-slate-700">
-              No bills due before the next paycheck.
+              No bills need funding from this paycheck.
             </p>
           </div>
         ) : (
           <div className="mt-3 space-y-2">
-            {plan.bills.map((item, index) => (
-              <div
-                key={`${item.bill.id}-${item.dueDate}-${index}`}
-                className="flex items-center justify-between rounded-xl bg-slate-50 p-4"
-              >
-                <div className="min-w-0">
-                  <p className="font-semibold text-slate-900">
-                    {item.bill.name}
-                  </p>
+            {plan.bills.map(
+              (item, index) => {
+                const isFullyFunded =
+                  Math.abs(
+                    item.allocatedAmount -
+                      item.bill.amount
+                  ) < 0.01;
 
-                  <p className="text-sm text-slate-500">
-                    Due {formatDisplayDate(item.dueDate)}
-                  </p>
-                </div>
+                return (
+                  <div
+                    key={`${item.bill.id}-${item.dueDate}-${index}`}
+                    className="flex items-center justify-between rounded-xl bg-slate-50 p-4"
+                  >
+                    <div className="min-w-0">
+                      <p className="font-semibold text-slate-900">
+                        {item.bill.name}
+                      </p>
 
-                <div className="ml-4 shrink-0 text-right">
-                  <p className="font-bold text-slate-900">
-                    {formatCurrency(item.allocatedAmount)}
-                  </p>
-                  <p className="text-sm text-slate-500">
-                    Reserved
-                  </p>
-                </div>
-              </div>
-            ))}
+                      <p className="text-sm text-slate-500">
+                        Due{" "}
+                        {formatDisplayDate(
+                          item.dueDate
+                        )}
+                      </p>
+
+                      <p
+                        className={`mt-1 text-xs font-semibold ${
+                          isFullyFunded
+                            ? "text-green-600"
+                            : "text-amber-600"
+                        }`}
+                      >
+                        {isFullyFunded
+                          ? "Fully Funded"
+                          : "Partially Funded"}
+                      </p>
+                    </div>
+
+                    <div className="ml-4 shrink-0 text-right">
+                      <p className="font-bold text-slate-900">
+                        {formatCurrency(
+                          item.allocatedAmount
+                        )}
+                      </p>
+
+                      {!isFullyFunded && (
+                        <p className="text-xs text-slate-400">
+                          of{" "}
+                          {formatCurrency(
+                            item.bill.amount
+                          )}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                );
+              }
+            )}
           </div>
         )}
       </div>
 
       <div className="mt-5 grid grid-cols-2 gap-4">
         <StatCard
-          title="Reserved"
-          value={formatCurrency(plan.totalBills)}
+          title="Allocated"
+          value={formatCurrency(
+            plan.totalBills
+          )}
           valueClassName="text-red-600"
         />
 
         <StatCard
           title="Remaining"
-          value={formatCurrency(plan.remaining)}
+          value={formatCurrency(
+            plan.remaining
+          )}
           valueClassName={
             isPositive
               ? "text-green-600"
@@ -127,7 +176,9 @@ function PaydayCard({
       {plan.nextPayday && (
         <p className="mt-4 text-center text-xs text-slate-400">
           Next paycheck:{" "}
-          {formatDisplayDate(plan.nextPayday)}
+          {formatDisplayDate(
+            plan.nextPayday
+          )}
         </p>
       )}
     </Card>
@@ -147,34 +198,37 @@ export default function PaydayStrategyPage() {
     [income, bills]
   );
 
-  /*
-   * The summary cards use a 30-day window.
-   *
-   * The detailed payday strategy below still
-   * shows the full projected plan.
-   */
   const summary = useMemo(() => {
     const today = new Date();
 
-    today.setHours(0, 0, 0, 0);
+    today.setHours(
+      0,
+      0,
+      0,
+      0
+    );
 
-    const cutoff = new Date(today);
+    const cutoff =
+      new Date(today);
+
     cutoff.setDate(
       cutoff.getDate() + 30
     );
 
-    const upcomingPlans = paydayPlans.filter(
-      (plan) => {
-        const payday = parseDate(
-          plan.payday
-        );
+    const upcomingPlans =
+      paydayPlans.filter(
+        (plan) => {
+          const payday =
+            parseDate(
+              plan.payday
+            );
 
-        return (
-          payday >= today &&
-          payday <= cutoff
-        );
-      }
-    );
+          return (
+            payday >= today &&
+            payday <= cutoff
+          );
+        }
+      );
 
     const totalUpcomingIncome =
       upcomingPlans.reduce(
@@ -184,28 +238,34 @@ export default function PaydayStrategyPage() {
       );
 
     /*
-     * Bills are counted only once and only if
-     * their due date falls inside the same
-     * 30-day window.
+     * Count each bill occurrence
+     * only once.
      */
-    const upcomingBills = new Map<
-      string,
-      number
-    >();
+    const upcomingBills =
+      new Map<
+        string,
+        number
+      >();
 
     for (const plan of paydayPlans) {
       for (const item of plan.bills) {
-        const dueDate = parseDate(
-          item.dueDate
-        );
+        const dueDate =
+          parseDate(
+            item.dueDate
+          );
 
         if (
           dueDate >= today &&
           dueDate <= cutoff
         ) {
-          const key = `${item.bill.id}-${item.dueDate}`;
+          const key =
+            `${item.bill.id}-${item.dueDate}`;
 
-          if (!upcomingBills.has(key)) {
+          if (
+            !upcomingBills.has(
+              key
+            )
+          ) {
             upcomingBills.set(
               key,
               item.bill.amount
@@ -237,7 +297,7 @@ export default function PaydayStrategyPage() {
     <PageContainer>
       <PageHeader
         title="Payday Strategy"
-        subtitle="Plan which bills each paycheck should cover."
+        subtitle="Plan which bills each paycheck should fund."
       />
 
       <div className="grid grid-cols-2 gap-4">
@@ -265,7 +325,8 @@ export default function PaydayStrategyPage() {
 
         <p
           className={`mt-2 text-3xl font-bold ${
-            summary.projectedRemaining >= 0
+            summary.projectedRemaining >=
+            0
               ? "text-blue-600"
               : "text-red-600"
           }`}
@@ -281,7 +342,8 @@ export default function PaydayStrategyPage() {
         </p>
       </Card>
 
-      {paydayPlans.length === 0 ? (
+      {paydayPlans.length ===
+      0 ? (
         <Card>
           <div className="py-6 text-center">
             <div className="text-5xl">
@@ -293,9 +355,9 @@ export default function PaydayStrategyPage() {
             </h2>
 
             <p className="mt-2 text-sm text-slate-500">
-              Add an income source with a
-              valid payday to build your
-              strategy.
+              Add an income source with
+              a valid payday to build
+              your strategy.
             </p>
           </div>
         </Card>
