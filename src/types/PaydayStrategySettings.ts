@@ -1,5 +1,3 @@
-import { PaydayBillFundingMode } from "../utils/paydayStrategy";
-
 export type PaydayBillFundingMode =
   | "together"
   | "large-bills"
