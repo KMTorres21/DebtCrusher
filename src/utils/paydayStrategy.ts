@@ -673,7 +673,7 @@ function shouldSplitObligation(
     ) / 100;
 
   return (
-    obligation.amount >
+    obligation.amount >=
     eligibleIncome * threshold
   );
 }
