@@ -36,17 +36,11 @@ export interface PaydayPlan {
 const STORAGE_KEY =
   "debtcrusher-payday-strategy-settings";
 
-function parseDate(
-  dateString: string
-): Date {
-  return new Date(
-    `${dateString}T12:00:00`
-  );
+function parseDate(dateString: string): Date {
+  return new Date(`${dateString}T12:00:00`);
 }
 
-function formatDate(
-  date: Date
-): string {
+function formatDate(date: Date): string {
   return `${date.getFullYear()}-${String(
     date.getMonth() + 1
   ).padStart(2, "0")}-${String(
@@ -88,8 +82,7 @@ function getNextPayday(
   }
 
   if (frequency === "monthly") {
-    const originalDay =
-      payday.getDate();
+    const originalDay = payday.getDate();
 
     const next = new Date(
       payday.getFullYear(),
@@ -97,18 +90,14 @@ function getNextPayday(
       1
     );
 
-    const lastDay =
-      new Date(
-        next.getFullYear(),
-        next.getMonth() + 1,
-        0
-      ).getDate();
+    const lastDay = new Date(
+      next.getFullYear(),
+      next.getMonth() + 1,
+      0
+    ).getDate();
 
     next.setDate(
-      Math.min(
-        originalDay,
-        lastDay
-      )
+      Math.min(originalDay, lastDay)
     );
 
     return next;
@@ -121,9 +110,7 @@ function getStrategySettings():
   PaydayStrategySettings {
   try {
     const stored =
-      localStorage.getItem(
-        STORAGE_KEY
-      );
+      localStorage.getItem(STORAGE_KEY);
 
     if (!stored) {
       return {
@@ -143,26 +130,23 @@ function getStrategySettings():
 }
 
 /*
- * Same-day paychecks are combined.
+ * Build all unique paycheck dates.
+ *
+ * If multiple income sources pay on the
+ * same date, they become one combined paycheck.
  */
 function getUniquePaydayDates(
   incomes: Income[],
   count = 24
 ): string[] {
-  const dates =
-    new Set<string>();
+  const dates = new Set<string>();
 
   for (const income of incomes) {
-    let payday =
-      parseDate(
-        income.nextPayDate
-      );
+    let payday = parseDate(
+      income.nextPayDate
+    );
 
-    if (
-      Number.isNaN(
-        payday.getTime()
-      )
-    ) {
+    if (Number.isNaN(payday.getTime())) {
       continue;
     }
 
@@ -171,15 +155,12 @@ function getUniquePaydayDates(
       index < count;
       index++
     ) {
-      dates.add(
-        formatDate(payday)
-      );
+      dates.add(formatDate(payday));
 
-      const next =
-        getNextPayday(
-          payday,
-          income.frequency
-        );
+      const next = getNextPayday(
+        payday,
+        income.frequency
+      );
 
       if (!next) {
         break;
@@ -189,9 +170,7 @@ function getUniquePaydayDates(
     }
   }
 
-  return Array.from(
-    dates
-  ).sort();
+  return Array.from(dates).sort();
 }
 
 function getCombinedPaycheckAmount(
@@ -200,10 +179,9 @@ function getCombinedPaycheckAmount(
 ): number {
   return incomes.reduce(
     (total, income) => {
-      let current =
-        parseDate(
-          income.nextPayDate
-        );
+      let current = parseDate(
+        income.nextPayDate
+      );
 
       if (
         Number.isNaN(
@@ -219,9 +197,8 @@ function getCombinedPaycheckAmount(
         index++
       ) {
         if (
-          formatDate(
-            current
-          ) === paydayDate
+          formatDate(current) ===
+          paydayDate
         ) {
           return (
             total +
@@ -229,11 +206,10 @@ function getCombinedPaycheckAmount(
           );
         }
 
-        const next =
-          getNextPayday(
-            current,
-            income.frequency
-          );
+        const next = getNextPayday(
+          current,
+          income.frequency
+        );
 
         if (!next) {
           break;
@@ -252,9 +228,7 @@ function buildCombinedPaydays(
   incomes: Income[]
 ): PaydayPlan[] {
   const paydayDates =
-    getUniquePaydayDates(
-      incomes
-    );
+    getUniquePaydayDates(incomes);
 
   return paydayDates.map(
     (payday, index) => {
@@ -266,24 +240,22 @@ function buildCombinedPaydays(
 
       return {
         income: {
-          id:
-            `combined-${payday}`,
-          source:
-            "Combined Income",
+          id: `combined-${payday}`,
+          source: "Combined Income",
           amount,
-          frequency:
-            "onetime",
-          nextPayDate:
-            payday,
+          frequency: "onetime",
+          nextPayDate: payday,
           createdAt: "",
           updatedAt: "",
         },
+
         payday,
         amount,
+
         nextPayday:
-          paydayDates[
-            index + 1
-          ] ?? null,
+          paydayDates[index + 1] ??
+          null,
+
         bills: [],
         totalBills: 0,
         remaining: amount,
@@ -293,15 +265,14 @@ function buildCombinedPaydays(
 }
 
 /*
- * Convert a normal Bill occurrence
- * into a Payday obligation.
+ * Create a bill obligation.
  */
 function createBillObligation(
   bill: Bill,
   dueDate: string
 ): PaydayBill {
   return {
-    id: `${bill.id}-${dueDate}`,
+    id: `bill:${bill.id}:${dueDate}`,
     name: bill.name,
     amount: bill.amount,
     dueDate,
@@ -312,15 +283,14 @@ function createBillObligation(
 }
 
 /*
- * Create a monthly debt-payment
- * occurrence.
+ * Create a debt-payment obligation.
  */
 function createDebtObligation(
   debt: Debt,
   dueDate: string
 ): PaydayBill {
   return {
-    id: `${debt.id}-${dueDate}`,
+    id: `debt:${debt.id}:${dueDate}`,
     name: debt.name,
     amount: debt.minimumPayment,
     dueDate,
@@ -346,21 +316,15 @@ function getBillObligations(
     1
   );
 
-  const lastMonth =
-    new Date(
-      endDate.getFullYear(),
-      endDate.getMonth(),
-      1
-    );
+  const lastMonth = new Date(
+    endDate.getFullYear(),
+    endDate.getMonth(),
+    1
+  );
 
-  while (
-    cursor <= lastMonth
-  ) {
-    const year =
-      cursor.getFullYear();
-
-    const month =
-      cursor.getMonth();
+  while (cursor <= lastMonth) {
+    const year = cursor.getFullYear();
+    const month = cursor.getMonth();
 
     for (const bill of bills) {
       const occurrences =
@@ -370,13 +334,9 @@ function getBillObligations(
           month
         );
 
-      for (
-        const occurrence of occurrences
-      ) {
+      for (const occurrence of occurrences) {
         const dueDate =
-          parseDate(
-            occurrence
-          );
+          parseDate(occurrence);
 
         if (
           Number.isNaN(
@@ -422,8 +382,8 @@ function getBillObligations(
 }
 
 /*
- * Generate monthly debt minimum
- * payment occurrences.
+ * Generate monthly debt minimum-payment
+ * occurrences.
  */
 function getDebtObligations(
   debts: Debt[],
@@ -438,33 +398,23 @@ function getDebtObligations(
     1
   );
 
-  const lastMonth =
-    new Date(
-      endDate.getFullYear(),
-      endDate.getMonth(),
-      1
-    );
+  const lastMonth = new Date(
+    endDate.getFullYear(),
+    endDate.getMonth(),
+    1
+  );
 
-  while (
-    cursor <= lastMonth
-  ) {
-    const year =
-      cursor.getFullYear();
-
-    const month =
-      cursor.getMonth();
+  while (cursor <= lastMonth) {
+    const year = cursor.getFullYear();
+    const month = cursor.getMonth();
 
     for (const debt of debts) {
-      if (
-        debt.minimumPayment <= 0
-      ) {
+      if (debt.minimumPayment <= 0) {
         continue;
       }
 
       const originalDueDate =
-        parseDate(
-          debt.dueDate
-        );
+        parseDate(debt.dueDate);
 
       if (
         Number.isNaN(
@@ -477,25 +427,23 @@ function getDebtObligations(
       const originalDay =
         originalDueDate.getDate();
 
-      const lastDay =
-        new Date(
-          year,
-          month + 1,
-          0
-        ).getDate();
+      const lastDay = new Date(
+        year,
+        month + 1,
+        0
+      ).getDate();
 
       const day = Math.min(
         originalDay,
         lastDay
       );
 
-      const dueDate =
-        new Date(
-          year,
-          month,
-          day,
-          12
-        );
+      const dueDate = new Date(
+        year,
+        month,
+        day,
+        12
+      );
 
       if (
         dueDate < startDate ||
@@ -547,6 +495,14 @@ function getAllObligations(
   );
 }
 
+/*
+ * Identify the previous occurrence
+ * of the SAME obligation.
+ *
+ * We use the full obligation ID prefix
+ * instead of split("-"), which is safer
+ * when IDs contain hyphens.
+ */
 function getPreviousOccurrence(
   occurrence: PaydayBill,
   allOccurrences: PaydayBill[]
@@ -556,15 +512,29 @@ function getPreviousOccurrence(
       occurrence.dueDate
     );
 
+  const occurrenceKey =
+    occurrence.id.substring(
+      0,
+      occurrence.id.lastIndexOf(":")
+    );
+
   const previous =
     allOccurrences
       .filter(
-        (item) =>
-          item.id.split("-")[0] ===
-            occurrence.id.split("-")[0] &&
-          parseDate(
-            item.dueDate
-          ) < currentDueDate
+        (item) => {
+          const itemKey =
+            item.id.substring(
+              0,
+              item.id.lastIndexOf(":")
+            );
+
+          return (
+            itemKey === occurrenceKey &&
+            parseDate(
+              item.dueDate
+            ) < currentDueDate
+          );
+        }
       )
       .sort(
         (a, b) =>
@@ -583,6 +553,23 @@ function getPreviousOccurrence(
     : null;
 }
 
+/*
+ * Find every paycheck that can fund
+ * an obligation before it is due.
+ *
+ * IMPORTANT:
+ * The paycheck immediately before the
+ * due date is included.
+ *
+ * Example:
+ *
+ * Aug 28
+ * Sep 1
+ * Sep 11
+ * Sep 16 due date
+ *
+ * All three are eligible.
+ */
 function getEligiblePaydays(
   occurrence: PaydayBill,
   previousDueDate: Date | null,
@@ -593,27 +580,30 @@ function getEligiblePaydays(
       occurrence.dueDate
     );
 
-  const eligible: number[] =
-    [];
+  const eligible: number[] = [];
 
   for (
     let index = 0;
-    index <
-      paydayPlans.length;
+    index < paydayPlans.length;
     index++
   ) {
     const payday =
       parseDate(
-        paydayPlans[index]
-          .payday
+        paydayPlans[index].payday
       );
 
-    if (
-      payday >= dueDate
-    ) {
+    /*
+     * A paycheck on the actual due date
+     * is considered usable.
+     */
+    if (payday > dueDate) {
       break;
     }
 
+    /*
+     * Do not use money from the previous
+     * recurring obligation cycle.
+     */
     if (
       previousDueDate &&
       payday <= previousDueDate
@@ -634,12 +624,15 @@ function getEligibleIncome(
   return eligibleIndexes.reduce(
     (total, index) =>
       total +
-      paydayPlans[index]
-        .amount,
+      paydayPlans[index].amount,
     0
   );
 }
 
+/*
+ * Determine whether an obligation
+ * should be split.
+ */
 function shouldSplitObligation(
   obligation: PaydayBill,
   eligibleIndexes: number[],
@@ -666,9 +659,7 @@ function shouldSplitObligation(
       paydayPlans
     );
 
-  if (
-    eligibleIncome <= 0
-  ) {
+  if (eligibleIncome <= 0) {
     return false;
   }
 
@@ -687,6 +678,14 @@ function shouldSplitObligation(
   );
 }
 
+/*
+ * Proportionally distribute an obligation
+ * across ALL eligible paychecks.
+ *
+ * This is the important part that allows
+ * Aug 28 to participate in the Sep 16
+ * obligation.
+ */
 function allocateProportionally(
   obligation: PaydayBill,
   eligibleIndexes: number[],
@@ -694,8 +693,7 @@ function allocateProportionally(
   availableCents: number[]
 ): void {
   if (
-    eligibleIndexes.length ===
-    0
+    eligibleIndexes.length === 0
   ) {
     return;
   }
@@ -705,18 +703,74 @@ function allocateProportionally(
       obligation.amount * 100
     );
 
-  const totalIncome =
+  const totalEligibleIncome =
     getEligibleIncome(
       eligibleIndexes,
       paydayPlans
     );
 
-  if (
-    totalIncome <= 0
-  ) {
+  if (totalEligibleIncome <= 0) {
     return;
   }
 
+  /*
+   * First calculate the theoretical
+   * proportional allocations.
+   */
+  const allocations =
+    eligibleIndexes.map(
+      (index) => {
+        return Math.floor(
+          amountCents *
+            (
+              paydayPlans[index]
+                .amount /
+              totalEligibleIncome
+            )
+        );
+      }
+    );
+
+  /*
+   * Distribute the rounding cents.
+   */
+  let allocatedTotal =
+    allocations.reduce(
+      (sum, value) =>
+        sum + value,
+      0
+    );
+
+  let roundingIndex =
+    allocations.length - 1;
+
+  while (
+    allocatedTotal <
+      amountCents &&
+    roundingIndex >= 0
+  ) {
+    allocations[
+      roundingIndex
+    ] += 1;
+
+    allocatedTotal += 1;
+
+    roundingIndex--;
+
+    if (
+      roundingIndex < 0 &&
+      allocatedTotal <
+        amountCents
+    ) {
+      roundingIndex =
+        allocations.length - 1;
+    }
+  }
+
+  /*
+   * Apply allocations while respecting
+   * actual available paycheck capacity.
+   */
   let remainingCents =
     amountCents;
 
@@ -729,54 +783,37 @@ function allocateProportionally(
     const index =
       eligibleIndexes[position];
 
-    let allocationCents =
-      position ===
-      eligibleIndexes.length - 1
-        ? remainingCents
-        : Math.round(
-            amountCents *
-              (paydayPlans[index]
-                .amount /
-                totalIncome)
-          );
-
-    allocationCents =
+    const allocation =
       Math.min(
-        allocationCents,
-        remainingCents,
-        availableCents[index]
+        allocations[position],
+        availableCents[index],
+        remainingCents
       );
 
-    if (
-      allocationCents <= 0
-    ) {
+    if (allocation <= 0) {
       continue;
     }
 
-    paydayPlans[index].bills.push(
-      {
-        ...obligation,
-        allocatedAmount:
-          allocationCents / 100,
-      }
-    );
+    paydayPlans[index].bills.push({
+      ...obligation,
+      allocatedAmount:
+        allocation / 100,
+    });
 
     availableCents[index] -=
-      allocationCents;
+      allocation;
 
     remainingCents -=
-      allocationCents;
+      allocation;
   }
 
   /*
-   * If limited available funds prevented
-   * the first proportional pass from fully
-   * funding the obligation, use remaining
+   * If a paycheck did not have enough
+   * available cash, redistribute the
+   * unfunded portion across remaining
    * eligible paycheck capacity.
    */
-  if (
-    remainingCents > 0
-  ) {
+  if (remainingCents > 0) {
     for (
       let position =
         eligibleIndexes.length - 1;
@@ -787,25 +824,24 @@ function allocateProportionally(
       const index =
         eligibleIndexes[position];
 
-      if (
-        availableCents[index] <= 0
-      ) {
+      const available =
+        availableCents[index];
+
+      if (available <= 0) {
         continue;
       }
 
       const allocation =
         Math.min(
-          remainingCents,
-          availableCents[index]
+          available,
+          remainingCents
         );
 
-      paydayPlans[index].bills.push(
-        {
-          ...obligation,
-          allocatedAmount:
-            allocation / 100,
-        }
-      );
+      paydayPlans[index].bills.push({
+        ...obligation,
+        allocatedAmount:
+          allocation / 100,
+      });
 
       availableCents[index] -=
         allocation;
@@ -816,6 +852,12 @@ function allocateProportionally(
   }
 }
 
+/*
+ * Fund an obligation from the latest
+ * eligible paycheck first.
+ *
+ * This is the "Together" strategy.
+ */
 function allocateTogether(
   obligation: PaydayBill,
   eligibleIndexes: number[],
@@ -823,8 +865,7 @@ function allocateTogether(
   availableCents: number[]
 ): void {
   if (
-    eligibleIndexes.length ===
-    0
+    eligibleIndexes.length === 0
   ) {
     return;
   }
@@ -844,25 +885,24 @@ function allocateTogether(
     const index =
       eligibleIndexes[position];
 
-    if (
-      availableCents[index] <= 0
-    ) {
+    const available =
+      availableCents[index];
+
+    if (available <= 0) {
       continue;
     }
 
     const allocation =
       Math.min(
         remainingCents,
-        availableCents[index]
+        available
       );
 
-    paydayPlans[index].bills.push(
-      {
-        ...obligation,
-        allocatedAmount:
-          allocation / 100,
-      }
-    );
+    paydayPlans[index].bills.push({
+      ...obligation,
+      allocatedAmount:
+        allocation / 100,
+    });
 
     availableCents[index] -=
       allocation;
@@ -877,8 +917,7 @@ function allocateObligations(
   paydayPlans: PaydayPlan[]
 ): PaydayPlan[] {
   if (
-    paydayPlans.length ===
-    0
+    paydayPlans.length === 0
   ) {
     return [];
   }
@@ -894,6 +933,11 @@ function allocateObligations(
   const settings =
     getStrategySettings();
 
+  /*
+   * Process obligations in due-date
+   * order so earlier obligations get
+   * priority for paycheck capacity.
+   */
   for (
     const obligation of obligations
   ) {
@@ -911,20 +955,20 @@ function allocateObligations(
       );
 
     if (
-      eligibleIndexes.length ===
-      0
+      eligibleIndexes.length === 0
     ) {
       continue;
     }
 
-    if (
+    const split =
       shouldSplitObligation(
         obligation,
         eligibleIndexes,
         paydayPlans,
         settings
-      )
-    ) {
+      );
+
+    if (split) {
       allocateProportionally(
         obligation,
         eligibleIndexes,
@@ -966,9 +1010,12 @@ function allocateObligations(
 
       return {
         ...plan,
+
         bills,
+
         totalBills:
           roundedTotal,
+
         remaining:
           Math.round(
             (plan.amount -
@@ -991,12 +1038,15 @@ export function buildAllPaydayPlans(
     );
 
   if (
-    paydayPlans.length ===
-    0
+    paydayPlans.length === 0
   ) {
     return [];
   }
 
+  /*
+   * Generate obligations across the
+   * complete strategy window.
+   */
   const firstPayday =
     parseDate(
       paydayPlans[0].payday
