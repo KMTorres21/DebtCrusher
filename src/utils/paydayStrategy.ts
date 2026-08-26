@@ -18,6 +18,8 @@ export interface PaydayPlan {
   remaining: number;
 }
 
+const LARGE_BILL_THRESHOLD = 2 / 3;
+
 function parseDate(dateString: string): Date {
   return new Date(`${dateString}T12:00:00`);
 }
@@ -30,9 +32,14 @@ function formatDate(date: Date): string {
   ).padStart(2, "0")}`;
 }
 
-function addDays(date: Date, days: number): Date {
+function addDays(
+  date: Date,
+  days: number
+): Date {
   const result = new Date(date);
-  result.setDate(result.getDate() + days);
+  result.setDate(
+    result.getDate() + days
+  );
   return result;
 }
 
@@ -57,7 +64,8 @@ function getNextPayday(
   }
 
   if (frequency === "monthly") {
-    const originalDay = payday.getDate();
+    const originalDay =
+      payday.getDate();
 
     const next = new Date(
       payday.getFullYear(),
@@ -72,7 +80,10 @@ function getNextPayday(
     ).getDate();
 
     next.setDate(
-      Math.min(originalDay, lastDay)
+      Math.min(
+        originalDay,
+        lastDay
+      )
     );
 
     return next;
@@ -82,13 +93,15 @@ function getNextPayday(
 }
 
 /*
- * Get all unique paycheck dates.
- * Paychecks falling on the same calendar date
- * are combined into one paycheck.
+ * Create all unique paycheck dates.
+ *
+ * If multiple income sources pay on the
+ * same calendar date, they become one
+ * combined paycheck.
  */
 function getUniquePaydayDates(
   incomes: Income[],
-  count = 12
+  count = 24
 ): string[] {
   const dates = new Set<string>();
 
@@ -97,32 +110,45 @@ function getUniquePaydayDates(
       income.nextPayDate
     );
 
-    if (Number.isNaN(payday.getTime())) {
+    if (
+      Number.isNaN(
+        payday.getTime()
+      )
+    ) {
       continue;
     }
 
-    for (let index = 0; index < count; index++) {
-      dates.add(formatDate(payday));
-
-      const nextPayday = getNextPayday(
-        payday,
-        income.frequency
+    for (
+      let index = 0;
+      index < count;
+      index++
+    ) {
+      dates.add(
+        formatDate(payday)
       );
 
-      if (!nextPayday) {
+      const next =
+        getNextPayday(
+          payday,
+          income.frequency
+        );
+
+      if (!next) {
         break;
       }
 
-      payday = nextPayday;
+      payday = next;
     }
   }
 
-  return Array.from(dates).sort();
+  return Array.from(
+    dates
+  ).sort();
 }
 
 /*
- * Calculate the total income occurring on
- * one calendar payday.
+ * Calculate how much income occurs on
+ * a specific calendar date.
  */
 function getCombinedPaycheckAmount(
   incomes: Income[],
@@ -130,33 +156,46 @@ function getCombinedPaycheckAmount(
 ): number {
   return incomes.reduce(
     (total, income) => {
-      let current = parseDate(
-        income.nextPayDate
-      );
+      let current =
+        parseDate(
+          income.nextPayDate
+        );
 
-      if (Number.isNaN(current.getTime())) {
+      if (
+        Number.isNaN(
+          current.getTime()
+        )
+      ) {
         return total;
       }
 
-      for (let index = 0; index < 12; index++) {
+      for (
+        let index = 0;
+        index < 24;
+        index++
+      ) {
         if (
-          formatDate(current) ===
-          paydayDate
+          formatDate(
+            current
+          ) === paydayDate
         ) {
-          return total + income.amount;
+          return (
+            total +
+            income.amount
+          );
         }
 
-        const nextPayday =
+        const next =
           getNextPayday(
             current,
             income.frequency
           );
 
-        if (!nextPayday) {
+        if (!next) {
           break;
         }
 
-        current = nextPayday;
+        current = next;
       }
 
       return total;
@@ -169,7 +208,9 @@ function buildCombinedPaydays(
   incomes: Income[]
 ): PaydayPlan[] {
   const paydayDates =
-    getUniquePaydayDates(incomes);
+    getUniquePaydayDates(
+      incomes
+    );
 
   return paydayDates.map(
     (payday, index) => {
@@ -181,21 +222,32 @@ function buildCombinedPaydays(
 
       return {
         income: {
-          id: `combined-${payday}`,
-          source: "Combined Income",
+          id:
+            `combined-${payday}`,
+          source:
+            "Combined Income",
           amount,
-          frequency: "onetime",
-          nextPayDate: payday,
+          frequency:
+            "onetime",
+          nextPayDate:
+            payday,
           createdAt: "",
           updatedAt: "",
         },
+
         payday,
+
         amount,
+
         nextPayday:
-          paydayDates[index + 1] ??
-          null,
+          paydayDates[
+            index + 1
+          ] ?? null,
+
         bills: [],
+
         totalBills: 0,
+
         remaining: amount,
       };
     }
@@ -203,24 +255,16 @@ function buildCombinedPaydays(
 }
 
 /*
- * IMPORTANT:
- *
- * This function only returns bill occurrences
- * whose ACTUAL occurrence date falls inside
+ * Get actual bill occurrences inside
  * the requested date range.
- *
- * This prevents something like:
- *
- * Mortgage due Aug 1, 2027
- *
- * from appearing in an Oct 2026 paycheck.
  */
 function getBillOccurrencesBetweenDates(
   bills: Bill[],
   startDate: Date,
   endDate: Date
 ): PaydayBill[] {
-  const results: PaydayBill[] = [];
+  const results: PaydayBill[] =
+    [];
 
   let cursor = new Date(
     startDate.getFullYear(),
@@ -228,15 +272,21 @@ function getBillOccurrencesBetweenDates(
     1
   );
 
-  const lastMonth = new Date(
-    endDate.getFullYear(),
-    endDate.getMonth(),
-    1
-  );
+  const lastMonth =
+    new Date(
+      endDate.getFullYear(),
+      endDate.getMonth(),
+      1
+    );
 
-  while (cursor <= lastMonth) {
-    const year = cursor.getFullYear();
-    const month = cursor.getMonth();
+  while (
+    cursor <= lastMonth
+  ) {
+    const year =
+      cursor.getFullYear();
+
+    const month =
+      cursor.getMonth();
 
     for (const bill of bills) {
       const occurrences =
@@ -246,14 +296,14 @@ function getBillOccurrencesBetweenDates(
           month
         );
 
-      for (const occurrence of occurrences) {
+      for (
+        const occurrence of occurrences
+      ) {
         const dueDate =
-          parseDate(occurrence);
+          parseDate(
+            occurrence
+          );
 
-        /*
-         * Reject anything outside the requested
-         * projection window.
-         */
         if (
           Number.isNaN(
             dueDate.getTime()
@@ -270,15 +320,15 @@ function getBillOccurrencesBetweenDates(
         }
 
         /*
-         * Extra protection:
-         *
-         * The occurrence must actually belong
-         * to the month we asked calendarOccurrences
-         * to generate.
+         * Extra protection against a
+         * recurring occurrence being
+         * returned for the wrong month.
          */
         if (
-          dueDate.getFullYear() !== year ||
-          dueDate.getMonth() !== month
+          dueDate.getFullYear() !==
+            year ||
+          dueDate.getMonth() !==
+            month
         ) {
           continue;
         }
@@ -298,77 +348,417 @@ function getBillOccurrencesBetweenDates(
     );
   }
 
-  return results.sort((a, b) =>
-    a.dueDate.localeCompare(
-      b.dueDate
-    )
+  return results.sort(
+    (a, b) =>
+      a.dueDate.localeCompare(
+        b.dueDate
+      )
   );
 }
 
 /*
- * Find the previous occurrence of the SAME bill.
- *
- * This creates an individual funding window
- * for every recurring occurrence.
+ * Find the previous occurrence of
+ * the same bill.
  */
 function getPreviousOccurrence(
-  bill: Bill,
-  dueDate: Date,
+  occurrence: PaydayBill,
   allOccurrences: PaydayBill[]
 ): Date | null {
-  const previous = allOccurrences
-    .filter(
-      (occurrence) =>
-        occurrence.bill.id ===
-          bill.id &&
-        parseDate(
-          occurrence.dueDate
-        ) < dueDate
-    )
-    .sort(
-      (a, b) =>
-        parseDate(
-          b.dueDate
-        ).getTime() -
-        parseDate(
-          a.dueDate
-        ).getTime()
+  const currentDueDate =
+    parseDate(
+      occurrence.dueDate
     );
 
-  return previous.length > 0
-    ? parseDate(
-        previous[0].dueDate
+  const previous =
+    allOccurrences
+      .filter(
+        (item) =>
+          item.bill.id ===
+            occurrence.bill.id &&
+          parseDate(
+            item.dueDate
+          ) < currentDueDate
       )
-    : null;
+      .sort(
+        (a, b) =>
+          parseDate(
+            b.dueDate
+          ).getTime() -
+          parseDate(
+            a.dueDate
+          ).getTime()
+      );
+
+  if (
+    previous.length === 0
+  ) {
+    return null;
+  }
+
+  return parseDate(
+    previous[0].dueDate
+  );
 }
 
 /*
- * Allocate bills.
- *
- * Rules:
- *
- * 1. A bill is allocated only to paychecks
- *    BEFORE its due date.
- *
- * 2. A recurring bill occurrence has its
- *    own funding window.
- *
- * 3. Future occurrences cannot consume
- *    money from today's paycheck.
- *
- * 4. We start with the latest paycheck
- *    before the due date.
- *
- * 5. We move backward only if that paycheck
- *    doesn't have enough available money.
- *
- * 6. Same-day paychecks are already combined.
+ * Find every paycheck that can participate
+ * in funding a particular bill occurrence.
  */
+function getEligiblePaydays(
+  occurrence: PaydayBill,
+  previousDueDate: Date | null,
+  paydayPlans: PaydayPlan[]
+): number[] {
+  const dueDate =
+    parseDate(
+      occurrence.dueDate
+    );
+
+  const eligible: number[] =
+    [];
+
+  for (
+    let index = 0;
+    index < paydayPlans.length;
+    index++
+  ) {
+    const payday =
+      parseDate(
+        paydayPlans[index].payday
+      );
+
+    /*
+     * Paycheck on the due date cannot
+     * fund the bill.
+     */
+    if (
+      payday >= dueDate
+    ) {
+      break;
+    }
+
+    /*
+     * Do not use a paycheck that belongs
+     * to the previous recurring bill cycle.
+     */
+    if (
+      previousDueDate &&
+      payday <= previousDueDate
+    ) {
+      continue;
+    }
+
+    eligible.push(index);
+  }
+
+  return eligible;
+}
+
+/*
+ * Allocate a large bill proportionally
+ * across all eligible paychecks.
+ */
+function allocateProportionally(
+  occurrence: PaydayBill,
+  eligibleIndexes: number[],
+  paydayPlans: PaydayPlan[],
+  availableCents: number[]
+): void {
+  if (
+    eligibleIndexes.length ===
+    0
+  ) {
+    return;
+  }
+
+  const billCents =
+    Math.round(
+      occurrence.bill.amount *
+        100
+    );
+
+  /*
+   * Calculate the income represented by
+   * the eligible paychecks.
+   */
+  const totalEligibleIncome =
+    eligibleIndexes.reduce(
+      (sum, index) =>
+        sum +
+        paydayPlans[index]
+          .amount,
+      0
+    );
+
+  if (
+    totalEligibleIncome <= 0
+  ) {
+    return;
+  }
+
+  /*
+   * If the bill is not actually large,
+   * don't use proportional allocation.
+   */
+  if (
+    occurrence.bill.amount <=
+    totalEligibleIncome *
+      LARGE_BILL_THRESHOLD
+  ) {
+    return;
+  }
+
+  let allocatedCents = 0;
+
+  eligibleIndexes.forEach(
+    (index, position) => {
+      const paycheckAmount =
+        paydayPlans[index]
+          .amount;
+
+      /*
+       * The percentage is based on the
+       * paycheck's share of total income
+       * in this funding cycle.
+       */
+      const percentage =
+        paycheckAmount /
+        totalEligibleIncome;
+
+      let allocationCents =
+        Math.round(
+          billCents *
+            percentage
+        );
+
+      /*
+       * Never allocate more than what
+       * remains available in this paycheck.
+       */
+      allocationCents =
+        Math.min(
+          allocationCents,
+          availableCents[index]
+        );
+
+      /*
+       * Last eligible paycheck receives
+       * the remaining amount after
+       * rounding.
+       */
+      if (
+        position ===
+        eligibleIndexes.length - 1
+      ) {
+        const remainingBillCents =
+          billCents -
+          allocatedCents;
+
+        const possible =
+          Math.min(
+            remainingBillCents +
+              allocatedCents,
+            availableCents[index]
+          );
+
+        allocationCents =
+          Math.min(
+            possible,
+            remainingBillCents
+          );
+      }
+
+      if (
+        allocationCents <= 0
+      ) {
+        return;
+      }
+
+      paydayPlans[index].bills.push(
+        {
+          bill: occurrence.bill,
+          dueDate:
+            occurrence.dueDate,
+          allocatedAmount:
+            allocationCents /
+            100,
+        }
+      );
+
+      availableCents[index] -=
+        allocationCents;
+
+      allocatedCents +=
+        allocationCents;
+    }
+  );
+
+  /*
+   * If rounding or limited paycheck
+   * availability left part of the bill
+   * unfunded, fill the remainder using
+   * available eligible paychecks.
+   */
+  let remainingCents =
+    billCents -
+    eligibleIndexes.reduce(
+      (sum, index) => {
+        const allocations =
+          paydayPlans[index].bills
+            .filter(
+              (item) =>
+                item.bill.id ===
+                  occurrence.bill.id &&
+                item.dueDate ===
+                  occurrence.dueDate
+            )
+            .reduce(
+              (total, item) =>
+                total +
+                Math.round(
+                  item.allocatedAmount *
+                    100
+                ),
+              0
+            );
+
+        return sum + allocations;
+      },
+      0
+    );
+
+  if (
+    remainingCents <= 0
+  ) {
+    return;
+  }
+
+  /*
+   * Add any remaining cents starting
+   * from the latest eligible paycheck.
+   */
+  for (
+    let position =
+      eligibleIndexes.length -
+      1;
+    position >= 0 &&
+    remainingCents > 0;
+    position--
+  ) {
+    const index =
+      eligibleIndexes[position];
+
+    const available =
+      availableCents[index];
+
+    if (available <= 0) {
+      continue;
+    }
+
+    const allocation =
+      Math.min(
+        remainingCents,
+        available
+      );
+
+    paydayPlans[index].bills.push(
+      {
+        bill: occurrence.bill,
+        dueDate:
+          occurrence.dueDate,
+        allocatedAmount:
+          allocation / 100,
+      }
+    );
+
+    availableCents[index] -=
+      allocation;
+
+    remainingCents -=
+      allocation;
+  }
+}
+
+/*
+ * Normal bill allocation.
+ *
+ * Put the whole bill on the latest
+ * paycheck before the due date unless
+ * that paycheck doesn't have enough.
+ */
+function allocateNormally(
+  occurrence: PaydayBill,
+  eligibleIndexes: number[],
+  paydayPlans: PaydayPlan[],
+  availableCents: number[]
+): void {
+  if (
+    eligibleIndexes.length ===
+    0
+  ) {
+    return;
+  }
+
+  let remainingCents =
+    Math.round(
+      occurrence.bill.amount *
+        100
+    );
+
+  /*
+   * Work backward so the bill is funded
+   * as close to its due date as possible.
+   */
+  for (
+    let position =
+      eligibleIndexes.length -
+      1;
+    position >= 0 &&
+    remainingCents > 0;
+    position--
+  ) {
+    const index =
+      eligibleIndexes[position];
+
+    const available =
+      availableCents[index];
+
+    if (available <= 0) {
+      continue;
+    }
+
+    const allocation =
+      Math.min(
+        remainingCents,
+        available
+      );
+
+    paydayPlans[index].bills.push(
+      {
+        bill: occurrence.bill,
+        dueDate:
+          occurrence.dueDate,
+        allocatedAmount:
+          allocation / 100,
+      }
+    );
+
+    availableCents[index] -=
+      allocation;
+
+    remainingCents -=
+      allocation;
+  }
+}
+
 function allocateBills(
   bills: Bill[],
   paydayPlans: PaydayPlan[]
 ): PaydayPlan[] {
-  if (paydayPlans.length === 0) {
+  if (
+    paydayPlans.length ===
+    0
+  ) {
     return [];
   }
 
@@ -384,10 +774,6 @@ function allocateBills(
       ].payday
     );
 
-  /*
-   * Generate ONLY occurrences that actually
-   * exist inside the projection.
-   */
   const occurrences =
     getBillOccurrencesBetweenDates(
       bills,
@@ -396,7 +782,7 @@ function allocateBills(
     );
 
   /*
-   * Available money in each paycheck.
+   * Available paycheck money.
    */
   const availableCents =
     paydayPlans.map(
@@ -407,7 +793,7 @@ function allocateBills(
     );
 
   /*
-   * Process bills chronologically.
+   * Process occurrences in due-date order.
    */
   for (const occurrence of occurrences) {
     const dueDate =
@@ -415,162 +801,98 @@ function allocateBills(
         occurrence.dueDate
       );
 
-    /*
-     * Find the previous occurrence of this
-     * SAME bill.
-     */
     const previousDueDate =
       getPreviousOccurrence(
-        occurrence.bill,
-        dueDate,
+        occurrence,
         occurrences
       );
 
-    /*
-     * Find the latest paycheck before
-     * this bill's due date.
-     */
-    let latestEligibleIndex = -1;
+    const eligibleIndexes =
+      getEligiblePaydays(
+        occurrence,
+        previousDueDate,
+        paydayPlans
+      );
 
-    for (
-      let index = 0;
-      index < paydayPlans.length;
-      index++
-    ) {
-      const payday =
-        parseDate(
-          paydayPlans[index].payday
-        );
-
-      /*
-       * Must be BEFORE the due date.
-       */
-      if (payday >= dueDate) {
-        break;
-      }
-
-      /*
-       * For recurring bills, the paycheck
-       * must also occur AFTER the previous
-       * occurrence.
-       */
-      if (
-        previousDueDate &&
-        payday <= previousDueDate
-      ) {
-        continue;
-      }
-
-      latestEligibleIndex =
-        index;
-    }
-
-    /*
-     * No valid paycheck exists in the
-     * funding window.
-     *
-     * Do not put the bill on the due-date
-     * paycheck.
-     */
     if (
-      latestEligibleIndex === -1
+      eligibleIndexes.length ===
+      0
     ) {
       continue;
     }
 
-    let remainingCents =
-      Math.round(
-        occurrence.bill.amount * 100
+    /*
+     * Calculate the income available
+     * in this bill's funding cycle.
+     */
+    const cycleIncome =
+      eligibleIndexes.reduce(
+        (sum, index) =>
+          sum +
+          paydayPlans[index]
+            .amount,
+        0
       );
 
-    /*
-     * Work backward from the latest
-     * eligible paycheck.
-     */
-    for (
-      let index =
-        latestEligibleIndex;
-      index >= 0 &&
-      remainingCents > 0;
-      index--
-    ) {
-      const payday =
-        parseDate(
-          paydayPlans[index].payday
-        );
+    const isLargeBill =
+      occurrence.bill.amount >
+      cycleIncome *
+        LARGE_BILL_THRESHOLD;
 
-      /*
-       * Never cross the previous occurrence
-       * of a recurring bill.
-       */
-      if (
-        previousDueDate &&
-        payday <= previousDueDate
-      ) {
-        break;
-      }
-
-      const available =
-        availableCents[index];
-
-      if (available <= 0) {
-        continue;
-      }
-
-      const allocationCents =
-        Math.min(
-          remainingCents,
-          available
-        );
-
-      paydayPlans[index].bills.push({
-        bill: occurrence.bill,
-        dueDate:
-          occurrence.dueDate,
-        allocatedAmount:
-          allocationCents / 100,
-      });
-
-      availableCents[index] -=
-        allocationCents;
-
-      remainingCents -=
-        allocationCents;
+    if (isLargeBill) {
+      allocateProportionally(
+        occurrence,
+        eligibleIndexes,
+        paydayPlans,
+        availableCents
+      );
+    } else {
+      allocateNormally(
+        occurrence,
+        eligibleIndexes,
+        paydayPlans,
+        availableCents
+      );
     }
   }
 
-  /*
-   * Recalculate each paycheck.
-   */
   return paydayPlans.map(
     (plan) => {
-      const sortedBills = [
+      const billsForPlan = [
         ...plan.bills,
-      ].sort((a, b) =>
-        a.dueDate.localeCompare(
-          b.dueDate
-        )
+      ].sort(
+        (a, b) =>
+          a.dueDate.localeCompare(
+            b.dueDate
+          )
       );
 
       const totalBills =
-        sortedBills.reduce(
+        billsForPlan.reduce(
           (sum, item) =>
             sum +
             item.allocatedAmount,
           0
         );
 
+      const roundedTotal =
+        Math.round(
+          totalBills * 100
+        ) / 100;
+
       return {
         ...plan,
-        bills: sortedBills,
+
+        bills:
+          billsForPlan,
+
         totalBills:
-          Math.round(
-            totalBills * 100
-          ) / 100,
+          roundedTotal,
+
         remaining:
           Math.round(
             (plan.amount -
-              totalBills) *
+              roundedTotal) *
               100
           ) / 100,
       };
