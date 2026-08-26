@@ -684,9 +684,6 @@ function shouldSplitObligation(
  *
  * This is the "Together" strategy.
  */
-<<<<<<< HEAD
-
-=======
 function getDebtAvailableCents(
   index: number,
   paydayPlans: PaydayPlan[],
@@ -951,7 +948,6 @@ function allocateTogether(
     remainingCents -= allocation;
   }
 }
->>>>>>> 340d25519d393f808b3f4480afab12e1dbae989b
 
 function allocateObligations(
   obligations: PaydayBill[],
