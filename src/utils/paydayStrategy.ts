@@ -990,47 +990,6 @@ function allocateObligations(
         settings
       );
 
-/*Protected Amount Helper*/
-function getAvailableForDebt(
-  index: number,
-  paydayPlans: PaydayPlan[],
-  availableCents: number[],
-  settings: PaydayStrategySettings
-): number {
-  if (!settings.debtSafetyNetEnabled) {
-    return availableCents[index];
-  }
-
-  const protectedCents = Math.round(
-    settings.debtSafetyNetAmount * 100
-  );
-
-  const minimumRemaining =
-    protectedCents;
-
-  const paycheckAmountCents =
-    Math.round(
-      paydayPlans[index].amount * 100
-    );
-
-  const alreadyAllocatedCents =
-    paycheckAmountCents -
-    availableCents[index];
-
-  const remainingBeforeDebt =
-    paycheckAmountCents -
-    alreadyAllocatedCents;
-
-  return Math.max(
-    0,
-    Math.min(
-      availableCents[index],
-      remainingBeforeDebt -
-        minimumRemaining
-    )
-  );
-}
-
     if (split) {
       allocateProportionally(
         obligation,
