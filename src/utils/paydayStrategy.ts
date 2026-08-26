@@ -33,28 +33,6 @@ export interface PaydayPlan {
   remaining: number;
 }
 
-/*Payday Safety-Net Setting*/
-export type PaydayBillFundingMode =
-  | "together"
-  | "large-bills"
-  | "always-split";
-
-export interface PaydayStrategySettings {
-  billFundingMode: PaydayBillFundingMode;
-  largeBillThreshold: number;
-
-  debtSafetyNetEnabled: boolean;
-  debtSafetyNetAmount: number;
-}
-
-export const DEFAULT_PAYDAY_STRATEGY_SETTINGS: PaydayStrategySettings = {
-  billFundingMode: "large-bills",
-  largeBillThreshold: 67,
-
-  debtSafetyNetEnabled: false,
-  debtSafetyNetAmount: 500,
-};
-
 const STORAGE_KEY =
   "debtcrusher-payday-strategy-settings";
 
@@ -700,47 +678,6 @@ function shouldSplitObligation(
   );
 }
 
-/*Protected Amount Helper*/
-function getAvailableForDebt(
-  index: number,
-  paydayPlans: PaydayPlan[],
-  availableCents: number[],
-  settings: PaydayStrategySettings
-): number {
-  if (!settings.debtSafetyNetEnabled) {
-    return availableCents[index];
-  }
-
-  const protectedCents = Math.round(
-    settings.debtSafetyNetAmount * 100
-  );
-
-  const minimumRemaining =
-    protectedCents;
-
-  const paycheckAmountCents =
-    Math.round(
-      paydayPlans[index].amount * 100
-    );
-
-  const alreadyAllocatedCents =
-    paycheckAmountCents -
-    availableCents[index];
-
-  const remainingBeforeDebt =
-    paycheckAmountCents -
-    alreadyAllocatedCents;
-
-  return Math.max(
-    0,
-    Math.min(
-      availableCents[index],
-      remainingBeforeDebt -
-        minimumRemaining
-    )
-  );
-}
-
 /*
  * Proportionally distribute an obligation
  * across ALL eligible paychecks.
@@ -846,12 +783,22 @@ function allocateProportionally(
     const index =
       eligibleIndexes[position];
 
-    const allocation =
+    const availableForAllocation =
+      obligation.type === "debt"
+        ? getDebtAvailableCents(
+          index, 
+          paydayPlans, 
+          availableCents,
+          settings
+        )
+        : availableCents[index];
+
+    const allocation = 
       Math.min(
-        allocations[position],
-        availableCents[index],
-        remainingCents
-      );
+      allocations[position],
+      availableForAllocation,
+      remainingCents
+    );
 
     if (allocation <= 0) {
       continue;
@@ -888,14 +835,7 @@ function allocateProportionally(
         eligibleIndexes[position];
 
       const available =
-        obligation.type === "debt"
-          ? getAvailableForDebt(
-              index,
-              paydayPlans,
-              availableCents,
-              settings
-            )
-          : availableCents[index];
+        availableCents[index];
 
       if (available <= 0) {
         continue;
@@ -933,7 +873,6 @@ function allocateTogether(
   eligibleIndexes: number[],
   paydayPlans: PaydayPlan[],
   availableCents: number[]
-  settings: PaydayStrategySettings,
 ): void {
   if (
     eligibleIndexes.length === 0
@@ -957,14 +896,7 @@ function allocateTogether(
       eligibleIndexes[position];
 
     const available =
-      obligation.type === "debt"
-        ? getDebtAvailableCents(
-            index,
-            paydayPlans,
-            availableCents,
-            settings
-          )
-        : availableCents[index];
+      availableCents[index];
 
     if (available <= 0) {
       continue;
@@ -1052,6 +984,7 @@ function allocateObligations(
         eligibleIndexes,
         paydayPlans,
         availableCents
+        settings
       );
     } else {
       allocateTogether(
@@ -1059,6 +992,7 @@ function allocateObligations(
         eligibleIndexes,
         paydayPlans,
         availableCents
+        settings
       );
     }
   }
