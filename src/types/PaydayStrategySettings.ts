@@ -4,7 +4,7 @@ export type PaydayBillFundingMode =
   | "always-split";
 
 export interface PaydayStrategySettings {
-  billFundingMode: PaydayBillFundingMode
+  billFundingMode: PaydayBillFundingMode;
   largeBillThreshold: number;
 
   debtSafetyNetEnabled: boolean;
