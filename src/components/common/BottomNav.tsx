@@ -59,11 +59,7 @@ export default function BottomNav() {
     <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-slate-200 bg-white shadow-lg">
       <div className="mx-auto flex max-w-3xl items-stretch justify-around overflow-x-auto">
         {navItems.map(
-          ({
-            label,
-            path,
-            icon: Icon,
-          }) => (
+          ({ label, path, icon: Icon }) => (
             <NavLink
               key={path}
               to={path}
@@ -90,7 +86,7 @@ export default function BottomNav() {
                 </>
               )}
             </NavLink>
-          )}
+          )
         )}
       </div>
     </nav>
