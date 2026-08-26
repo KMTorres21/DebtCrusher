@@ -1,14 +1,23 @@
-export type BillFundingMode =
+import { PaydayBillFundingMode } from "../utils/paydayStrategy";
+
+export type PaydayBillFundingMode =
   | "together"
   | "large-bills"
   | "always-split";
 
 export interface PaydayStrategySettings {
-  billFundingMode: BillFundingMode;
+  billFundingMode: PaydayBillFundingMode
   largeBillThreshold: number;
+
+  debtSafetyNetEnabled: boolean;
+  debtSafetyNetAmount: number;
 }
 
-export const DEFAULT_PAYDAY_STRATEGY_SETTINGS: PaydayStrategySettings = {
+export const DEFAULT_PAYDAY_STRATEGY_SETTINGS: 
+PaydayStrategySettings = {
   billFundingMode: "large-bills",
   largeBillThreshold: 67,
+
+  debtSafetyNetEnabled: false,
+  debtSafetyNetAmount: 500,
 };
