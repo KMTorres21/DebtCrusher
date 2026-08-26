@@ -7,6 +7,7 @@ import StatCard from "../components/common/StatCard";
 
 import { useBills } from "../hooks/useBills";
 import { useIncome } from "../hooks/useIncome";
+import { useDebts } from "../hooks/useDebts";
 
 import {
   buildAllPaydayPlans,
@@ -78,13 +79,14 @@ function PaydayCard({
 
       <div className="mt-5">
         <h3 className="text-sm font-bold uppercase tracking-wide text-slate-500">
-          Bills to Fund
+          Bills & Debt Payments to Fund
         </h3>
 
-        {plan.bills.length === 0 ? (
+        {plan.bills.length ===
+        0 ? (
           <div className="mt-3 rounded-xl bg-slate-50 p-4">
             <p className="text-sm font-semibold text-slate-700">
-              No bills need funding from this paycheck.
+              No bills or debt payments need funding from this paycheck.
             </p>
           </div>
         ) : (
@@ -94,17 +96,24 @@ function PaydayCard({
                 const isFullyFunded =
                   Math.abs(
                     item.allocatedAmount -
-                      item.bill.amount
+                      item.amount
                   ) < 0.01;
 
                 return (
                   <div
-                    key={`${item.bill.id}-${item.dueDate}-${index}`}
+                    key={`${item.id}-${index}`}
                     className="flex items-center justify-between rounded-xl bg-slate-50 p-4"
                   >
                     <div className="min-w-0">
                       <p className="font-semibold text-slate-900">
-                        {item.bill.name}
+                        {item.name}
+                      </p>
+
+                      <p className="text-xs font-semibold text-slate-400">
+                        {item.type ===
+                        "debt"
+                          ? "Debt Payment"
+                          : "Bill"}
                       </p>
 
                       <p className="text-sm text-slate-500">
@@ -138,7 +147,7 @@ function PaydayCard({
                         <p className="text-xs text-slate-400">
                           of{" "}
                           {formatCurrency(
-                            item.bill.amount
+                            item.amount
                           )}
                         </p>
                       )}
@@ -188,14 +197,16 @@ function PaydayCard({
 export default function PaydayStrategyPage() {
   const { bills } = useBills();
   const { income } = useIncome();
+  const { debts } = useDebts();
 
   const paydayPlans = useMemo(
     () =>
       buildAllPaydayPlans(
         income,
-        bills
+        bills,
+        debts
       ),
-    [income, bills]
+    [income, bills, debts]
   );
 
   const summary = useMemo(() => {
@@ -238,17 +249,24 @@ export default function PaydayStrategyPage() {
       );
 
     /*
-     * Count each bill occurrence
+     * Count each obligation occurrence
      * only once.
+     *
+     * This includes both Bills and
+     * Debt minimum payments.
      */
-    const upcomingBills =
+    const upcomingObligations =
       new Map<
         string,
         number
       >();
 
-    for (const plan of paydayPlans) {
-      for (const item of plan.bills) {
+    for (
+      const plan of paydayPlans
+    ) {
+      for (
+        const item of plan.bills
+      ) {
         const dueDate =
           parseDate(
             item.dueDate
@@ -258,26 +276,23 @@ export default function PaydayStrategyPage() {
           dueDate >= today &&
           dueDate <= cutoff
         ) {
-          const key =
-            `${item.bill.id}-${item.dueDate}`;
-
           if (
-            !upcomingBills.has(
-              key
+            !upcomingObligations.has(
+              item.id
             )
           ) {
-            upcomingBills.set(
-              key,
-              item.bill.amount
+            upcomingObligations.set(
+              item.id,
+              item.amount
             );
           }
         }
       }
     }
 
-    const totalUpcomingBills =
+    const totalUpcomingObligations =
       Array.from(
-        upcomingBills.values()
+        upcomingObligations.values()
       ).reduce(
         (sum, amount) =>
           sum + amount,
@@ -286,10 +301,10 @@ export default function PaydayStrategyPage() {
 
     return {
       totalUpcomingIncome,
-      totalUpcomingBills,
+      totalUpcomingObligations,
       projectedRemaining:
         totalUpcomingIncome -
-        totalUpcomingBills,
+        totalUpcomingObligations,
     };
   }, [paydayPlans]);
 
@@ -297,7 +312,7 @@ export default function PaydayStrategyPage() {
     <PageContainer>
       <PageHeader
         title="Payday Strategy"
-        subtitle="Plan which bills each paycheck should fund."
+        subtitle="Plan which bills and debt payments each paycheck should fund."
       />
 
       <div className="grid grid-cols-2 gap-4">
@@ -310,9 +325,9 @@ export default function PaydayStrategyPage() {
         />
 
         <StatCard
-          title="Upcoming Bills"
+          title="Upcoming Obligations"
           value={formatCurrency(
-            summary.totalUpcomingBills
+            summary.totalUpcomingObligations
           )}
           valueClassName="text-red-600"
         />
@@ -337,8 +352,7 @@ export default function PaydayStrategyPage() {
         </p>
 
         <p className="mt-2 text-sm text-slate-500">
-          Projected income remaining after
-          bills due in the next 30 days.
+          Projected income remaining after bills and debt payments due in the next 30 days.
         </p>
       </Card>
 
@@ -355,9 +369,7 @@ export default function PaydayStrategyPage() {
             </h2>
 
             <p className="mt-2 text-sm text-slate-500">
-              Add an income source with
-              a valid payday to build
-              your strategy.
+              Add an income source with a valid payday to build your strategy.
             </p>
           </div>
         </Card>
