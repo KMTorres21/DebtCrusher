@@ -933,6 +933,7 @@ function allocateTogether(
   eligibleIndexes: number[],
   paydayPlans: PaydayPlan[],
   availableCents: number[]
+  settings: PaydayStrategySettings,
 ): void {
   if (
     eligibleIndexes.length === 0
@@ -956,7 +957,14 @@ function allocateTogether(
       eligibleIndexes[position];
 
     const available =
-      availableCents[index];
+      obligation.type === "debt"
+        ? getDebtAvailableCents(
+            index,
+            paydayPlans,
+            availableCents,
+            settings
+          )
+        : availableCents[index];
 
     if (available <= 0) {
       continue;
