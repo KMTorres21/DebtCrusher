@@ -4,11 +4,13 @@ import {
   Wallet,
   Target,
   ScanLine,
+  CalendarDays,
+  BarChart3,
+  Banknote,
 } from "lucide-react";
-import { CalendarDays } from "lucide-react";
+
 import { NavLink } from "react-router-dom";
-import { BarChart3 } from "lucide-react";
- 
+
 const navItems = [
   {
     label: "Dashboard",
@@ -26,16 +28,21 @@ const navItems = [
     icon: ScanLine,
   },
   {
-  label: "Calendar",
-  path: "/calendar",
-  icon: CalendarDays,
+    label: "Calendar",
+    path: "/calendar",
+    icon: CalendarDays,
   },
   {
     label: "Income",
     path: "/income",
     icon: Wallet,
   },
-   {
+  {
+    label: "Payday",
+    path: "/payday-strategy",
+    icon: Banknote,
+  },
+  {
     label: "Debts",
     path: "/debts",
     icon: Target,
@@ -45,39 +52,46 @@ const navItems = [
     path: "/reports",
     icon: BarChart3,
   },
-  
 ];
- 
+
 export default function BottomNav() {
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-slate-200 bg-white shadow-lg">
-      <div className="mx-auto flex max-w-3xl items-stretch justify-around">
-        {navItems.map(({ label, path, icon: Icon }) => (
-          <NavLink
-            key={path}
-            to={path}
-            className={({ isActive }) =>
-              `flex min-h-[72px] flex-1 flex-col items-center justify-center gap-1 transition-colors ${
-                isActive
-                  ? "text-blue-600"
-                  : "text-slate-500 hover:text-slate-800"
-              }`
-            }
-          >
-            {({ isActive }) => (
-              <>
-                <Icon
-                  size={30}
-                  strokeWidth={isActive ? 2.8 : 2}
-                />
- 
-                <span className="text-xs font-semibold">
-                  {label}
-                </span>
-              </>
-            )}
-          </NavLink>
-        ))}
+      <div className="mx-auto flex max-w-3xl items-stretch justify-around overflow-x-auto">
+        {navItems.map(
+          ({
+            label,
+            path,
+            icon: Icon,
+          }) => (
+            <NavLink
+              key={path}
+              to={path}
+              className={({ isActive }) =>
+                `flex min-h-[72px] min-w-[76px] flex-1 flex-col items-center justify-center gap-1 transition-colors ${
+                  isActive
+                    ? "text-blue-600"
+                    : "text-slate-500 hover:text-slate-800"
+                }`
+              }
+            >
+              {({ isActive }) => (
+                <>
+                  <Icon
+                    size={30}
+                    strokeWidth={
+                      isActive ? 2.8 : 2
+                    }
+                  />
+
+                  <span className="text-xs font-semibold">
+                    {label}
+                  </span>
+                </>
+              )}
+            </NavLink>
+          )}
+        )}
       </div>
     </nav>
   );
