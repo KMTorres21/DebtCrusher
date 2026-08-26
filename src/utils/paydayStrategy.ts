@@ -691,6 +691,7 @@ function allocateProportionally(
   eligibleIndexes: number[],
   paydayPlans: PaydayPlan[],
   availableCents: number[]
+  settings: PaydayStrategySettings
 ): void {
   if (
     eligibleIndexes.length === 0
@@ -868,11 +869,47 @@ function allocateProportionally(
  *
  * This is the "Together" strategy.
  */
+function getDebtAvailableCents(
+  index: number,
+  paydayPlans: PaydayPlan[],
+  availableCents: number[],
+  settings: PaydayStrategySettings
+): number {
+  if (settings.debtSafetyNetEnabled) {
+    return availableCents[index]
+  }
+  
+  const protectedCents = Math.round(
+    settings.debtSafetyNetAmount * 100
+  );
+  
+  const paycheckAmountCents =
+    Math.round(
+      paydayPlans[index].amount * 100
+    )
+
+  const alreadyAllocatedCents = 
+    paycheckAmountCents - 
+    availableCents[index];
+
+  const remainingBeforeDebt = 
+    paycheckAmountCents - 
+    alreadyAllocatedCents;
+
+  return Math.max(
+    0,
+    Math.min(
+      availableCents[index],
+      remainingBeforeDebt - protectedCents
+    )
+  );
+}
 function allocateTogether(
   obligation: PaydayBill,
   eligibleIndexes: number[],
   paydayPlans: PaydayPlan[],
-  availableCents: number[]
+  availableCents: number[],
+  settings: PaydayStrategySettings
 ): void {
   if (
     eligibleIndexes.length === 0
@@ -895,18 +932,34 @@ function allocateTogether(
     const index =
       eligibleIndexes[position];
 
-    const available =
-      availableCents[index];
+    const available = 
+      obligation.type === 'debt'
+        ? getDebtAvailableCents(
+            index,
+            paydayPlans,
+            availableCents,
+            settings
+          )
+        : availableCents[index];
+
+    const allocation = 
+      Math.min(
+        allocations[position],
+        availableForAllocation,
+        remainingCents
+      );
 
     if (available <= 0) {
       continue;
     }
 
-    const allocation =
+        const allocation = 
       Math.min(
-        remainingCents,
-        available
+        allocations[position],
+        availableForAllocation,
+        remainingCents
       );
+
 
     paydayPlans[index].bills.push({
       ...obligation,
