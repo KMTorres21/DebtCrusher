@@ -693,16 +693,13 @@ function allocateProportionally(
   availableCents: number[],
   settings: PaydayStrategySettings
 ): void {
-  if (
-    eligibleIndexes.length === 0
-  ) {
+  if (eligibleIndexes.length === 0) {
     return;
   }
 
-  const amountCents =
-    Math.round(
-      obligation.amount * 100
-    );
+  const amountCents = Math.round(
+    obligation.amount * 100
+  );
 
   const totalEligibleIncome =
     getEligibleIncome(
@@ -715,30 +712,26 @@ function allocateProportionally(
   }
 
   /*
-   * First calculate the theoretical
-   * proportional allocations.
+   * Calculate the theoretical proportional
+   * allocation for each eligible paycheck.
    */
   const allocations =
-    eligibleIndexes.map(
-      (index) => {
-        return Math.floor(
-          amountCents *
-            (
-              paydayPlans[index]
-                .amount /
-              totalEligibleIncome
-            )
-        );
-      }
+    eligibleIndexes.map((index) =>
+      Math.floor(
+        amountCents *
+          (
+            paydayPlans[index].amount /
+            totalEligibleIncome
+          )
+      )
     );
 
   /*
-   * Distribute the rounding cents.
+   * Distribute rounding cents.
    */
   let allocatedTotal =
     allocations.reduce(
-      (sum, value) =>
-        sum + value,
+      (sum, value) => sum + value,
       0
     );
 
@@ -746,22 +739,16 @@ function allocateProportionally(
     allocations.length - 1;
 
   while (
-    allocatedTotal <
-      amountCents &&
+    allocatedTotal < amountCents &&
     roundingIndex >= 0
   ) {
-    allocations[
-      roundingIndex
-    ] += 1;
-
+    allocations[roundingIndex] += 1;
     allocatedTotal += 1;
-
-    roundingIndex--;
+    roundingIndex -= 1;
 
     if (
       roundingIndex < 0 &&
-      allocatedTotal <
-        amountCents
+      allocatedTotal < amountCents
     ) {
       roundingIndex =
         allocations.length - 1;
@@ -769,16 +756,17 @@ function allocateProportionally(
   }
 
   /*
-   * Apply allocations while respecting
-   * actual available paycheck capacity.
+   * Apply the proportional allocations.
+   *
+   * Debt payments respect the safety-net
+   * setting. Bills continue to use the
+   * normal paycheck capacity.
    */
-  let remainingCents =
-    amountCents;
+  let remainingCents = amountCents;
 
   for (
     let position = 0;
-    position <
-      eligibleIndexes.length;
+    position < eligibleIndexes.length;
     position++
   ) {
     const index =
@@ -786,16 +774,21 @@ function allocateProportionally(
 
     const availableForAllocation =
       obligation.type === "debt"
-        ? getDebtAvailableCents(
-          index, 
-          paydayPlans, 
-          availableCents,
-          settings
-        )
+        ? Math.max(
+            0,
+            availableCents[index] -
+              Math.round(
+                paydayPlans[index].amount *
+                  (
+                    settings.debtSafetyNetPercent /
+                    100
+                  ) *
+                  100
+              )
+          )
         : availableCents[index];
 
-    const allocation = 
-      Math.min(
+    const allocation = Math.min(
       allocations[position],
       availableForAllocation,
       remainingCents
@@ -811,18 +804,18 @@ function allocateProportionally(
         allocation / 100,
     });
 
-    availableCents[index] -=
-      allocation;
+    availableCents[index] -= allocation;
 
-    remainingCents -=
-      allocation;
+    remainingCents -= allocation;
   }
 
   /*
-   * If a paycheck did not have enough
-   * available cash, redistribute the
-   * unfunded portion across remaining
-   * eligible paycheck capacity.
+   * If the proportional allocation could
+   * not fully fund the obligation, use
+   * remaining eligible capacity.
+   *
+   * For debt payments, the safety net
+   * remains protected.
    */
   if (remainingCents > 0) {
     for (
@@ -835,18 +828,32 @@ function allocateProportionally(
       const index =
         eligibleIndexes[position];
 
-      const available =
-        availableCents[index];
+      const availableForAllocation =
+        obligation.type === "debt"
+          ? Math.max(
+              0,
+              availableCents[index] -
+                Math.round(
+                  paydayPlans[index].amount *
+                    (
+                      settings.debtSafetyNetPercent /
+                      100
+                    ) *
+                    100
+                )
+            )
+          : availableCents[index];
 
-      if (available <= 0) {
+      if (
+        availableForAllocation <= 0
+      ) {
         continue;
       }
 
-      const allocation =
-        Math.min(
-          available,
-          remainingCents
-        );
+      const allocation = Math.min(
+        availableForAllocation,
+        remainingCents
+      );
 
       paydayPlans[index].bills.push({
         ...obligation,
@@ -854,11 +861,9 @@ function allocateProportionally(
           allocation / 100,
       });
 
-      availableCents[index] -=
-        allocation;
+      availableCents[index] -= allocation;
 
-      remainingCents -=
-        allocation;
+      remainingCents -= allocation;
     }
   }
 }
