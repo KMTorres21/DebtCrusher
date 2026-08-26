@@ -990,6 +990,8 @@ function allocateObligations(
         settings
       );
 
+/*Protected Amount Helper*/
+
     if (split) {
       allocateProportionally(
         obligation,
