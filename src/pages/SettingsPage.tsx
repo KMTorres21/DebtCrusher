@@ -92,6 +92,8 @@ export default function SettingsPage() {
                 </p>
               </div>
             </label>
+            
+/*Payday Safety-Net Setting*/
 
             <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-slate-200 p-4">
               <input
