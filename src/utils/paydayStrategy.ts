@@ -991,7 +991,7 @@ function allocateObligations(
         obligation,
         eligibleIndexes,
         paydayPlans,
-        availableCents
+        availableCents,
         settings
       );
     }
