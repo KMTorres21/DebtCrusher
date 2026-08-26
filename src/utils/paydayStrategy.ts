@@ -690,7 +690,7 @@ function allocateProportionally(
   obligation: PaydayBill,
   eligibleIndexes: number[],
   paydayPlans: PaydayPlan[],
-  availableCents: number[]
+  availableCents: number[],
   settings: PaydayStrategySettings
 ): void {
   if (
