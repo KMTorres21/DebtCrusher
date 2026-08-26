@@ -94,6 +94,83 @@ export default function SettingsPage() {
             </label>
             
 /*Payday Safety-Net Setting*/
+<div className="mt-6 border-t border-slate-200 pt-6">
+  <h3 className="text-sm font-bold uppercase tracking-wide text-slate-500">
+    Debt Payment Safety Net
+  </h3>
+
+  <label className="mt-3 flex cursor-pointer items-start gap-3 rounded-xl border border-slate-200 p-4">
+    <input
+      type="checkbox"
+      checked={settings.debtSafetyNetEnabled}
+      onChange={(event) =>
+        setSettings({
+          debtSafetyNetEnabled:
+            event.target.checked,
+        })
+      }
+      className="mt-1 h-5 w-5"
+    />
+
+    <div>
+      <p className="font-semibold text-slate-900">
+        Protect Money From Debt Payments
+      </p>
+
+      <p className="mt-1 text-sm text-slate-500">
+        Keep a minimum amount of every paycheck
+        available instead of using it for debt
+        payments.
+      </p>
+    </div>
+  </label>
+
+  {settings.debtSafetyNetEnabled && (
+    <div className="mt-4">
+      <label
+        htmlFor="debtSafetyNetAmount"
+        className="text-sm font-bold uppercase tracking-wide text-slate-500"
+      >
+        Minimum Paycheck Amount to Protect
+      </label>
+
+      <div className="mt-2 flex items-center gap-3">
+        <span className="text-lg font-semibold text-slate-600">
+          $
+        </span>
+
+        <input
+          id="debtSafetyNetAmount"
+          type="number"
+          min="0"
+          step="25"
+          value={settings.debtSafetyNetAmount}
+          onChange={(event) => {
+            const value = Number(
+              event.target.value
+            );
+
+            if (Number.isNaN(value)) {
+              return;
+            }
+
+            setSettings({
+              debtSafetyNetAmount:
+                Math.max(0, value),
+            });
+          }}
+          className="w-32 rounded-xl border border-slate-300 px-4 py-3 text-lg font-semibold text-slate-900 outline-none focus:border-slate-500"
+        />
+      </div>
+
+      <p className="mt-2 text-sm text-slate-500">
+        Debt payments will never reduce an individual
+        paycheck below this amount. Bills are not
+        affected by this setting.
+      </p>
+    </div>
+  )}
+</div>
 
             <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-slate-200 p-4">
               <input
