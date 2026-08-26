@@ -888,7 +888,14 @@ function allocateProportionally(
         eligibleIndexes[position];
 
       const available =
-        availableCents[index];
+        obligation.type === "debt"
+          ? getAvailableForDebt(
+              index,
+              paydayPlans,
+              availableCents,
+              settings
+            )
+          : availableCents[index];
 
       if (available <= 0) {
         continue;
