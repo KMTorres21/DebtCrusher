@@ -678,6 +678,40 @@ function shouldSplitObligation(
   );
 }
 
+function getDebtAvailableCents(
+  index: number,
+  paydayPlans: PaydayPlan[],
+  availableCents: number[],
+  settings: PaydayStrategySettings
+): number {
+  if (!settings.debtSafetyNetEnabled) {
+    return availableCents[index];
+  }
+
+  const safetyNetCents = Math.round(
+    settings.debtSafetyNetAmount * 100
+  );
+
+  const paycheckCents = Math.round(
+    paydayPlans[index].amount * 100
+  );
+
+  /*
+   * Never allow debt payments to consume
+   * the configured safety-net amount.
+   */
+  const maximumDebtAllocation =
+    paycheckCents - safetyNetCents;
+
+  return Math.max(
+    0,
+    Math.min(
+      availableCents[index],
+      maximumDebtAllocation
+    )
+  );
+}
+
 /*
  * Proportionally distribute an obligation
  * across ALL eligible paychecks.
