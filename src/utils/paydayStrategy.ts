@@ -746,8 +746,7 @@ function allocateProportionally(
   }
 
   /*
-   * Calculate the theoretical proportional
-   * allocation for each eligible paycheck.
+   * Calculate proportional allocations.
    */
   const allocations =
     eligibleIndexes.map((index) =>
@@ -773,31 +772,25 @@ function allocateProportionally(
     allocations.length - 1;
 
   while (
-    allocatedTotal < amountCents &&
-    roundingIndex >= 0
+    allocatedTotal < amountCents
   ) {
     allocations[roundingIndex] += 1;
     allocatedTotal += 1;
+
     roundingIndex -= 1;
 
-    if (
-      roundingIndex < 0 &&
-      allocatedTotal < amountCents
-    ) {
+    if (roundingIndex < 0) {
       roundingIndex =
         allocations.length - 1;
     }
   }
 
-  /*
-   * Apply the proportional allocations.
-   *
-   * Debt payments respect the safety-net
-   * setting. Bills continue to use the
-   * normal paycheck capacity.
-   */
-  let remainingCents = amountCents;
+  let remainingCents =
+    amountCents;
 
+  /*
+   * Apply proportional allocations.
+   */
   for (
     let position = 0;
     position < eligibleIndexes.length;
@@ -808,17 +801,11 @@ function allocateProportionally(
 
     const availableForAllocation =
       obligation.type === "debt"
-        ? Math.max(
-            0,
-            availableCents[index] -
-              Math.round(
-                paydayPlans[index].amount *
-                  (
-                    settings.debtSafetyNetPercent /
-                    100
-                  ) *
-                  100
-              )
+        ? getDebtAvailableCents(
+            index,
+            paydayPlans,
+            availableCents,
+            settings
           )
         : availableCents[index];
 
@@ -838,18 +825,16 @@ function allocateProportionally(
         allocation / 100,
     });
 
-    availableCents[index] -= allocation;
+    availableCents[index] -=
+      allocation;
 
-    remainingCents -= allocation;
+    remainingCents -=
+      allocation;
   }
 
   /*
-   * If the proportional allocation could
-   * not fully fund the obligation, use
-   * remaining eligible capacity.
-   *
-   * For debt payments, the safety net
-   * remains protected.
+   * Redistribute any remaining amount
+   * across eligible paycheck capacity.
    */
   if (remainingCents > 0) {
     for (
@@ -864,17 +849,11 @@ function allocateProportionally(
 
       const availableForAllocation =
         obligation.type === "debt"
-          ? Math.max(
-              0,
-              availableCents[index] -
-                Math.round(
-                  paydayPlans[index].amount *
-                    (
-                      settings.debtSafetyNetPercent /
-                      100
-                    ) *
-                    100
-                )
+          ? getDebtAvailableCents(
+              index,
+              paydayPlans,
+              availableCents,
+              settings
             )
           : availableCents[index];
 
@@ -895,9 +874,11 @@ function allocateProportionally(
           allocation / 100,
       });
 
-      availableCents[index] -= allocation;
+      availableCents[index] -=
+        allocation;
 
-      remainingCents -= allocation;
+      remainingCents -=
+        allocation;
     }
   }
 }
