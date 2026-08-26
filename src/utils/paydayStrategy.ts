@@ -684,7 +684,274 @@ function shouldSplitObligation(
  *
  * This is the "Together" strategy.
  */
+<<<<<<< HEAD
 
+=======
+function getDebtAvailableCents(
+  index: number,
+  paydayPlans: PaydayPlan[],
+  availableCents: number[],
+  settings: PaydayStrategySettings
+): number {
+  /*
+   * If the safety net is disabled,
+   * debt payments can use all available
+   * paycheck capacity.
+   */
+  if (!settings.debtSafetyNetEnabled) {
+    return availableCents[index];
+  }
+
+  const protectedCents = Math.round(
+    settings.debtSafetyNetAmount * 100
+  );
+
+  /*
+   * availableCents represents money that
+   * has not already been allocated.
+   *
+   * Keep the configured safety-net amount
+   * untouched before allocating debt payments.
+   */
+  return Math.max(
+    0,
+    availableCents[index] - protectedCents
+  );
+}
+
+/*
+ * Proportionally distribute an obligation
+ * across ALL eligible paychecks.
+ *
+ * Bills and debt payments can both be
+ * split, but debt payments respect the
+ * safety-net setting.
+ */
+function allocateProportionally(
+  obligation: PaydayBill,
+  eligibleIndexes: number[],
+  paydayPlans: PaydayPlan[],
+  availableCents: number[],
+  settings: PaydayStrategySettings
+): void {
+  if (eligibleIndexes.length === 0) {
+    return;
+  }
+
+  const amountCents = Math.round(
+    obligation.amount * 100
+  );
+
+  const totalEligibleIncome =
+    getEligibleIncome(
+      eligibleIndexes,
+      paydayPlans
+    );
+
+  if (totalEligibleIncome <= 0) {
+    return;
+  }
+
+  /*
+   * Calculate the theoretical proportional
+   * allocation for each paycheck.
+   */
+  const allocations =
+    eligibleIndexes.map((index) =>
+      Math.floor(
+        amountCents *
+          (
+            paydayPlans[index].amount /
+            totalEligibleIncome
+          )
+      )
+    );
+
+  /*
+   * Distribute rounding cents.
+   */
+  let allocatedTotal =
+    allocations.reduce(
+      (sum, value) => sum + value,
+      0
+    );
+
+  let roundingIndex =
+    allocations.length - 1;
+
+  while (allocatedTotal < amountCents) {
+    allocations[roundingIndex] += 1;
+    allocatedTotal += 1;
+
+    roundingIndex -= 1;
+
+    if (roundingIndex < 0) {
+      roundingIndex =
+        allocations.length - 1;
+    }
+  }
+
+  let remainingCents = amountCents;
+
+  /*
+   * Apply proportional allocations.
+   */
+  for (
+    let position = 0;
+    position < eligibleIndexes.length;
+    position++
+  ) {
+    const index =
+      eligibleIndexes[position];
+
+    const availableForAllocation =
+      obligation.type === "debt"
+        ? getDebtAvailableCents(
+            index,
+            paydayPlans,
+            availableCents,
+            settings
+          )
+        : availableCents[index];
+
+    const allocation = Math.min(
+      allocations[position],
+      availableForAllocation,
+      remainingCents
+    );
+
+    if (allocation <= 0) {
+      continue;
+    }
+
+    paydayPlans[index].bills.push({
+      ...obligation,
+      allocatedAmount:
+        allocation / 100,
+    });
+
+    availableCents[index] -=
+      allocation;
+
+    remainingCents -= allocation;
+  }
+
+  /*
+   * Redistribute any unfunded amount
+   * across remaining eligible capacity.
+   */
+  if (remainingCents > 0) {
+    for (
+      let position =
+        eligibleIndexes.length - 1;
+      position >= 0 &&
+      remainingCents > 0;
+      position--
+    ) {
+      const index =
+        eligibleIndexes[position];
+
+      const availableForAllocation =
+        obligation.type === "debt"
+          ? getDebtAvailableCents(
+              index,
+              paydayPlans,
+              availableCents,
+              settings
+            )
+          : availableCents[index];
+
+      if (availableForAllocation <= 0) {
+        continue;
+      }
+
+      const allocation = Math.min(
+        availableForAllocation,
+        remainingCents
+      );
+
+      paydayPlans[index].bills.push({
+        ...obligation,
+        allocatedAmount:
+          allocation / 100,
+      });
+
+      availableCents[index] -=
+        allocation;
+
+      remainingCents -= allocation;
+    }
+  }
+}
+
+/*
+ * Fund an obligation from the latest
+ * eligible paycheck first.
+ *
+ * This is the "Together" strategy.
+ */
+function allocateTogether(
+  obligation: PaydayBill,
+  eligibleIndexes: number[],
+  paydayPlans: PaydayPlan[],
+  availableCents: number[],
+  settings: PaydayStrategySettings
+): void {
+  if (eligibleIndexes.length === 0) {
+    return;
+  }
+
+  let remainingCents =
+    Math.round(
+      obligation.amount * 100
+    );
+
+  for (
+    let position =
+      eligibleIndexes.length - 1;
+    position >= 0 &&
+    remainingCents > 0;
+    position--
+  ) {
+    const index =
+      eligibleIndexes[position];
+
+    /*
+     * Debt payments must leave the
+     * configured safety net untouched.
+     */
+    const available =
+      obligation.type === "debt"
+        ? getDebtAvailableCents(
+            index,
+            paydayPlans,
+            availableCents,
+            settings
+          )
+        : availableCents[index];
+
+    if (available <= 0) {
+      continue;
+    }
+
+    const allocation = Math.min(
+      remainingCents,
+      available
+    );
+
+    paydayPlans[index].bills.push({
+      ...obligation,
+      allocatedAmount:
+        allocation / 100,
+    });
+
+    availableCents[index] -=
+      allocation;
+
+    remainingCents -= allocation;
+  }
+}
+>>>>>>> 340d25519d393f808b3f4480afab12e1dbae989b
 
 function allocateObligations(
   obligations: PaydayBill[],
