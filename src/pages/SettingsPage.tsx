@@ -4,6 +4,12 @@ import {
   useState,
 } from "react";
 
+import PageContainer from "../components/common/PageContainer";
+import PageHeader from "../components/common/PageHeader";
+import Card from "../components/common/Card";
+
+import { usePaydayStrategySettings } from "../hooks/usePaydayStrategySettings";
+
 import {
   DebtCrusherBackup,
   downloadBackup,
@@ -12,6 +18,12 @@ import {
 } from "../utils/backup";
 
 export default function SettingsPage() {
+  const {
+    settings,
+    setSettings,
+    resetSettings,
+  } = usePaydayStrategySettings();
+
   const fileInputRef =
     useRef<HTMLInputElement>(null);
 
@@ -76,10 +88,7 @@ export default function SettingsPage() {
       return;
     }
 
-    /*
-     * Automatically create a safety backup
-     * before replacing the current data.
-     */
+    // Safety backup before restore
     downloadBackup();
 
     restoreBackup(pendingBackup);
@@ -88,14 +97,6 @@ export default function SettingsPage() {
       "DebtCrusher has been restored successfully."
     );
 
-    /*
-     * The existing hooks loaded their values
-     * into React state when the app started.
-     *
-     * Reloading causes useBills, useDebts,
-     * useIncome, etc. to read the restored
-     * localStorage values.
-     */
     window.location.reload();
   }
 
@@ -116,62 +117,251 @@ export default function SettingsPage() {
     : null;
 
   const recordGroups = pendingBackup
-    ? Object.keys(pendingBackup.data).length
+    ? Object.keys(
+        pendingBackup.data
+      ).length
     : 0;
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold">
-          Settings
-        </h1>
-      </div>
+    <PageContainer>
+      <PageHeader
+        title="Settings"
+        subtitle="Customize DebtCrusher and manage your data."
+      />
 
-      <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-        <h2 className="text-xl font-semibold">
+      {/* PAYDAY STRATEGY */}
+      <Card>
+        <h2 className="text-xl font-bold text-slate-900">
+          Payday Strategy
+        </h2>
+
+        <p className="mt-1 text-sm text-slate-500">
+          Control how bills are assigned to upcoming
+          paychecks.
+        </p>
+
+        <div className="mt-6">
+          <h3 className="text-sm font-bold uppercase tracking-wide text-slate-500">
+            Bill Funding
+          </h3>
+
+          <div className="mt-3 space-y-3">
+
+            <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-slate-200 p-4">
+              <input
+                type="radio"
+                name="billFundingMode"
+                value="together"
+                checked={
+                  settings.billFundingMode ===
+                  "together"
+                }
+                onChange={() =>
+                  setSettings({
+                    billFundingMode: "together",
+                  })
+                }
+                className="mt-1"
+              />
+
+              <div>
+                <p className="font-semibold text-slate-900">
+                  Keep Bills Together
+                </p>
+
+                <p className="mt-1 text-sm text-slate-500">
+                  Assign each bill to one paycheck
+                  whenever possible.
+                </p>
+              </div>
+            </label>
+
+            <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-slate-200 p-4">
+              <input
+                type="radio"
+                name="billFundingMode"
+                value="large-bills"
+                checked={
+                  settings.billFundingMode ===
+                  "large-bills"
+                }
+                onChange={() =>
+                  setSettings({
+                    billFundingMode:
+                      "large-bills",
+                  })
+                }
+                className="mt-1"
+              />
+
+              <div>
+                <p className="font-semibold text-slate-900">
+                  Split Large Bills Automatically
+                </p>
+
+                <p className="mt-1 text-sm text-slate-500">
+                  Split large bills across eligible
+                  paychecks based on the threshold
+                  below.
+                </p>
+              </div>
+            </label>
+
+            <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-slate-200 p-4">
+              <input
+                type="radio"
+                name="billFundingMode"
+                value="always-split"
+                checked={
+                  settings.billFundingMode ===
+                  "always-split"
+                }
+                onChange={() =>
+                  setSettings({
+                    billFundingMode:
+                      "always-split",
+                  })
+                }
+                className="mt-1"
+              />
+
+              <div>
+                <p className="font-semibold text-slate-900">
+                  Always Split Bills
+                </p>
+
+                <p className="mt-1 text-sm text-slate-500">
+                  Distribute every bill proportionally
+                  across eligible paychecks.
+                </p>
+              </div>
+            </label>
+
+          </div>
+        </div>
+
+        {settings.billFundingMode ===
+          "large-bills" && (
+          <div className="mt-6">
+            <label
+              htmlFor="largeBillThreshold"
+              className="text-sm font-bold uppercase tracking-wide text-slate-500"
+            >
+              Large Bill Threshold
+            </label>
+
+            <div className="mt-2 flex items-center gap-3">
+              <input
+                id="largeBillThreshold"
+                type="number"
+                min="1"
+                max="100"
+                step="1"
+                value={
+                  settings.largeBillThreshold
+                }
+                onChange={(event) => {
+                  const value = Number(
+                    event.target.value
+                  );
+
+                  if (Number.isNaN(value)) {
+                    return;
+                  }
+
+                  setSettings({
+                    largeBillThreshold:
+                      Math.min(
+                        100,
+                        Math.max(1, value)
+                      ),
+                  });
+                }}
+                className="w-24 rounded-xl border border-slate-300 px-4 py-3 text-lg font-semibold text-slate-900 outline-none focus:border-slate-500"
+              />
+
+              <span className="text-lg font-semibold text-slate-600">
+                %
+              </span>
+            </div>
+
+            <p className="mt-2 text-sm text-slate-500">
+              Bills above this percentage of eligible
+              recurring income will be split across
+              paychecks.
+            </p>
+          </div>
+        )}
+      </Card>
+
+      {/* RESET PAYDAY STRATEGY */}
+      <Card>
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <h2 className="text-lg font-bold text-slate-900">
+              Reset Payday Strategy
+            </h2>
+
+            <p className="mt-1 text-sm text-slate-500">
+              Restore the default funding strategy and
+              67% threshold.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={resetSettings}
+            className="rounded-xl border border-slate-300 px-4 py-2 font-semibold text-slate-700 hover:bg-slate-50"
+          >
+            Reset
+          </button>
+        </div>
+      </Card>
+
+      {/* DATA & BACKUP */}
+      <Card>
+        <h2 className="text-xl font-bold text-slate-900">
           Data & Backup
         </h2>
 
-        <p className="mt-2 text-sm text-gray-600">
-          Export a complete backup of your
-          DebtCrusher data or restore data from
-          a previous backup.
+        <p className="mt-1 text-sm text-slate-500">
+          Export a complete backup of your DebtCrusher
+          data or restore a previous backup.
         </p>
 
         <div className="mt-6 space-y-6">
-          {/* EXPORT */}
 
+          {/* EXPORT */}
           <div>
-            <h3 className="font-semibold">
+            <h3 className="font-semibold text-slate-900">
               Export DebtCrusher Backup
             </h3>
 
-            <p className="mt-1 text-sm text-gray-600">
-              Download your DebtCrusher data
-              as a JSON backup file.
+            <p className="mt-1 text-sm text-slate-500">
+              Download your DebtCrusher data as a JSON
+              backup file.
             </p>
 
             <button
               type="button"
               onClick={handleExport}
-              className="mt-3 rounded-lg bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700"
+              className="mt-3 rounded-xl bg-blue-600 px-4 py-3 font-semibold text-white hover:bg-blue-700"
             >
               Export Backup
             </button>
           </div>
 
-          <hr className="border-gray-200" />
+          <hr className="border-slate-200" />
 
           {/* IMPORT */}
-
           <div>
-            <h3 className="font-semibold">
+            <h3 className="font-semibold text-slate-900">
               Import DebtCrusher Backup
             </h3>
 
-            <p className="mt-1 text-sm text-gray-600">
-              Select a backup previously
-              exported from DebtCrusher.
+            <p className="mt-1 text-sm text-slate-500">
+              Select a backup previously exported from
+              DebtCrusher.
             </p>
 
             <input
@@ -183,8 +373,8 @@ export default function SettingsPage() {
             />
 
             {error && (
-              <div className="mt-4 rounded-lg border border-red-200 bg-red-50 p-4">
-                <p className="font-medium text-red-700">
+              <div className="mt-4 rounded-xl border border-red-200 bg-red-50 p-4">
+                <p className="font-semibold text-red-700">
                   Unable to import backup
                 </p>
 
@@ -195,7 +385,7 @@ export default function SettingsPage() {
             )}
 
             {pendingBackup && (
-              <div className="mt-5 rounded-lg border border-amber-200 bg-amber-50 p-4">
+              <div className="mt-5 rounded-xl border border-amber-200 bg-amber-50 p-4">
                 <h4 className="font-semibold text-amber-900">
                   Backup Ready to Restore
                 </h4>
@@ -221,24 +411,21 @@ export default function SettingsPage() {
                   </p>
                 </div>
 
-                <p className="mt-4 text-sm font-medium text-amber-900">
-                  Restoring this backup will
-                  replace your current
-                  DebtCrusher data.
+                <p className="mt-4 text-sm font-semibold text-amber-900">
+                  Restoring this backup will replace
+                  your current DebtCrusher data.
                 </p>
 
                 <p className="mt-2 text-sm text-amber-800">
-                  DebtCrusher will automatically
-                  download a backup of your
-                  current data before restoring
-                  this file.
+                  DebtCrusher will automatically export
+                  a safety backup before restoring.
                 </p>
 
                 <div className="mt-4 flex flex-wrap gap-3">
                   <button
                     type="button"
                     onClick={handleRestore}
-                    className="rounded-lg bg-red-600 px-4 py-2 font-medium text-white hover:bg-red-700"
+                    className="rounded-xl bg-red-600 px-4 py-2 font-semibold text-white hover:bg-red-700"
                   >
                     Restore Backup
                   </button>
@@ -246,7 +433,7 @@ export default function SettingsPage() {
                   <button
                     type="button"
                     onClick={cancelImport}
-                    className="rounded-lg border border-gray-300 bg-white px-4 py-2 font-medium text-gray-700 hover:bg-gray-50"
+                    className="rounded-xl border border-slate-300 bg-white px-4 py-2 font-semibold text-slate-700 hover:bg-slate-50"
                   >
                     Cancel
                   </button>
@@ -254,8 +441,9 @@ export default function SettingsPage() {
               </div>
             )}
           </div>
+
         </div>
-      </section>
-    </div>
+      </Card>
+    </PageContainer>
   );
 }
