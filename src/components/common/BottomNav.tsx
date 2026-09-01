@@ -4,10 +4,12 @@ import {
   Wallet,
   Target,
   Settings,
+  CalendarDays,
+  CalendarClock,
+  ScanLine,
 } from "lucide-react";
-import { CalendarDays } from "lucide-react";
 import { NavLink } from "react-router-dom";
- 
+
 const navItems = [
   {
     label: "Dashboard",
@@ -20,9 +22,9 @@ const navItems = [
     icon: CreditCard,
   },
   {
-  label: "Calendar",
-  path: "/calendar",
-  icon: CalendarDays,
+    label: "Calendar",
+    path: "/calendar",
+    icon: CalendarDays,
   },
   {
     label: "Income",
@@ -30,9 +32,19 @@ const navItems = [
     icon: Wallet,
   },
   {
+    label: "Payday",
+    path: "/payday",
+    icon: CalendarClock,
+  },
+  {
     label: "Debts",
     path: "/debts",
     icon: Target,
+  },
+  {
+    label: "Scanner",
+    path: "/scanner",
+    icon: ScanLine,
   },
   {
     label: "Settings",
@@ -40,7 +52,7 @@ const navItems = [
     icon: Settings,
   },
 ];
- 
+
 export default function BottomNav() {
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-slate-200 bg-white shadow-lg">
@@ -60,11 +72,11 @@ export default function BottomNav() {
             {({ isActive }) => (
               <>
                 <Icon
-                  size={30}
+                  size={28}
                   strokeWidth={isActive ? 2.8 : 2}
                 />
- 
-                <span className="text-xs font-semibold">
+
+                <span className="text-[10px] font-semibold">
                   {label}
                 </span>
               </>
