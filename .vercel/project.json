@@ -1,0 +1,16 @@
+{
+  "projectId": "prj_1zmbALXCRerkiejEjHzmnStCC5dm",
+  "orgId": "team_nXA8Nn31CsgGDCGuj9teczLN",
+  "projectName": "debt-crusher",
+  "settings": {
+    "createdAt": 1787962857637,
+    "framework": "vite",
+    "devCommand": null,
+    "installCommand": null,
+    "buildCommand": null,
+    "outputDirectory": null,
+    "rootDirectory": null,
+    "directoryListing": false,
+    "nodeVersion": "24.x"
+  }
+}
