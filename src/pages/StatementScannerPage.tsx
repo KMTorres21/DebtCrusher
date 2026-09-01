@@ -59,7 +59,7 @@ export default function StatementScannerPage() {
 
  setBills((current) => [
   ...current,
-  ...extractedBills,
+  extractedBill,
 ]);
 setHasScanned(true);
   };
@@ -98,31 +98,29 @@ setHasScanned(true);
   ).length;
 
   return (
-    <div 
+    <div className="space-y-6 px-5 py-6 pb-32">
+      {isScanning && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm">
+          <div className="mx-5 w-full max-w-sm rounded-3xl bg-white p-8 text-center shadow-2xl">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-blue-100">
+              <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+            </div>
 
-{isScanning && (
-  <div className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm">
-    <div className="mx-5 w-full max-w-sm rounded-3xl bg-white p-8 text-center shadow-2xl">
-      <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-blue-100">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
-      </div>
+            <h2 className="mt-5 text-2xl font-bold text-slate-900">
+              Scanning Statement...
+            </h2>
 
-      <h2 className="mt-5 text-2xl font-bold text-slate-900">
-        Scanning Statement...
-      </h2>
+            <p className="mt-2 text-sm text-slate-500">
+              DebtCrusher is analyzing your statement and looking for bills.
+            </p>
 
-      <p className="mt-2 text-sm text-slate-500">
-        DebtCrusher is analyzing your statement and looking for bills.
-      </p>
+            <p className="mt-4 text-xs text-slate-400">
+              Please wait while the scan completes.
+            </p>
+          </div>
+        </div>
+      )}
 
-      <p className="mt-4 text-xs text-slate-400">
-        Please wait while the scan completes.
-      </p>
-    </div>
-  </div>
-)}
-
-className="space-y-6 px-5 py-6 pb-32">
       <div>
         <h1 className="text-3xl font-bold text-slate-900">
           AI Statement Scanner
