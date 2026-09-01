@@ -77,7 +77,7 @@ export default function AddDebtModal({
   const [creditLimit, setCreditLimit] = useState("");
   const [notes, setNotes] = useState("");
 
-seEffect(() => {
+useEffect(() => {
   if (!open) return;
 
   if (prefill) {
