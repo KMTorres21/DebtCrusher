@@ -166,22 +166,44 @@ const handleScan = async () => {
       )
     );
   };
-  const handleEditBill = (bill: ExtractedBill) => {
-    setEditingBill(bill);
-  };
-  const handleAddDebt = (bill: ExtractedBill) => {
-    setDebtPrefill({
-      name: bill.name,
-      type: "Credit Card",
-      interestRate:
-        typeof bill.apr === "number"
-          ? bill.apr
-          : undefined,
-      minimumPayment: bill.amount,
-      dueDate: bill.dueDate,
-      notes: bill.notes,
-    });
-  };
+const handleAddDebt = (bill: ExtractedBill) => {
+  setDebtPrefill({
+    name: bill.name,
+    type: "Credit Card",
+
+    balance:
+      typeof bill.currentBalance === "number"
+        ? bill.currentBalance
+        : typeof bill.statementBalance === "number"
+          ? bill.statementBalance
+          : 0,
+
+    originalBalance:
+      typeof bill.statementBalance === "number"
+        ? bill.statementBalance
+        : typeof bill.currentBalance === "number"
+          ? bill.currentBalance
+          : 0,
+
+    interestRate:
+      typeof bill.apr === "number"
+        ? bill.apr
+        : 0,
+
+    minimumPayment: bill.amount,
+
+    dueDate: bill.dueDate,
+
+    notes: [
+      bill.statementDate
+        ? `Statement date: ${bill.statementDate}`
+        : null,
+      bill.notes ?? null,
+    ]
+      .filter(Boolean)
+      .join("\n"),
+  });
+};
   const handleSaveEditBill = (updatedBill: Bill) => {
     setBills((current) =>
       current.map((bill) =>
