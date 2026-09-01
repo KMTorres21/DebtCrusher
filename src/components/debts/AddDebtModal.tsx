@@ -1,4 +1,9 @@
-import { FormEvent, useState } from "react";
+import { 
+  FormEvent,
+  useEffect,
+  useState,
+} from "react";
+
 import { X } from "lucide-react";
 
 import { Debt, DebtType } from "../../types/Debt";
@@ -6,6 +11,7 @@ import Button from "../common/Button";
 
 interface AddDebtModalProps {
   open: boolean;
+  prefill?: Partial<Debt>;
   onClose: () => void;
   onSave: (debt: Debt) => void;
 }
@@ -23,6 +29,7 @@ const debtTypes: DebtType[] = [
 
 export default function AddDebtModal({
   open,
+  prefill,
   onClose,
   onSave,
 }: AddDebtModalProps) {
