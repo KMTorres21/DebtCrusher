@@ -62,8 +62,6 @@ export default function StatementScannerPage() {
   extractedBill,
 ]);
 setHasScanned(true);
-setIsScanning(false);
-    }, 1500);
   };
 
   const toggleBill = (id: string) => {
