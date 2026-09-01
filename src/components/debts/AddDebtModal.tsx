@@ -43,6 +43,42 @@ export default function AddDebtModal({
   const [creditLimit, setCreditLimit] = useState("");
   const [notes, setNotes] = useState("");
 
+useEffect(() => {
+  if (!open) return;
+
+  if (prefill) {
+    setName(prefill.name ?? "");
+    setType(prefill.type ?? "Credit Card");
+    setBalance(
+      prefill.balance !== undefined
+        ? String(prefill.balance)
+        : ""
+    );
+    setOriginalBalance(
+      prefill.originalBalance !== undefined
+        ? String(prefill.originalBalance)
+        : ""
+    );
+    setInterestRate(
+      prefill.interestRate !== undefined
+        ? String(prefill.interestRate)
+        : ""
+    );
+    setMinimumPayment(
+      prefill.minimumPayment !== undefined
+        ? String(prefill.minimumPayment)
+        : ""
+    );
+    setDueDate(prefill.dueDate ?? "");
+    setCreditLimit(
+      prefill.creditLimit !== undefined
+        ? String(prefill.creditLimit)
+        : ""
+    );
+    setNotes(prefill.notes ?? "");
+  }
+}, [open, prefill]);
+
   if (!open) return null;
 
   function resetForm() {
