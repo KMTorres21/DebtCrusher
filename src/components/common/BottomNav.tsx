@@ -3,7 +3,6 @@ import {
   CreditCard,
   Wallet,
   Target,
-  Settings,
   CalendarDays,
   CalendarClock,
   ScanLine,
@@ -17,14 +16,9 @@ const navItems = [
     icon: Home,
   },
   {
-    label: "Bills",
-    path: "/bills",
-    icon: CreditCard,
-  },
-  {
-    label: "Calendar",
-    path: "/calendar",
-    icon: CalendarDays,
+    label: "Scanner",
+    path: "/statement-scanner",
+    icon: ScanLine,
   },
   {
     label: "Income",
@@ -32,9 +26,9 @@ const navItems = [
     icon: Wallet,
   },
   {
-    label: "Payday",
-    path: "/timeline",
-    icon: CalendarClock,
+    label: "Bills",
+    path: "/bills",
+    icon: CreditCard,
   },
   {
     label: "Debts",
@@ -42,14 +36,14 @@ const navItems = [
     icon: Target,
   },
   {
-    label: "Scanner",
-    path: "/statement-scanner",
-    icon: ScanLine,
+    label: "Calendar",
+    path: "/calendar",
+    icon: CalendarDays,
   },
   {
-    label: "Settings",
-    path: "/settings",
-    icon: Settings,
+    label: "Payday",
+    path: "/timeline",
+    icon: CalendarClock,
   },
 ];
 
