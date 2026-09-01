@@ -11,6 +11,9 @@ interface ExtractedBill extends Bill{
   confidence: number;
   selected: boolean;
   apr?: number | null;
+  statementDate?: string | null;
+  statementBalance?: number | null;
+  currentBalance?: number | null;
 }
 
 export default function StatementScannerPage() {
@@ -68,6 +71,9 @@ const handleScan = async () => {
         amount?: number | null;
         apr?: number | null;
         dueDate?: string | null;
+        statementDate?: string | null;
+        statementBalance?: number | null;
+        currentBalance?: number | null;
         category?: string | null;
         recurring?: boolean | null;
         paid?: boolean | null;
@@ -107,6 +113,16 @@ const handleScan = async () => {
         apr: 
           typeof bill.apr === "number"
             ? bill.apr
+            : undefined,
+        statementDate: bill.statementDate ??
+          undefined,
+        statementBalance:
+          typeof bill.statementBalance === "number"
+            ? bill.statementBalance
+            : undefined,
+        currentBalance:
+          typeof bill.currentBalance === "number"
+            ? bill.currentBalance
             : undefined,
         dueDate: bill.dueDate ?? "",
         category,
