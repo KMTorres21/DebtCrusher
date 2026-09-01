@@ -386,10 +386,33 @@ const handleAddDebt = (bill: ExtractedBill) => {
                           </p>
                         </div>
 
-                        <div className="text-right font-bold">
-                          {formatCurrency(bill.amount)}
-                        </div>
-                      </div>
+                       <div className="mt-3 space-y-1 text-sm text-slate-500">
+  {bill.statementDate && (
+    <p>
+      Statement Date: {bill.statementDate}
+    </p>
+  )}
+
+  {typeof bill.statementBalance === "number" && (
+    <p>
+      Statement Balance:{" "}
+      {formatCurrency(bill.statementBalance)}
+    </p>
+  )}
+
+  {typeof bill.currentBalance === "number" && (
+    <p>
+      Current Balance:{" "}
+      {formatCurrency(bill.currentBalance)}
+    </p>
+  )}
+
+  {typeof bill.apr === "number" && (
+    <p>
+      APR: {bill.apr.toFixed(2)}%
+    </p>
+  )}
+</div>
 
                 <div className="mt-4 flex flex-wrap gap-2">
                 <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold">
