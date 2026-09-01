@@ -375,18 +375,23 @@ const handleAddDebt = (bill: ExtractedBill) => {
                     />
 
                     <div className="min-w-0 flex-1">
-                      <div className="flex items-start justify-between gap-3">
-                        <div>
-                          <h3 className="font-bold">
-                            {bill.name}
-                          </h3>
+                     <div className="flex items-start justify-between gap-3">
+  <div>
+    <h3 className="font-bold">
+      {bill.name}
+    </h3>
 
-                          <p className="mt-1 text-sm text-slate-500">
-                            Due {bill.dueDate}
-                          </p>
-                        </div>
+    <p className="mt-1 text-sm text-slate-500">
+      Due {bill.dueDate}
+    </p>
+  </div>
 
-                       <div className="mt-3 space-y-1 text-sm text-slate-500">
+  <div className="text-right font-bold">
+    {formatCurrency(bill.amount)}
+  </div>
+</div>
+
+<div className="mt-3 space-y-1 text-sm text-slate-500">
   {bill.statementDate && (
     <p>
       Statement Date: {bill.statementDate}
