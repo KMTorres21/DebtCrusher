@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import AppLayout from "./AppLayout";
-import TimelinePage from "../pages/TimelinePage";
+import PaydayStrategyPage from "../pages/PaydayStrategyPage";
 import DashboardPage from "../pages/DashboardPage";
 import BillsPage from "../pages/BillsPage";
 import IncomePage from "../pages/IncomePage";
@@ -19,7 +19,7 @@ export default function AppRouter() {
           <Route path="/income" element={<IncomePage />} />
           <Route path="/debts" element={<DebtsPage />} />
           <Route path="/settings" element={<SettingsPage />} />
-          <Route path="/timeline" element={<TimelinePage />} />
+          <Route path="/timeline" element={<PaydayStrategyPage />} />
           <Route path="/calendar" element={<CalendarPage />} />
           <Route path="/statement-scanner" element={<StatementScannerPage />}
       />
