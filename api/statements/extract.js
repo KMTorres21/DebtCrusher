@@ -88,6 +88,12 @@ For each bill, extract:
 - confidence
 
 Rules:
+- statementDate should use YYYY-MM-DD when identifiable.
+- statementBalance is the balance shown for the statement period.
+- currentBalance is the current/account balance.
+- apr is the annual percentage rate as a number, without the percent sign.
+- Do not substitute statement balance with current balance or vice versa.
+- If any value cannot be determined, use null.
 - amount must be the normal recurring payment amount when identifiable.
 - dueDate should use YYYY-MM-DD when a specific due date can be determined.
 - category should be a reasonable category such as Utilities, Insurance,
@@ -143,6 +149,22 @@ Rules:
                         type: Type.STRING,
                         nullable: true,
                       },
+                      statementDate: {
+                        type: Type.STRING,
+                        nullable: true,
+                      },
+                      statementBalance: {
+                        type: Type.NUMBER,
+                        nullable: true,
+                      },
+                      currentBalance: {
+                        type: Type.NUMBER,
+                        nullable: true,
+                      },
+                      apr: {
+                        type: Type.NUMBER,
+                        nullable: true,
+                      },
                       amount: {
                         type: Type.NUMBER,
                         nullable: true,
@@ -179,6 +201,10 @@ Rules:
                     required: [
                       "name",
                       "amount",
+                      "statementDate",
+                      "statementBalance",
+                      "currentBalance",
+                      "apr", 
                       "dueDate",
                       "category",
                       "recurring",
