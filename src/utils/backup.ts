@@ -1,13 +1,13 @@
-export interface DebtCrusherBackup {
-  app: "DebtCrusher";
+export interface DebtBeGoneBackup {
+  app: "DebtBeGone!!";
   version: 1;
   exportedAt: string;
   data: Record<string, string>;
 }
 
-const STORAGE_PREFIX = "debtcrusher-";
+const STORAGE_PREFIX = "debtbegone-";
 
-export function createBackup(): DebtCrusherBackup {
+export function createBackup(): DebtBeGoneBackup {
   const data: Record<string, string> = {};
 
   for (let i = 0; i < localStorage.length; i++) {
@@ -25,7 +25,7 @@ export function createBackup(): DebtCrusherBackup {
   }
 
   return {
-    app: "DebtCrusher",
+    app: "DebtBeGone!!",
     version: 1,
     exportedAt: new Date().toISOString(),
     data,
@@ -50,7 +50,7 @@ export function downloadBackup() {
     .slice(0, 10);
 
   link.href = url;
-  link.download = `DebtCrusher-Backup-${today}.json`;
+  link.download = `DebtBeGone!!-Backup-${today}.json`;
 
   document.body.appendChild(link);
 
@@ -63,7 +63,7 @@ export function downloadBackup() {
 
 export function parseBackup(
   fileContents: string
-): DebtCrusherBackup {
+): DebtBeGoneBackup {
   let parsed: unknown;
 
   try {
@@ -79,16 +79,16 @@ export function parseBackup(
     parsed === null
   ) {
     throw new Error(
-      "This is not a valid DebtCrusher backup."
+      "This is not a valid DebtBeGone!! backup."
     );
   }
 
   const backup =
-    parsed as Partial<DebtCrusherBackup>;
+    parsed as Partial<DebtBeGoneBackup>;
 
-  if (backup.app !== "DebtCrusher") {
+  if (backup.app !== "DebtBeGone!!") {
     throw new Error(
-      "This file was not created by DebtCrusher."
+      "This file was not created by DebtBeGone!!."
     );
   }
 
@@ -104,7 +104,7 @@ export function parseBackup(
     Array.isArray(backup.data)
   ) {
     throw new Error(
-      "The backup does not contain valid DebtCrusher data."
+      "The backup does not contain valid DebtBeGone!! data."
     );
   }
 
@@ -124,13 +124,13 @@ export function parseBackup(
     }
   }
 
-  return backup as DebtCrusherBackup;
+  return backup as DebtBeGoneBackup;
 }
 
 export function restoreBackup(
-  backup: DebtCrusherBackup
+  backup: DebtBeGoneBackup
 ) {
-  // Remove existing DebtCrusher data only.
+  // Remove existing DebtBeGone!! data only.
   // Other websites/app localStorage is untouched.
   const keysToRemove: string[] = [];
 

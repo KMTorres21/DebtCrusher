@@ -11,7 +11,7 @@ import Card from "../components/common/Card";
 import { usePaydayStrategySettings } from "../hooks/usePaydayStrategySettings";
 
 import {
-  DebtCrusherBackup,
+  DebtBeGoneBackup,
   downloadBackup,
   parseBackup,
   restoreBackup,
@@ -28,7 +28,7 @@ export default function SettingsPage() {
     useRef<HTMLInputElement>(null);
 
   const [pendingBackup, setPendingBackup] =
-    useState<DebtCrusherBackup | null>(null);
+    useState<DebtBeGoneBackup | null>(null);
 
   const [fileName, setFileName] =
     useState("");
@@ -80,8 +80,8 @@ export default function SettingsPage() {
     }
 
     const confirmed = window.confirm(
-      "Restore this DebtCrusher backup?\n\n" +
-        "Your current DebtCrusher data will be replaced with the data from this backup."
+      "Restore this DebtBeGone!! backup?\n\n" +
+        "Your current DebtBeGone!! data will be replaced with the data from this backup."
     );
 
     if (!confirmed) {
@@ -94,7 +94,7 @@ export default function SettingsPage() {
     restoreBackup(pendingBackup);
 
     window.alert(
-      "DebtCrusher has been restored successfully."
+      "DebtBeGone!! has been restored successfully."
     );
 
     window.location.reload();
@@ -126,7 +126,7 @@ export default function SettingsPage() {
     <PageContainer>
       <PageHeader
         title="Settings"
-        subtitle="Customize DebtCrusher and manage your data."
+        subtitle="Customize DebtBeGone!! and manage your data."
       />
 
       {/* PAYDAY STRATEGY */}
@@ -325,7 +325,7 @@ export default function SettingsPage() {
         </h2>
 
         <p className="mt-1 text-sm text-slate-500">
-          Export a complete backup of your DebtCrusher
+          Export a complete backup of your DebtBeGone!!
           data or restore a previous backup.
         </p>
 
@@ -334,11 +334,11 @@ export default function SettingsPage() {
           {/* EXPORT */}
           <div>
             <h3 className="font-semibold text-slate-900">
-              Export DebtCrusher Backup
+              Export DebtBeGone!! Backup
             </h3>
 
             <p className="mt-1 text-sm text-slate-500">
-              Download your DebtCrusher data as a JSON
+              Download your DebtBeGone!! data as a JSON
               backup file.
             </p>
 
@@ -356,12 +356,12 @@ export default function SettingsPage() {
           {/* IMPORT */}
           <div>
             <h3 className="font-semibold text-slate-900">
-              Import DebtCrusher Backup
+              Import DebtBeGone!! Backup
             </h3>
 
             <p className="mt-1 text-sm text-slate-500">
               Select a backup previously exported from
-              DebtCrusher.
+              DebtBeGone!!.
             </p>
 
             <input
@@ -413,11 +413,11 @@ export default function SettingsPage() {
 
                 <p className="mt-4 text-sm font-semibold text-amber-900">
                   Restoring this backup will replace
-                  your current DebtCrusher data.
+                  your current DebtBeGone!! data.
                 </p>
 
                 <p className="mt-2 text-sm text-amber-800">
-                  DebtCrusher will automatically export
+                  DebtBeGone!! will automatically export
                   a safety backup before restoring.
                 </p>
 

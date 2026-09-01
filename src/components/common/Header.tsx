@@ -16,7 +16,7 @@ export default function Header() {
 
           <div>
             <h1 className="text-2xl font-bold">
-              DebtCrusher
+              DebtBeGone!!
             </h1>
 
             <p className="text-sm text-blue-100">

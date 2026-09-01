@@ -114,7 +114,7 @@ export default function AddBillModal({
             <p className="mt-1 text-sm text-slate-500">
               {bill
   ? "Update your bill details."
-  : "Add a bill to your DebtCrusher plan."}
+  : "Add a bill to your DebtBeGone!! plan."}
             </p>
           </div>
 

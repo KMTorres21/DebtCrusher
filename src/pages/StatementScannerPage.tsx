@@ -219,7 +219,7 @@ const handleScan = async () => {
       </h2>
 
       <p className="mt-2 text-sm text-slate-500">
-        DebtCrusher is analyzing your statement and looking for bills.
+        DebtBeGone!! is analyzing your statement and looking for bills.
       </p>
 
       <p className="mt-4 text-xs text-slate-400">
@@ -235,7 +235,7 @@ const handleScan = async () => {
         </h1>
 
         <p className="mt-1 text-slate-500">
-          Upload a statement and let DebtCrusher find your bills.
+          Upload a statement and let DebtBeGone!! find your bills.
         </p>
       </div>
 
@@ -299,7 +299,7 @@ const handleScan = async () => {
 
             <p className="text-sm text-slate-500">
               Review the information before adding anything
-              to DebtCrusher.
+              to DebtBeGone!!.
             </p>
           </div>
 
