@@ -33,7 +33,7 @@ const navItems = [
   },
   {
     label: "Payday",
-    path: "/payday",
+    path: "/timeline",
     icon: CalendarClock,
   },
   {
@@ -43,7 +43,7 @@ const navItems = [
   },
   {
     label: "Scanner",
-    path: "/scanner",
+    path: "/statement-scanner",
     icon: ScanLine,
   },
   {
