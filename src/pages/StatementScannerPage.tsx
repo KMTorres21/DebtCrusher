@@ -19,7 +19,8 @@ export default function StatementScannerPage() {
   const handleFileChange = (
     event: ChangeEvent<HTMLInputElement>
   ) => {
-    const selectedFile = event.target.files?.[0] ?? null;
+    const selectedFile =
+      event.target.files?.[0] ?? null;
 
     setFile(selectedFile);
     setHasScanned(false);
@@ -31,7 +32,7 @@ export default function StatementScannerPage() {
     setIsScanning(true);
 
     // Mock AI extraction for Sprint 1.
-    // Real statement/OCR processing will replace this later.
+    // Real statement processing can replace this.
     setTimeout(() => {
       const today = new Date();
 
@@ -49,7 +50,7 @@ export default function StatementScannerPage() {
         category: "Utilities" as BillCategory,
         recurring: true,
         paid: false,
-    autoPay: false,
+        autoPay: false,
         notes: `Extracted from ${file.name}`,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
@@ -57,12 +58,24 @@ export default function StatementScannerPage() {
         selected: true,
       };
 
+<<<<<<< HEAD
  setBills((current) => [
   ...current,
   ...extractedBills,
 ]);
 setHasScanned(true);
   }
+=======
+      setBills((current) => [
+        ...current,
+        extractedBill,
+      ]);
+
+      setHasScanned(true);
+      setIsScanning(false);
+    }, 1000);
+  };
+>>>>>>> 7adfbb2dc932b4a5f98ccbad9ab93b611c0dc6e3
 
   const toggleBill = (id: string) => {
     setBills((current) =>
@@ -83,13 +96,19 @@ setHasScanned(true);
     );
 
     selectedBills.forEach((bill) => {
-      const { confidence, selected, ...newBill } = bill;
+      const {
+        confidence,
+        selected,
+        ...newBill
+      } = bill;
 
       addBill(newBill);
     });
 
     setBills((current) =>
-      current.filter((bill) => !bill.selected)
+      current.filter(
+        (bill) => !bill.selected
+      )
     );
   };
 
@@ -98,45 +117,49 @@ setHasScanned(true);
   ).length;
 
   return (
-    <div 
+    <div className="space-y-6 px-5 py-6 pb-32">
+      {/* Scanning Overlay */}
+      {isScanning && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm">
+          <div className="mx-5 w-full max-w-sm rounded-3xl bg-white p-8 text-center shadow-2xl">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-blue-100">
+              <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+            </div>
 
-{isScanning && (
-  <div className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm">
-    <div className="mx-5 w-full max-w-sm rounded-3xl bg-white p-8 text-center shadow-2xl">
-      <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-blue-100">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
-      </div>
+            <h2 className="mt-5 text-2xl font-bold text-slate-900">
+              Scanning Statement...
+            </h2>
 
-      <h2 className="mt-5 text-2xl font-bold text-slate-900">
-        Scanning Statement...
-      </h2>
+            <p className="mt-2 text-sm text-slate-500">
+              DebtCrusher is analyzing your
+              statement and looking for bills.
+            </p>
 
-      <p className="mt-2 text-sm text-slate-500">
-        DebtCrusher is analyzing your statement and looking for bills.
-      </p>
+            <p className="mt-4 text-xs text-slate-400">
+              Please wait while the scan
+              completes.
+            </p>
+          </div>
+        </div>
+      )}
 
-      <p className="mt-4 text-xs text-slate-400">
-        Please wait while the scan completes.
-      </p>
-    </div>
-  </div>
-)}
-
-className="space-y-6 px-5 py-6 pb-32">
       <div>
         <h1 className="text-3xl font-bold text-slate-900">
           AI Statement Scanner
         </h1>
 
         <p className="mt-1 text-slate-500">
-          Upload a statement and let DebtCrusher find your bills.
+          Upload a statement and let DebtCrusher
+          find your bills.
         </p>
       </div>
 
       {/* Upload */}
       <div className="rounded-2xl bg-white p-6 shadow">
         <div className="text-center">
-          <div className="text-5xl">📄</div>
+          <div className="text-5xl">
+            📄
+          </div>
 
           <h2 className="mt-3 text-xl font-bold">
             Upload a Statement
@@ -148,6 +171,7 @@ className="space-y-6 px-5 py-6 pb-32">
 
           <label className="mt-5 inline-flex cursor-pointer rounded-xl bg-blue-600 px-5 py-3 font-semibold text-white transition hover:bg-blue-700">
             Choose Statement
+
             <input
               type="file"
               accept=".pdf,image/*"
@@ -167,21 +191,21 @@ className="space-y-6 px-5 py-6 pb-32">
         </div>
       </div>
 
-{/* Scan */}
-{file && (
-  <button
-    type="button"
-    onClick={handleScan}
-    disabled={isScanning}
-    className="w-full rounded-xl bg-slate-900 px-5 py-4 font-bold text-white shadow transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
-  >
-    {isScanning
-      ? "🔎 Scanning Statement..."
-      : bills.length > 0
-        ? "➕ Scan Another Statement"
-        : "🤖 Scan Statement"}
-  </button>
-)}
+      {/* Scan */}
+      {file && (
+        <button
+          type="button"
+          onClick={handleScan}
+          disabled={isScanning}
+          className="w-full rounded-xl bg-slate-900 px-5 py-4 font-bold text-white shadow transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {isScanning
+            ? "🔎 Scanning Statement..."
+            : bills.length > 0
+              ? "➕ Scan Another Statement"
+              : "🤖 Scan Statement"}
+        </button>
+      )}
 
       {/* Results */}
       {hasScanned && (
@@ -192,14 +216,16 @@ className="space-y-6 px-5 py-6 pb-32">
             </h2>
 
             <p className="text-sm text-slate-500">
-              Review the information before adding anything
-              to DebtCrusher.
+              Review the information before
+              adding anything to DebtCrusher.
             </p>
           </div>
 
           {bills.length === 0 ? (
             <div className="rounded-2xl bg-white p-6 text-center shadow">
-              <div className="text-4xl">🔍</div>
+              <div className="text-4xl">
+                🔍
+              </div>
 
               <h3 className="mt-3 font-bold">
                 No bills found
@@ -243,7 +269,9 @@ className="space-y-6 px-5 py-6 pb-32">
                         </div>
 
                         <div className="text-right font-bold">
-                          {formatCurrency(bill.amount)}
+                          {formatCurrency(
+                            bill.amount
+                          )}
                         </div>
                       </div>
 
@@ -259,7 +287,8 @@ className="space-y-6 px-5 py-6 pb-32">
                         )}
 
                         <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
-                          {bill.confidence}% confidence
+                          {bill.confidence}%
+                          confidence
                         </span>
                       </div>
                     </div>
@@ -274,7 +303,9 @@ className="space-y-6 px-5 py-6 pb-32">
                 className="w-full rounded-xl bg-green-600 px-5 py-4 font-bold text-white shadow transition hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 ✅ Add {selectedCount} Selected{" "}
-                {selectedCount === 1 ? "Bill" : "Bills"}
+                {selectedCount === 1
+                  ? "Bill"
+                  : "Bills"}
               </button>
             </>
           )}
