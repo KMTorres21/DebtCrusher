@@ -12,5 +12,4 @@
     "esModuleInterop": true,
     "noEmit": true
   },
-  "include": ["src"]
 }
