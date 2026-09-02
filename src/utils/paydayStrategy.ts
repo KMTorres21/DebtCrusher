@@ -796,8 +796,10 @@ function allocateBills(
   const availableCents =
     paydayPlans.map(
       (plan) =>
-        Math.round(
-          plan.amount * 100
+        Math.max(
+          0,
+          Math.round(plan.amount * 100) -
+            protectedCents
         )
     );
 
