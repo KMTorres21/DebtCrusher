@@ -108,29 +108,54 @@ export function getBillOccurrences(
 
   // Semi-Monthly
   if (frequency === "semimonthly") {
-    let occurrence =
-      new Date(originalDate);
+  const day1 =
+    bill.semiMonthlyDay1 ?? 1;
 
-    while (occurrence < monthStart) {
-      occurrence = addDays(
-        occurrence,
-        15
-      );
-    }
+  const day2 =
+    bill.semiMonthlyDay2 ?? 15;
 
-    while (occurrence <= monthEnd) {
-      occurrences.push(
-        toDateString(occurrence)
-      );
+  const lastDayOfMonth =
+    new Date(
+      year,
+      month + 1,
+      0
+    ).getDate();
 
-      occurrence = addDays(
-        occurrence,
-        15
-      );
-    }
+  const firstOccurrence = new Date(
+    year,
+    month,
+    Math.min(day1, lastDayOfMonth)
+  );
 
-    return occurrences;
+  const secondOccurrence = new Date(
+    year,
+    month,
+    Math.min(day2, lastDayOfMonth)
+  );
+
+  const dates = [
+    firstOccurrence,
+    secondOccurrence,
+  ]
+    .filter(
+      (date) =>
+        date >= originalDate &&
+        date >= monthStart &&
+        date <= monthEnd
+    )
+    .sort(
+      (a, b) =>
+        a.getTime() - b.getTime()
+    );
+
+  for (const date of dates) {
+    occurrences.push(
+      toDateString(date)
+    );
   }
+
+  return occurrences;
+}
 
   const originalYear =
     originalDate.getFullYear();
