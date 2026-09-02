@@ -58,13 +58,13 @@ export default function DebtsPage() {
         subtitle="Track and manage your debts"
       />
 
-<button
-  type="button"
-  onClick={() => navigate("/debt-planner")}
-  className="w-full rounded-2xl bg-slate-900 px-5 py-4 text-left font-semibold text-white shadow transition hover:bg-slate-800"
->
-  Debt Payoff Plan
-</button>
+      <button
+        type="button"
+        onClick={() => navigate("/debt-planner")}
+        className="w-full rounded-2xl bg-slate-900 px-5 py-4 text-left font-semibold text-white shadow transition hover:bg-slate-800"
+      >
+        Debt Payoff Plan
+      </button>
 
       <div className="grid grid-cols-2 gap-4">
         <StatCard
