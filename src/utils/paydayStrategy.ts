@@ -754,7 +754,7 @@ function allocateNormally(
 
 function allocateBills(
   bills: Bill[],
-  paydayPlans: PaydayPlan[]
+  paydayPlans: PaydayPlan[],
   protectedPaycheckAmount: number
 ): PaydayPlan[] {
   if (
@@ -912,7 +912,7 @@ function allocateBills(
 export function buildAllPaydayPlans(
   incomes: Income[],
   bills: Bill[],
-  debts: Debt[]
+  debts: Debt[],
   protectedPaycheckAmount = 0,
 ): PaydayPlan[] {
   const debtBills: Bill[] = debts.map((debt) => ({
@@ -946,7 +946,7 @@ export function buildAllPaydayPlans(
 
   return allocateBills(
     allObligations,
-    paydayPlans
+    paydayPlans,
     protectedPaycheckAmount
   );
 }
