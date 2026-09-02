@@ -24,8 +24,8 @@ export default function AppRouter() {
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/timeline" element={<PaydayStrategyPage />} />
           <Route path="/calendar" element={<CalendarPage />} />
-          <Route path="/statement-scanner" element={<StatementScannerPage />}
-      />
+          <Route path="/reports" element={<ReportsPage />} />
+          <Route path="/statement-scanner" element={<StatementScannerPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>
