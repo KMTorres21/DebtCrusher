@@ -11,7 +11,7 @@ import PageHeader from "../components/common/PageHeader";
 import SearchBar from "../components/common/SearchBar";
 import EmptyState from "../components/common/EmptyState";
 import StatCard from "../components/common/StatCard";
-
+import { useNavigate } from "react-router-dom";
 import DebtCard from "../components/debts/DebtCard";
 import AddDebtModal from "../components/debts/AddDebtModal";
 
@@ -40,6 +40,8 @@ export default function DebtsPage() {
     (sum, debt) => sum + debt.minimumPayment,
     0
   );
+
+  const navigate= useNavigate();
 
   function handleEdit(debt: Debt) {
     setEditingDebt(debt);
