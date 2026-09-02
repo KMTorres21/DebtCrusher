@@ -30,6 +30,8 @@ export interface Bill {
   paid: boolean;
   recurring: boolean;
   frequency?: BillFrequency;
+    semiMonthlyDay1?: number;
+    semiMonthlyDay2?: number;
   autoPay: boolean;
   notes?: string;
   createdAt: string;

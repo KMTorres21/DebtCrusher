@@ -44,6 +44,12 @@ export default function AddBillModal({
   const [recurring, setRecurring] = useState(false);
   const [frequency, setFrequency] =
     useState<BillFrequency>("monthly");
+  const [semiMonthlyDay1,
+    setSemiMonthlyDay1] =
+    useState("1");
+  const [semiMonthlyDay2,
+    setSemiMonthlyDay2] =
+    useState("15");
   const [notes, setNotes] = useState("");
 
   useEffect(() => {
@@ -54,6 +60,12 @@ export default function AddBillModal({
     setCategory(bill.category);
     setRecurring(bill.recurring);
     setFrequency(bill.frequency ?? "monthly");
+    setSemiMonthlyDay1(
+      String(bill.semiMonthlyDay1 ?? 1)
+    );
+    setSemiMonthlyDay2(
+      String(bill.semiMonthlyDay2 ?? 15)
+    );
     setNotes(bill.notes ?? "");
   } else {
     setFrequency("monthly");
@@ -72,6 +84,8 @@ export default function AddBillModal({
     setCategory("Other");
     setRecurring(false);
     setFrequency("monthly");
+    setSemiMonthlyDay1("1");
+    setSemiMonthlyDay2("15");
     setNotes("");
   }
 
@@ -274,7 +288,7 @@ export default function AddBillModal({
                 Automatically treat this as a recurring bill.
               </p>
             </div>
-            </label>
+          </label>
 
             {recurring && (
               <div>
@@ -313,10 +327,56 @@ export default function AddBillModal({
                 <option value="annually">
                   Annually
                 </option>
-              </select>
+                </select>
+                {frequency === "semimonthly" && (
+                  <div className="ml-6 mt-4 border-1-2 border-slate-300 pl-4">
+                    <p className="mb-3 text-sm font-semibold text-slate-700">
+
+                      Semi-Monthly Due Days
+                    </p>
+
+                    <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="mb-1 block text-xs font-medium text-slate-600">
+                        First Day
+                      </label>
+                      <input
+                        type="number"
+                        min="1"
+                        max="31"
+                        value={semiMonthlyDay1}
+                        onChange={(event) =>
+                          setSemiMonthlyDay1(event.target.value)
+                        }
+                        className="w-full rounded-xl border border-slate-300 bg-white p-3"
+                          required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="mb-1 block text-xs font-medium text-slate-600">
+                        Second Day
+                      </label>
+                      <input
+                        type="number"
+                        min="1"
+                        max="31"
+                        value={semiMonthlyDay2}
+                        onChange={(event) =>
+                          setSemiMonthlyDay2(event.target.value)
+                        }
+                      
+                        className="w-full rounded-xl border border-slate-300 bg-white p-3"
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+               )}
             </div>
           )}
-          </div>
+      </div>
+
 
           {/* Notes */}
           <div>
