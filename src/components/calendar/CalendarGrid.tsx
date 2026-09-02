@@ -63,7 +63,14 @@ export default function CalendarGrid({
     );
 
     const dayIncome = income.filter(
-      (item) => item.nextPayDate === dateString
+      (item) => {
+          const occurrences = getIncomeOccurrences(
+            item,
+            year,
+            month
+          );
+          return occurrences.includes(dateString);
+      }
     );
 
     const dayDebts = debts.filter(
