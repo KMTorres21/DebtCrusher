@@ -292,6 +292,47 @@ export default function SettingsPage() {
             </p>
           </div>
         )}
+
+<div className="mt-6">
+  <label
+    htmlFor="protectedPaycheckAmount"
+    className="text-sm font-bold uppercase tracking-wide text-slate-500"
+  >
+    Protected Paycheck Amount
+  </label>
+
+  <div className="mt-2 flex items-center gap-2">
+    <span className="text-lg font-semibold text-slate-600">
+      $
+    </span>
+
+    <input
+      id="protectedPaycheckAmount"
+      type="number"
+      min="0"
+      step="1"
+      value={settings.protectedPaycheckAmount}
+      onChange={(event) => {
+        const value = Number(event.target.value);
+
+        if (Number.isNaN(value)) {
+          return;
+        }
+
+        setSettings({
+          protectedPaycheckAmount:
+            Math.max(0, value),
+        });
+      }}
+      className="w-32 rounded-xl border border-slate-300 px-4 py-3 text-lg font-semibold text-slate-900 outline-none focus:border-slate-500"
+    />
+  </div>
+
+  <p className="mt-2 text-sm text-slate-500">
+    Keep this amount protected from bill and debt
+    allocations on every paycheck.
+  </p>
+</div>
       </Card>
 
       {/* RESET PAYDAY STRATEGY */}
