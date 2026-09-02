@@ -106,34 +106,34 @@ export default function AddBillModal({
     const now = new Date().toISOString();
 
     const newBill: Bill = {
-  id: bill?.id ?? crypto.randomUUID(),
-  name: name.trim(),
-  amount: numericAmount,
-  dueDate,
-  category,
-  recurring,
+    id: bill?.id ?? crypto.randomUUID(),
+    name: name.trim(),
+    amount: numericAmount,
+    dueDate,
+    category,
+    recurring,
+    frequency,
+      semiMonthlyDay1:
+        recurring && frequency === "semimonthly"
+          ? Number(semiMonthlyDay1)
+          : undefined,
+      semiMonthlyDay2:
+        recurring && frequency === "semimonthly"
+          ? Number(semiMonthlyDay2)
+          : undefined,
+    
+    autoPay: bill?.autoPay ?? false,
+    paid: bill?.paid ?? false,
+    notes: notes.trim() || undefined,
+    createdAt: bill?.createdAt ?? now,
+    updatedAt: now,
+  };
 
-  frequency:
-    recurring
-      ? frequency
-      : "once",
+    onSave(newBill);
 
-  semiMonthlyDay1:
-    recurring && frequency === "semimonthly"
-      ? Number(semiMonthlyDay1)
-      : undefined,
-
-  semiMonthlyDay2:
-    recurring && frequency === "semimonthly"
-      ? Number(semiMonthlyDay2)
-      : undefined,
-
-  autoPay: bill?.autoPay ?? false,
-  paid: bill?.paid ?? false,
-  notes: notes.trim() || undefined,
-  createdAt: bill?.createdAt ?? now,
-  updatedAt: now,
-};
+    resetForm();
+    onClose();
+  }
 
   return (
     <div className="fixed inset-0 z-[100] flex items-end justify-center bg-black/50 p-0 sm:items-center sm:p-4">
