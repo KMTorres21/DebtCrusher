@@ -43,7 +43,7 @@ export default function AddBillModal({
     useState<BillCategory>("Other");
   const [recurring, setRecurring] = useState(false);
   const [frequency, setFrequency] =
-    useState<BillFrequency>("Monthly");
+    useState<BillFrequency>("monthly");
   const [notes, setNotes] = useState("");
 
   useEffect(() => {
@@ -53,10 +53,10 @@ export default function AddBillModal({
     setDueDate(bill.dueDate);
     setCategory(bill.category);
     setRecurring(bill.recurring);
-    setFrequency(bill.frequency ?? "Monthly");
+    setFrequency(bill.frequency ?? "monthly");
     setNotes(bill.notes ?? "");
   } else {
-    setFrequency("Monthly");
+    setFrequency("monthly");
     resetForm();
   }
 }, [bill]);
@@ -71,7 +71,7 @@ export default function AddBillModal({
     setDueDate("");
     setCategory("Other");
     setRecurring(false);
-    setFrequency("Monthly");
+    setFrequency("monthly");
     setNotes("");
   }
 
@@ -255,7 +255,7 @@ export default function AddBillModal({
                 const checked = event.target.checked;
                 setRecurring(checked);
                 if (checked && !bill?.frequency) {
-                  setFrequency("Monthly");
+                  setFrequency("monthly");
                 }
               }}
               className="mt-1 h-5 w-5"
@@ -306,8 +306,8 @@ export default function AddBillModal({
                 <option value="semiannually">
                   Semi-Annually
                 </option>
-                <option value="annually">
-                  Annually
+                <option value="yearly">
+                  Yearly
                 </option>
               </select>
             </div>
