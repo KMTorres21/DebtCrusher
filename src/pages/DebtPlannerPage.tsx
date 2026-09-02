@@ -1,11 +1,12 @@
-import { useEffect,
-         useMemo, 
-         useState } from "react";
+import { 
+    useMemo,
+    useState 
+    } from "react";
 import { useDebts } from "../hooks/useDebts";
 import {
-  calculateDebtPayoff,
-  PayoffStrategy,
-} from "../utils/debtPayoff";
+    calculateDebtPayoff,
+    PayoffStrategy,
+    } from "../utils/debtPayoff";
 import { formatCurrency } from "../utils/formatCurrency";
 import { useBills } from "../hooks/useBills";
 import { useIncome } from "../hooks/useIncome";
@@ -31,13 +32,7 @@ export default function DebtPlannerPage() {
   const availableAfterObligations = summary.remainingCash;
   const maxExtraPayment = Math.max(0,
     Math.round(availableAfterObligations * 100) / 100);
-    useEffect(() => {
-      const currentAmount =
-        Number(extraPayment) || 0;
-      if (currentAmount > maxExtraPayment) {
-        setExtraPayment(String(extraPayment));
-      } 
-    }, [maxExtraPayment, extraPayment]);
+    
   const plan = useMemo(
     () =>
       calculateDebtPayoff(
@@ -190,7 +185,6 @@ export default function DebtPlannerPage() {
             id="extra-payment"
             type="number"
             min="0"
-            max={maxExtraPayment}
             step="25"
             value={extraPayment}
             onChange={(event) => {
@@ -202,16 +196,25 @@ export default function DebtPlannerPage() {
               }
 
               const numericValue = Number(value);
+              if (Number.isNaN(numericValue)) {
+                return;
+              }
               setExtraPayment(
-                String(Math.min(Math.max(0, numericValue), maxExtraPayment)),
+                String(Math.max(0,numericValue))
               );
               }}
+
             className="w-full rounded-xl border border-slate-200 py-3 pl-8 pr-4 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
           />
           <div className="mt-3 flex items-center justify-between text-sm">
             <span className="text-slate-500">
               Available after obligations
             </span>
+            {extraAmount > maxExtraPayment && (
+              <p className="mt-2 text-sm font-semibold text-amber-600">
+                This extra payment IS GREATER than your currently calculated available cash.
+              </p>
+            )}
             <span className="font-semibold text-green-600">
               {formatCurrency(maxExtraPayment)}
             </span>
