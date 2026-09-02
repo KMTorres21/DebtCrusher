@@ -12,6 +12,22 @@ function addDays(date: Date, days: number): Date {
   const result = new Date(date);
   result.setDate(result.getDate() + days);
 =======
+  ).padStart(2, "0")}-${String(
+    date.getDate()
+  ).padStart(2, "0")}`;
+}
+
+function addDays(
+  date: Date,
+  days: number
+): Date {
+  const result = new Date(date);
+
+  result.setDate(
+    result.getDate() + days
+  );
+
+>>>>>>> 6393a08c085a54efdb0154c146eedb177741f89f
   return result;
 }
 
@@ -72,9 +88,17 @@ export function getIncomeOccurrences(
     return [];
   }
 
-  const monthStart = new Date(year, month, 1);
-  const monthEnd = new Date(year, month + 1, 0);
   const monthStart = new Date(
+    year,
+    month,
+    1
+  );
+
+  const monthEnd = new Date(
+    year,
+    month + 1,
+    0
+  );
 
   const occurrences: string[] = [];
 
