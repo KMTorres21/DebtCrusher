@@ -4,7 +4,7 @@ import PageContainer from "../components/common/PageContainer";
 import PageHeader from "../components/common/PageHeader";
 import Card from "../components/common/Card";
 import StatCard from "../components/common/StatCard";
-
+import { Debt } from "../utils/paydayStrategy";
 import { useBills } from "../hooks/useBills";
 import { useIncome } from "../hooks/useIncome";
 
