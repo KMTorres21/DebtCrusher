@@ -29,13 +29,10 @@ const categories: BillCategory[] = [
   "Other",
 ];
 
-const [frequency, setFrequency] =
-  useState<BillFrequency>("Monthly");
 
 export default function AddBillModal({
   open,
   bill,
-  frequency,
   onClose,
   onSave,
 }: AddBillModalProps) {
@@ -45,6 +42,8 @@ export default function AddBillModal({
   const [category, setCategory] =
     useState<BillCategory>("Other");
   const [recurring, setRecurring] = useState(false);
+  const [frequency, setFrequency] =
+    useState<BillFrequency>("Monthly");
   const [notes, setNotes] = useState("");
 
   useEffect(() => {
