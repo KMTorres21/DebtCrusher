@@ -245,30 +245,34 @@ export default function AddBillModal({
           </div>
 
           {/* Recurring */}
-          <label className="flex cursor-pointer items-center gap-3 rounded-xl bg-slate-50 p-4">
+          <div className="rounded-2xl bg-slate-100 p-4">
+          <label className="flex items-start gap-3">
             <input
               type="checkbox"
               checked={recurring}
               onChange={(event) =>
                 setRecurring(event.target.checked)
               }
-              className="h-5 w-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+              className="mt-1 h-5 w-5"
             />
 
             <div>
-              <p className="font-semibold text-slate-800">
+              <div className="font-semibold text-slate-800">
                 Recurring Monthly Bill
-              </p>
+              </div>
 
               <p className="text-sm text-slate-500">
                 Automatically treat this as a recurring bill.
               </p>
             </div>
             </label>
+
             {recurring && (
               <div>
               <label className="mb-1 block text-sm text-slate-700">
                 Frequency
+              </label>
+
               <select
                 value={frequency}
                 onChange={(event) =>
@@ -301,9 +305,9 @@ export default function AddBillModal({
                   Annually
                 </option>
               </select>
-              </label>
             </div>
           )}
+          </div>
 
           {/* Notes */}
           <div>
