@@ -11,6 +11,16 @@ export type BillCategory =
   | "Transportation"
   | "Other";
 
+export type BillFrequency =
+  | "Once"
+  | "Weekly"
+  | "Biweekly"
+  | "Semimonthly"
+  | "Monthly"
+  | "Quarterly"
+  | "Semiannually"
+  | "Yearly";
+
 export interface Bill {
   id: string;
   name: string;
@@ -19,6 +29,7 @@ export interface Bill {
   category: BillCategory;
   paid: boolean;
   recurring: boolean;
+  frequency?: BillFrequency;
   autoPay: boolean;
   notes?: string;
   createdAt: string;

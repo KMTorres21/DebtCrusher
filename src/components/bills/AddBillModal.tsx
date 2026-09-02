@@ -1,11 +1,16 @@
 import { FormEvent, useEffect, useState } from "react";
-import { Bill, BillCategory } from "../../types/Bill";
+import {
+  Bill,
+  BillFrequency,
+} from "../../types/Bill"
+import { BillCategory } from "../../types/Bill";
 import Button from "../common/Button";
 import { X } from "lucide-react"
 
 interface AddBillModalProps {
   open: boolean;
   bill?: Bill | null;
+  frequency: BillFrequency;
   onClose: () => void;
   onSave: (bill: Bill) => void;
 }
@@ -24,9 +29,13 @@ const categories: BillCategory[] = [
   "Other",
 ];
 
+const [frequency, setFrequency] =
+  useState<BillFrequency>("Monthly");
+
 export default function AddBillModal({
   open,
   bill,
+  frequency,
   onClose,
   onSave,
 }: AddBillModalProps) {
@@ -45,6 +54,7 @@ export default function AddBillModal({
     setDueDate(bill.dueDate);
     setCategory(bill.category);
     setRecurring(bill.recurring);
+    setFrequency(bill.frequency ?? "Monthly");
     setNotes(bill.notes ?? "");
   } else {
     resetForm();
@@ -61,6 +71,7 @@ export default function AddBillModal({
     setDueDate("");
     setCategory("Other");
     setRecurring(false);
+    setFrequency("Monthly");
     setNotes("");
   }
 
@@ -80,19 +91,19 @@ export default function AddBillModal({
 
     const now = new Date().toISOString();
 
-  const newBill: Bill = {
-  id: bill?.id ?? crypto.randomUUID(),
-  name: name.trim(),
-  amount: numericAmount,
-  dueDate,
-  category,
-  recurring,
-  autoPay: bill?.autoPay ?? false,
-  paid: bill?.paid ?? false,
-  notes: notes.trim() || undefined,
-  createdAt: bill?.createdAt ?? now,
-  updatedAt: now,
-};
+    const newBill: Bill = {
+    id: bill?.id ?? crypto.randomUUID(),
+    name: name.trim(),
+    amount: numericAmount,
+    dueDate,
+    category,
+    recurring,
+    autoPay: bill?.autoPay ?? false,
+    paid: bill?.paid ?? false,
+    notes: notes.trim() || undefined,
+    createdAt: bill?.createdAt ?? now,
+    updatedAt: now,
+  };
 
     onSave(newBill);
 
@@ -254,7 +265,46 @@ export default function AddBillModal({
                 Automatically treat this as a recurring bill.
               </p>
             </div>
-          </label>
+            </label>
+            {recurring && (
+              <div>
+              <label className="mb-1 block text-sm text-slate-700">
+                Frequency
+              </label>
+              <select
+                value={frequency}
+                onChange={(event) =>
+                  setFrequency(event.target.value as BillFrequency)
+                }
+                className="w-full rounded-xl border p-3"
+              >
+                <option value="once">
+                  Once
+                </option>
+                <option value="weekly">
+                  Weekly
+                </option>
+                <option value="biweekly">
+                  Biweekly
+                </option>
+                <option value="semimonthly">
+                  Monthly
+                </option>
+                <option value="monthly">
+                  Monthly
+                </option>
+                <option value="quarterly">
+                  Quarterly
+                </option>
+                <option value="semiannually">
+                  Semi-Annually
+                </option>
+                <option value="annually">
+                  Annually
+                </option>
+              </select>
+            </div>
+          )}
 
           {/* Notes */}
           <div>
