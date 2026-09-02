@@ -56,6 +56,7 @@ export default function AddBillModal({
     setFrequency(bill.frequency ?? "Monthly");
     setNotes(bill.notes ?? "");
   } else {
+    setFrequency("Monthly");
     resetForm();
   }
 }, [bill]);
@@ -250,15 +251,19 @@ export default function AddBillModal({
             <input
               type="checkbox"
               checked={recurring}
-              onChange={(event) =>
-                setRecurring(event.target.checked)
-              }
+              onChange={(event) => {
+                const checked = event.target.checked;
+                setRecurring(checked);
+                if (checked && !bill?.frequency) {
+                  setFrequency("Monthly");
+                }
+              }}
               className="mt-1 h-5 w-5"
             />
 
             <div>
               <div className="font-semibold text-slate-800">
-                Recurring Monthly Bill
+                Recurring Bill
               </div>
 
               <p className="text-sm text-slate-500">
@@ -290,7 +295,7 @@ export default function AddBillModal({
                   Biweekly
                 </option>
                 <option value="semimonthly">
-                  Monthly
+                  Semi-Monthly
                 </option>
                 <option value="monthly">
                   Monthly
