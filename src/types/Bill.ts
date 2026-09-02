@@ -12,14 +12,14 @@ export type BillCategory =
   | "Other";
 
 export type BillFrequency =
-  | "Once"
-  | "Weekly"
-  | "Biweekly"
-  | "Semimonthly"
-  | "Monthly"
-  | "Quarterly"
-  | "Semiannually"
-  | "Yearly";
+  | "once"
+  | "weekly"
+  | "biweekly"
+  | "semimonthly"
+  | "monthly"
+  | "quarterly"
+  | "semiannually"
+  | "yearly";
 
 export interface Bill {
   id: string;
