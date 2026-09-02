@@ -98,6 +98,10 @@ export default function AddBillModal({
     dueDate,
     category,
     recurring,
+    frequency:
+      recurring
+        ? frequency
+        : "once",
     autoPay: bill?.autoPay ?? false,
     paid: bill?.paid ?? false,
     notes: notes.trim() || undefined,
@@ -306,8 +310,8 @@ export default function AddBillModal({
                 <option value="semiannually">
                   Semi-Annually
                 </option>
-                <option value="yearly">
-                  Yearly
+                <option value="annually">
+                  Annually
                 </option>
               </select>
             </div>
