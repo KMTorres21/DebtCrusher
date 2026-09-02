@@ -40,11 +40,6 @@ const navItems = [
     path: "/calendar",
     icon: CalendarDays,
   },
-  {
-    label: "Payday",
-    path: "/timeline",
-    icon: CalendarClock,
-  },
 ];
 
 export default function BottomNav() {
