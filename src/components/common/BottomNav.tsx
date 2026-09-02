@@ -36,6 +36,11 @@ const navItems = [
     icon: Target,
   },
   {
+    label: "Calendar",
+    path: "/calendar",
+    icon: CalendarDays,
+  },
+  {
     label: "Reports",
     path: "/reports",
     icon: BarChart3,
