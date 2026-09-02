@@ -155,7 +155,7 @@ export function getBillOccurrences(
   ) {
     intervalMonths = 6;
   } else if (
-    frequency === "annually"
+    frequency === "yearly"
   ) {
     intervalMonths = 12;
   }
