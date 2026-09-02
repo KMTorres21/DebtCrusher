@@ -157,7 +157,7 @@ export default function DashboardPage() {
 
       <AddBillModal
         open={isAddBillOpen}
-        frequency="Monthly"
+        frequency="monthly"
         onClose={() => setIsAddBillOpen(false)}
         onSave={handleAddBill}
       />

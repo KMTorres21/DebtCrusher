@@ -500,7 +500,7 @@ const handleAddDebt = (bill: ExtractedBill) => {
     <AddBillModal
       open={editingBill !== null}
       bill={editingBill}
-      frequency={editingBill?.frequency ?? "Monthly"}
+      frequency={editingBill?.frequency ?? "monthly"}
       onClose={() => setEditingBill(null)}
       onSave={handleSaveEditBill}
     />
