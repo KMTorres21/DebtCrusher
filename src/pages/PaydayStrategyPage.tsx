@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-
+import { usePaydayStrategySettings } from "../hooks/usePaydayStrategySettings";
 import PageContainer from "../components/common/PageContainer";
 import PageHeader from "../components/common/PageHeader";
 import Card from "../components/common/Card";
@@ -189,12 +189,14 @@ export default function PaydayStrategyPage() {
   const { bills } = useBills();
   const { income } = useIncome();
   const { debts } = useDebts();
+  const { settings } = usePaydayStrategySettings();
   const paydayPlans = useMemo(
     () =>
       buildAllPaydayPlans(
         income,
         bills,
-        debts
+        debts,
+        settings.protectedPaycheckAmount
       ),
     [income, bills, debts]
   );
