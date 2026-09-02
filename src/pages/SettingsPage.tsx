@@ -254,7 +254,7 @@ export default function SettingsPage() {
               <input
                 id="largeBillThreshold"
                 type="number"
-                min="1"
+                min="0"
                 max="100"
                 step="1"
                 value={
