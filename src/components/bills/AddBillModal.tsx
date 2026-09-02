@@ -269,7 +269,6 @@ export default function AddBillModal({
               <div>
               <label className="mb-1 block text-sm text-slate-700">
                 Frequency
-              </label>
               <select
                 value={frequency}
                 onChange={(event) =>
@@ -302,6 +301,7 @@ export default function AddBillModal({
                   Annually
                 </option>
               </select>
+              </label>
             </div>
           )}
 
