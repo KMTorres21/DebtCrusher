@@ -97,8 +97,7 @@ export default function IncomePage() {
       />
       
       <button
-        type="button"
-  onClick={() => navigate("/timeline")}
+        type="button" onClick={() => navigate("/timeline")}
       className="w-full rounded-2xl bg-slate-900 px-5 py-4 text-left font-semibold text-white shadow transition hover:bg-slate-800"
 
 >
