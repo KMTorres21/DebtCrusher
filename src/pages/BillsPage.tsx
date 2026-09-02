@@ -91,6 +91,7 @@ export default function BillsPage() {
       <AddBillModal
         open={isAddModalOpen}
         bill={editingBill}
+        frequency={editingBill?.frequency ?? "Monthly"}
         onClose={() => {
           setEditingBill(null);
           setIsAddModalOpen(false);
