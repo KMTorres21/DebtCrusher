@@ -27,7 +27,7 @@ export default function IncomePage() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingIncome, setEditingIncome] =
     useState<Income | null>(null);
-
+  const navigate = useNavigate();
   const filteredIncome = income.filter((item) =>
     item.source.toLowerCase().includes(search.toLowerCase())
   );
@@ -95,6 +95,15 @@ export default function IncomePage() {
         title="Income"
         subtitle="Track your income sources"
       />
+      
+      <button
+        type="button"
+  onClick={() => navigate("/timeline")}
+      className="w-full rounded-2xl bg-slate-900 px-5 py-4 text-left font-semibold text-white shadow transition hover:bg-slate-800"
+
+>
+  Payday Strategy
+</button>
 
       <div className="grid grid-cols-2 gap-4">
         <StatCard
