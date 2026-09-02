@@ -5,6 +5,7 @@ import DashboardPage from "../pages/DashboardPage";
 import BillsPage from "../pages/BillsPage";
 import IncomePage from "../pages/IncomePage";
 import DebtsPage from "../pages/DebtsPage";
+import ReportsPage from "../pages/ReportsPage";
 import SettingsPage from "../pages/SettingsPage";
 import CalendarPage from "../pages/CalendarPage";
 import StatementScannerPage from "../pages/StatementScannerPage";
