@@ -1,6 +1,7 @@
 import { Bill } from "../../types/Bill";
 import { Income } from "../../types/Income";
 import { Debt } from "../../types/Debt";
+import { getIncomeOccurrences } from "../../utils/calendarOccurrences";
 
 interface Props {
   year: number;
@@ -61,15 +62,9 @@ export default function CalendarGrid({
       (bill) => bill.dueDate === dateString
     );
 
-    const dayIncome = income.filter((item) => {
-  const occurrences = getIncomeOccurrences(
-    item,
-    year,
-    month
-  );
-
-  return occurrences.includes(dateString);
-});
+    const dayIncome = income.filter(
+      (item) => item.nextPayDate === dateString
+    );
 
     const dayDebts = debts.filter(
       (debt) => debt.dueDate === dateString
