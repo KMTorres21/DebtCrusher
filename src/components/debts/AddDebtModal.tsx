@@ -262,7 +262,7 @@ useEffect(() => {
               type="submit"
               className="flex-1"
             >
-              {prefill?.id ? "SaveChanges" : "Savedebt"}
+              {prefill?.id ? "Save Changes" : "Save Debt"}
             </Button>
           </div>
 
