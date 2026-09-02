@@ -902,15 +902,40 @@ function allocateBills(
 
 export function buildAllPaydayPlans(
   incomes: Income[],
-  bills: Bill[]
+  bills: Bill[],
+  debts: Debt[]
 ): PaydayPlan[] {
+  const debtBills: Bill[] = debts.map((debt) => ({
+    id: `debt-${debt.id}`,
+    name: debt.name,
+    amount: debt.minimumPayment,
+    dueDate: debt.dueDate,
+    category:
+      debt.type === "Credit Card"
+        ? "Credit Card"
+        : debt.type === "Mortgage"
+          ? "Housing"
+          : debt.type === "Auto Loan"
+            ? "Transportation"
+            : "Loan",
+    paid: false,
+    recurring: true,
+    autoPay: false,
+    notes: `Debt minimum payment`,
+    createdAt: debt.createdAt,
+    updatedAt: debt.updatedAt,
+  }));
+
+  const allObligations = [
+    ...bills,
+    ...debtBills,
+  ];
+
   const paydayPlans =
-    buildCombinedPaydays(
-      incomes
-    );
+    buildCombinedPaydays(incomes);
 
   return allocateBills(
-    bills,
+    allObligations,
     paydayPlans
   );
 }
