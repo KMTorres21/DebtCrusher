@@ -116,7 +116,7 @@ useEffect(() => {
         ? Number(creditLimit)
         : undefined,
       notes: notes.trim() || undefined,
-      createdAt: now,
+      createdAt: prefill?.createdAt ?? now,
       updatedAt: now,
     };
 
@@ -132,7 +132,7 @@ useEffect(() => {
 
         <div className="flex items-center justify-between border-b px-6 py-5">
           <h2 className="text-2xl font-bold">
-            Add Debt
+            {prefill?.id ? "Edit Debt" : "Add Debt"}
           </h2>
 
           <button onClick={handleClose}>
@@ -253,6 +253,7 @@ useEffect(() => {
               variant="secondary"
               onClick={handleClose}
               className="flex-1"
+
             >
               Cancel
             </Button>
@@ -261,7 +262,7 @@ useEffect(() => {
               type="submit"
               className="flex-1"
             >
-              Save Debt
+              {prefill?.id ? "SaveChanges" : "Savedebt"}
             </Button>
           </div>
 

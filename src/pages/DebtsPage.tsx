@@ -19,6 +19,7 @@ export default function DebtsPage() {
   const {
     debts,
     addDebt,
+    updateDebt,
     deleteDebt,
   } = useDebts();
 
@@ -45,9 +46,7 @@ export default function DebtsPage() {
 
   function handleEdit(debt: Debt) {
     setEditingDebt(debt);
-
-    // Edit functionality will be completed next.
-    console.log("Editing:", debt);
+    setIsAddModalOpen(true);
   }
 
   return (
@@ -113,8 +112,18 @@ export default function DebtsPage() {
 
       <AddDebtModal
         open={isAddModalOpen}
+        prefill={editingDebt ?? undefined}
         onClose={() => setIsAddModalOpen(false)}
-        onSave={addDebt}
+        onSave={(debt) => {
+          if (editingDebt) {
+            updateDebt(debt);
+          } else {
+            addDebt(debt);
+          }
+
+          setEditingDebt(null);
+          setIsAddModalOpen(false);
+        }}
       />
 
     </PageContainer>
