@@ -26,38 +26,12 @@ export default function BillsPage() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingBill, setEditingBill] =
     useState<Bill | null>(null);
-
-  const filteredBills = bills
-  .filter((bill) =>
+  const [sortBy, setSortBy] = useState<"name" | "dueDate" | "statementDate">("dueDate");
+  const filteredBills = bills.filter((bill) =>
     bill.name
       .toLowerCase()
       .includes(search.toLowerCase())
-  )
-  .sort((a, b) => {
-    if (sortBy === "name") {
-      return a.name.localeCompare(
-        b.name,
-        undefined,
-        { sensitivity: "base" }
-      );
-    }
-
-    const aDate =
-      sortBy === "statementDate"
-        ? a.statementDate
-        : a.dueDate;
-
-    const bDate =
-      sortBy === "statementDate"
-        ? b.statementDate
-        : b.dueDate;
-
-    if (!aDate && !bDate) return 0;
-    if (!aDate) return 1;
-    if (!bDate) return -1;
-
-    return aDate.localeCompare(bDate);
-  });
+  );
 
   function handleEdit(bill: Bill) {
     setEditingBill(bill);
@@ -73,41 +47,12 @@ export default function BillsPage() {
       />
 
       <SearchBar
-  value={search}
-  onChange={setSearch}
-  placeholder="Search bills..."
-/>
+        value={search}
+        onChange={setSearch}
+        placeholder="Search bills..."
+      />
 
-<div className="flex items-center justify-end gap-2">
-  <label
-    htmlFor="bill-sort"
-    className="text-sm font-semibold text-slate-600"
-  >
-    Sort by
-  </label>
-
-  <select
-    id="bill-sort"
-    value={sortBy}
-    onChange={(event) =>
-      setSortBy(
-        event.target.value as
-          | "name"
-          | "dueDate"
-          | "statementDate"
-      )
-    }
-    className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm"
-  >
-    <option value="name">Name</option>
-    <option value="dueDate">Due Date</option>
-    <option value="statementDate">
-      Statement Date
-    </option>
-  </select>
-</div>
-
-{filteredBills.length === 0 ? (
+      {filteredBills.length === 0 ? (
         <EmptyState
           icon="💳"
           title={search ? "No bills found" : "No bills yet"}
