@@ -12,15 +12,10 @@ export default function DebtCard({
   onEdit,
   onDelete,
 }: DebtCardProps) {
-  const progress =
-    debt.originalBalance > 0
-      ? Math.round(
-          ((debt.originalBalance - debt.balance) /
-            debt.originalBalance) *
-            100
-        )
-      : 0;
-
+  const currentBalance = debt.statementBalance ?? debt.balance ?? 0;
+  const progress = debt.originalBalance > 0
+    ? Math.round(((debt.originalBalance - currentBalance) / debt.originalBalance) * 100)
+    : 0;
   return (
     <div className="rounded-2xl bg-white p-5 shadow-md border border-slate-100">
       <div className="flex items-start justify-between">
@@ -40,53 +35,27 @@ export default function DebtCard({
       </div>
 
       <div className="mt-5">
-  {/* Progress header */}
-  <div className="flex items-end justify-between gap-4">
-    <p className="text-sm font-medium text-slate-600">
-      Payoff Progress
-    </p>
+        <div className="flex justify-between text-sm">
+          <span>Balance</span>
 
-    <div className="text-right">
-      <p className="text-xs text-slate-500">
-        Original Balance
-      </p>
+          <span className="font-semibold">
+            {formatCurrency(debt.balance)}
+          </span>
+        </div>
 
-      <p className="font-semibold text-slate-900">
-        {formatCurrency(debt.originalBalance)}
-      </p>
-    </div>
-  </div>
+        <div className="mt-2 h-3 overflow-hidden rounded-full bg-slate-200">
+          <div
+            className="h-full rounded-full bg-green-500 transition-all"
+            style={{
+              width: `${Math.min(progress, 100)}%`,
+            }}
+          />
+        </div>
 
-  {/* Progress bar */}
-  <div className="mt-2 h-3 overflow-hidden rounded-full bg-slate-200">
-    <div
-      className="h-full rounded-full bg-green-500 transition-all"
-      style={{
-        width: `${Math.min(
-          Math.max(progress, 0),
-          100
-        )}%`,
-      }}
-    />
-  </div>
-
-  {/* Progress details */}
-  <div className="mt-2 flex items-start justify-between gap-4">
-    <p className="text-xs font-semibold text-green-700">
-      {progress}% paid off
-    </p>
-
-    <div className="text-right">
-      <p className="text-xs text-slate-500">
-        Current Balance
-      </p>
-
-      <p className="text-sm font-semibold text-slate-900">
-        {formatCurrency(currentBalance)}
-      </p>
-    </div>
-  </div>
-</div>
+        <p className="mt-2 text-xs text-slate-500">
+          {progress}% paid off
+        </p>
+      </div>
 
       <div className="mt-5 grid grid-cols-2 gap-3 text-sm">
         <div>

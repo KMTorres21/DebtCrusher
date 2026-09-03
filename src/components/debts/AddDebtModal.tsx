@@ -122,15 +122,15 @@ useEffect(() => {
   name: name.trim(),
   type,
 
-  balance: Number(balance),
+  balance: Number(statementBalance),
   originalBalance: Number(originalBalance),
 
   statementDate:
     statementDate || undefined,
 
   statementBalance:
-    balance
-      ? Number(balance)
+    statementBalance
+      ? Number(statementBalance)
       : undefined,
 
   interestRate: Number(interestRate),
