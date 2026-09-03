@@ -42,7 +42,7 @@ export default function BillCard({
           </p>
 
           <p className="text-sm text-slate-500">
-            Due {bill.dueDate}
+            Due Date: {bill.dueDate}
           </p>
           {showStatementDate && bill.statementDate && (
             <p className="text-sm text-slate-500">
