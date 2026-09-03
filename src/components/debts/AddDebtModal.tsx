@@ -286,9 +286,9 @@ useEffect(() => {
                   type="number"
                   min="0.01"
                   step="0.01"
-                  value={statementBalance}
+                  value={currentBalance}
                   onChange={(event) =>
-                    setStatementBalance(event.target.value)
+                    setCurrentBalance(event.target.value)
                   }
                   placeholder="0.00"
                   required
