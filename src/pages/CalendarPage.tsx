@@ -7,23 +7,36 @@ import { buildCalendarEvents } from "../utils/calendarEvents";
 
 export default function CalendarPage() {
   const today = new Date();
-
   const [month, setMonth] = useState(today.getMonth());
   const [year, setYear] = useState(today.getFullYear());
-const { bills } = useBills();
-const { income } = useIncome();
-const { debts } = useDebts();
-
-const events = buildCalendarEvents(
+  const { bills } = useBills();
+  const { income } = useIncome();
+  const { debts } = useDebts();
+  const events = buildCalendarEvents(
   bills,
   income,
   debts
 );
-
+  function goToPreviousMonth() {
+    if (month === 0) {
+      setMonth(11);
+      setYear((current) => current - 1);
+    } else {
+      setMonth((current) => current - 1)
+    }
+  }
+  function goToNextMonth() {
+    if (month === 11) {
+      setMonth(0);
+      setYear((current) => current + 1);
+    } else {
+      setMonth((current) => current + 1);
+    }
+  }
   return (
     <div className="space-y-6 px-5 py-6 pb-32">
       <div className="flex items-center justify-between">
-        <button onClick={() => setMonth(month - 1)}>
+        <button onClick={goToPreviousMonth}>
           ◀
         </button>
 
@@ -34,7 +47,7 @@ const events = buildCalendarEvents(
           {year}
         </h1>
 
-        <button onClick={() => setMonth(month + 1)}>
+        <button onClick={goToNextMonth}>
           ▶
         </button>
       </div>
