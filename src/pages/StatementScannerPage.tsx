@@ -214,7 +214,11 @@ const handleAddDebt = (bill: ExtractedBill) => {
     setBills((current) =>
       current.map((bill) =>
         bill.id === updatedBill.id
-          ? { ...updatedBill, confidence: bill.confidence, selected: bill.selected }
+          ? { ...bill,
+              ...updatedBill,
+              confidence: bill.confidence,
+              selected: bill.selected,
+            }
           : bill
       )
     );
