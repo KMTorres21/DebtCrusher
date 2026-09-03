@@ -184,11 +184,11 @@ const handleAddDebt = (bill: ExtractedBill) => {
           ? bill.statementBalance
           : 0,
 
-    originalBalance:
+    statementBalance:
       typeof bill.statementBalance === "number"
         ? bill.statementBalance
-        : typeof bill.currentBalance === "number"
-          ? bill.currentBalance
+        : typeof bill.statementBalance === "number"
+          ? bill.statementBalance
           : 0,
 
     interestRate:
