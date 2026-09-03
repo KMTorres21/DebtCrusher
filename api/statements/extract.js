@@ -267,6 +267,10 @@ creditLimit:
                         type: Type.BOOLEAN,
                         nullable: true,
                       },
+                      creditLimit: {
+                        type: Type.NUMBER,
+                        nullable: true,
+                      },
                       notes: {
                         type: Type.STRING,
                         nullable: true,
@@ -282,6 +286,7 @@ creditLimit:
                       "statementDate",
                       "statementBalance",
                       "currentBalance",
+                      "creditLimit",
                       "apr", 
                       "dueDate",
                       "category",
