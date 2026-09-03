@@ -228,14 +228,14 @@ useEffect(() => {
             </div>
             <div>
               <label
-                htmlFor="debt-due-date"
+                htmlFor="statement-date"
                 className="mb-2 block text-sm font-semibold text-slate-700"
               >
-                Due Date
+                Statement Date
               </label>
 
               <input
-                id="debt-due-date"
+                id="statement-date"
                 type="date"
                 value={dueDate}
                 onChange={(event) =>
