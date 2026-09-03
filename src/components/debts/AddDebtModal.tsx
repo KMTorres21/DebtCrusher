@@ -39,6 +39,7 @@ export default function AddDebtModal({
   const [balance, setBalance] = useState("");
   const [originalBalance, setOriginalBalance] = useState("");
   const [statementBalance, setStatementBalance] = useState("");
+  const [currentBalance, setCurrentBalance] = useState("");
   const [interestRate, setInterestRate] = useState("");
   const [minimumPayment, setMinimumPayment] = useState("");
   const [dueDate, setDueDate] = useState("");
@@ -254,7 +255,7 @@ useEffect(() => {
 
             <div>
               <label
-                htmlFor="statement-balance"
+                htmlFor="current-balance"
                 className="mb-2 block text-sm font-semibold text-slate-700"
               >
                 Statement Balance
@@ -266,7 +267,7 @@ useEffect(() => {
                 </span>
 
                 <input
-                  id="statement-balance"
+                  id="current-balance"
                   type="number"
                   min="0.01"
                   step="0.01"
