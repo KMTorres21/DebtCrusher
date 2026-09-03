@@ -95,6 +95,35 @@ export default function DebtsPage() {
         placeholder="Search debts..."
       />
 
+<div className="flex items-center justify-end gap-2">
+  <label
+    htmlFor="debt-sort"
+    className="text-sm font-semibold text-slate-600"
+  >
+    Sort by
+  </label>
+
+  <select
+    id="debt-sort"
+    value={sortBy}
+    onChange={(event) =>
+      setSortBy(
+        event.target.value as
+          | "name"
+          | "dueDate"
+          | "statementDate"
+      )
+    }
+    className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm"
+  >
+    <option value="name">Name</option>
+    <option value="dueDate">Due Date</option>
+    <option value="statementDate">
+      Statement Date
+    </option>
+  </select>
+</div>
+
       {filteredDebts.length === 0 ? (
         <EmptyState
           icon="🏦"
