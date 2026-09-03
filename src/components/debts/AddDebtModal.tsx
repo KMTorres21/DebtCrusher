@@ -161,7 +161,8 @@ useEffect(() => {
             onChange={(e) =>
               setType(e.target.value as DebtType)
             }
-            className="w-full rounded-xl border p-3"
+            className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition 
+                focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
           >
             {debtTypes.map((type) => (
               <option
