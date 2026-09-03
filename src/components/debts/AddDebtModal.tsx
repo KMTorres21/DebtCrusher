@@ -195,31 +195,57 @@ useEffect(() => {
             ))}
           </select>
 
-          {/* Current Balance */}
-          <input
-            type="number"
-            placeholder="Current Balance"
-            value={balance}
-            onChange={(e) =>
-              setBalance(e.target.value)
-            }
-            className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition 
-                focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-            required
-          />
+          {/* Statement Balance + Statement Date */}
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
 
-          {/* Original Balance */}
-          <input
-            type="number"
-            placeholder="Original Balance"
-            value={originalBalance}
-            onChange={(e) =>
-              setOriginalBalance(e.target.value)
-            }
-            className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition 
-                focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-            required
-          />
+            <div>
+              <label
+                htmlFor="statement-balance"
+                className="mb-2 block text-sm font-semibold text-slate-700"
+              >
+                Statement Balance
+              </label>
+
+              <div className="relative">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                  $
+                </span>
+
+                <input
+                  id="statement-balance"
+                  type="number"
+                  min="0.01"
+                  step="0.01"
+                  value={statementBalance}
+                  onChange={(event) =>
+                    setStatementBalance(event.target.value)
+                  }
+                  placeholder="0.00"
+                  required
+                  className="w-full rounded-xl border border-slate-200 py-3 pl-8 pr-4 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                />
+              </div>
+            </div>
+            <div>
+              <label
+                htmlFor="debt-due-date"
+                className="mb-2 block text-sm font-semibold text-slate-700"
+              >
+                Due Date
+              </label>
+
+              <input
+                id="debt-due-date"
+                type="date"
+                value={dueDate}
+                onChange={(event) =>
+                  setDueDate(event.target.value)
+                }
+                required
+                className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+              />
+            </div>
+          </div>       
 
           {/* Interest Rate */}
           <input
