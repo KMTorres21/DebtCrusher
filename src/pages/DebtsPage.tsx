@@ -27,7 +27,8 @@ export default function DebtsPage() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingDebt, setEditingDebt] =
     useState<Debt | null>(null);
-
+  const [sortBy, setSortBy] = useState<"name" | "dueDate" | "statementDate">("dueDate"
+  );
   const filteredDebts = debts.filter((debt) =>
     debt.name.toLowerCase().includes(search.toLowerCase())
   );

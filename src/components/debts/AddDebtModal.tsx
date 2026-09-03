@@ -35,8 +35,10 @@ export default function AddDebtModal({
 }: AddDebtModalProps) {
   const [name, setName] = useState("");
   const [type, setType] = useState<DebtType>("Credit Card");
+  const [statementDate, setStatementDate] = useState("");
   const [balance, setBalance] = useState("");
   const [originalBalance, setOriginalBalance] = useState("");
+  const [statementBalance, setStatementBalance] = useState("");
   const [interestRate, setInterestRate] = useState("");
   const [minimumPayment, setMinimumPayment] = useState("");
   const [dueDate, setDueDate] = useState("");
@@ -64,6 +66,14 @@ useEffect(() => {
         ? String(prefill.interestRate)
         : ""
     );
+    setStatementDate(prefill?.statementDate ?? ""
+
+    );
+    setStatementBalance(
+      prefill?.statementBalance !== undefined
+        ? String(prefill.statementBalance)
+        : ""
+    );
     setMinimumPayment(
       prefill.minimumPayment !== undefined
         ? String(prefill.minimumPayment)
@@ -87,6 +97,8 @@ useEffect(() => {
     setBalance("");
     setOriginalBalance("");
     setInterestRate("");
+    setStatementDate("");
+    setStatementBalance("");
     setMinimumPayment("");
     setDueDate("");
     setCreditLimit("");
