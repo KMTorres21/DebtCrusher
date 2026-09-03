@@ -186,6 +186,7 @@ useEffect(() => {
             required
           />
 
+          {/* Original Balance */}
           <input
             type="number"
             placeholder="Original Balance"
@@ -193,10 +194,12 @@ useEffect(() => {
             onChange={(e) =>
               setOriginalBalance(e.target.value)
             }
-            className="w-full rounded-xl border p-3"
+            className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition 
+                focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
             required
           />
 
+          {/* Interest Rate */}
           <input
             type="number"
             step="0.01"
@@ -205,7 +208,8 @@ useEffect(() => {
             onChange={(e) =>
               setInterestRate(e.target.value)
             }
-            className="w-full rounded-xl border p-3"
+            className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition 
+                focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
             required
           />
 
@@ -216,7 +220,8 @@ useEffect(() => {
             onChange={(e) =>
               setMinimumPayment(e.target.value)
             }
-            className="w-full rounded-xl border p-3"
+            className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition 
+                focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
             required
           />
 
@@ -226,7 +231,8 @@ useEffect(() => {
             onChange={(e) =>
               setDueDate(e.target.value)
             }
-            className="w-full rounded-xl border p-3"
+            className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition 
+                focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
             required
           />
 
@@ -237,7 +243,8 @@ useEffect(() => {
             onChange={(e) =>
               setCreditLimit(e.target.value)
             }
-            className="w-full rounded-xl border p-3"
+            className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition 
+                focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
           />
 
           <textarea
@@ -247,7 +254,8 @@ useEffect(() => {
             onChange={(e) =>
               setNotes(e.target.value)
             }
-            className="w-full rounded-xl border p-3"
+            className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition 
+                focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
           />
 
           <div className="flex gap-3">
