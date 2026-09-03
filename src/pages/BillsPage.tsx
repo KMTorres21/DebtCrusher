@@ -46,42 +46,42 @@ export default function BillsPage() {
         subtitle="Track and manage your bills"
       />
 
-      <SearchBar
-  value={search}
-  onChange={setSearch}
-  placeholder="Search bills..."
-/>
+        <SearchBar
+          value={search}
+          onChange={setSearch}
+          placeholder="Search bills..."
+        />
 
-<div className="flex items-center justify-end gap-2">
-  <label
-    htmlFor="bill-sort"
-    className="text-sm font-semibold text-slate-600"
-  >
-    Sort by
-  </label>
+        <div className="flex items-center justify-end gap-2">
+          <label
+            htmlFor="bill-sort"
+            className="text-sm font-semibold text-slate-600"
+          >
+            Sort by
+          </label>
 
-  <select
-    id="bill-sort"
-    value={sortBy}
-    onChange={(event) =>
-      setSortBy(
-        event.target.value as
-          | "name"
-          | "dueDate"
-          | "statementDate"
-      )
-    }
-    className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm"
-  >
-    <option value="name">Name</option>
-    <option value="dueDate">Due Date</option>
-    <option value="statementDate">
-      Statement Date
-    </option>
-  </select>
-</div>
+          <select
+            id="bill-sort"
+            value={sortBy}
+            onChange={(event) =>
+              setSortBy(
+                event.target.value as
+                  | "name"
+                  | "dueDate"
+                  | "statementDate"
+              )
+            }
+            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm"
+          >
+            <option value="name">Name</option>
+            <option value="dueDate">Due Date</option>
+            <option value="statementDate">
+              Statement Date
+            </option>
+          </select>
+        </div>
 
-{filteredBills.length === 0 ? (
+        {filteredBills.length === 0 ? (
         <EmptyState
           icon="💳"
           title={search ? "No bills found" : "No bills yet"}
