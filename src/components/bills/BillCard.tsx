@@ -6,6 +6,7 @@ import Button from "../common/Button";
 
 interface BillCardProps {
   bill: Bill;
+  showStatementDate?: boolean;
   onTogglePaid: (id: string) => void;
   onEdit: (bill: Bill) => void;
   onDelete: (id: string) => void;
@@ -13,6 +14,7 @@ interface BillCardProps {
 
 export default function BillCard({
   bill,
+  showStatementDate = true,
   onTogglePaid,
   onEdit,
   onDelete,
@@ -42,6 +44,11 @@ export default function BillCard({
           <p className="text-sm text-slate-500">
             Due {bill.dueDate}
           </p>
+          {showStatementDate && bill.statementDate && (
+            <p className="text-sm text-slate-500">
+              Statement {bill.statementDate}
+            </p>
+          )}
         </div>
       </div>
 

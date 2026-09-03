@@ -3,7 +3,7 @@ import { Plus } from "lucide-react";
 
 import { Bill } from "../types/Bill";
 import { useBills } from "../hooks/useBills";
-
+import { useDisplaySettings } from "../hooks/useDisplaySettings";
 import Button from "../components/common/Button";
 import BillCard from "../components/bills/BillCard";
 import AddBillModal from "../components/bills/AddBillModal";
@@ -21,6 +21,9 @@ export default function BillsPage() {
     togglePaid,
     deleteBill,
   } = useBills();
+  const {
+    settings: displaySettings}
+     = useDisplaySettings();
 
   const [search, setSearch] = useState("");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -123,6 +126,7 @@ export default function BillsPage() {
             <BillCard
               key={bill.id}
               bill={bill}
+              showStatementDate={displaySettings.showBillStatementDate}
               onTogglePaid={togglePaid}
               onEdit={handleEdit}
               onDelete={deleteBill}

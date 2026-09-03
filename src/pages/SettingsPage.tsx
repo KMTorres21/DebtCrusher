@@ -363,7 +363,8 @@ export default function SettingsPage() {
           </button>
         </div>
       </Card>
-
+      
+{/* DISPLAY SETTINGS */}
 <Card>
   <h2 className="text-xl font-bold text-slate-900">
     Display
