@@ -10,10 +10,10 @@ import AddDebtModal from "../components/debts/AddDebtModal";
 interface ExtractedBill extends Bill{
   confidence: number;
   selected: boolean;
-  apr?: number | null;
-  statementDate?: string | null;
-  statementBalance?: number | null;
-  currentBalance?: number | null;
+  apr?: number;
+  statementDate?: string;
+  statementBalance?: number;
+  currentBalance?: number;
 }
 
 export default function StatementScannerPage() {
