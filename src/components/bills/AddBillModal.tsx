@@ -256,6 +256,62 @@ export default function AddBillModal({
 
           </div>
 
+{/* Statement Information */}
+<div className="rounded-2xl bg-slate-50 p-4">
+  <h3 className="mb-4 font-semibold text-slate-800">
+    Statement Information
+  </h3>
+
+  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <div>
+      <label
+        htmlFor="statement-date"
+        className="mb-2 block text-sm font-semibold text-slate-700"
+      >
+        Statement Date
+      </label>
+
+      <input
+        id="statement-date"
+        type="date"
+        value={statementDate}
+        onChange={(event) =>
+          setStatementDate(event.target.value)
+        }
+        className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+      />
+    </div>
+
+    <div>
+      <label
+        htmlFor="statement-balance"
+        className="mb-2 block text-sm font-semibold text-slate-700"
+      >
+        Statement Balance
+      </label>
+
+      <div className="relative">
+        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+          $
+        </span>
+
+        <input
+          id="statement-balance"
+          type="number"
+          min="0"
+          step="0.01"
+          value={statementBalance}
+          onChange={(event) =>
+            setStatementBalance(event.target.value)
+          }
+          placeholder="0.00"
+          className="w-full rounded-xl border border-slate-200 py-3 pl-8 pr-4 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+
           {/* Category */}
           <div>
             <label
