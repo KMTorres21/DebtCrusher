@@ -29,26 +29,37 @@ export default function DebtsPage() {
     useState<Debt | null>(null);
   const [sortBy, setSortBy] = useState<"name" | "dueDate" | "statementDate">("dueDate"
   );
-  const filteredDebts = debts.filter((debt) =>
-    debt.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredDebts = debts
+  .filter((debt) =>
+    debt.name
+      .toLowerCase()
+      .includes(search.toLowerCase())
+  )
+  .sort((a, b) => {
+    if (sortBy === "name") {
+      return a.name.localeCompare(
+        b.name,
+        undefined,
+        { sensitivity: "base" }
+      );
+    }
 
-  const totalDebt = debts.reduce(
-    (sum, debt) => sum + debt.balance,
-    0
-  );
+    const aDate =
+      sortBy === "statementDate"
+        ? a.statementDate
+        : a.dueDate;
 
-  const totalMinimumPayments = debts.reduce(
-    (sum, debt) => sum + debt.minimumPayment,
-    0
-  );
+    const bDate =
+      sortBy === "statementDate"
+        ? b.statementDate
+        : b.dueDate;
 
-  const navigate= useNavigate();
+    if (!aDate && !bDate) return 0;
+    if (!aDate) return 1;
+    if (!bDate) return -1;
 
-  function handleEdit(debt: Debt) {
-    setEditingDebt(debt);
-    setIsAddModalOpen(true);
-  }
+    return aDate.localeCompare(bDate);
+  });
 
   return (
     <PageContainer>
