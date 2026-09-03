@@ -364,6 +364,42 @@ export default function SettingsPage() {
         </div>
       </Card>
 
+<Card>
+  <h2 className="text-xl font-bold text-slate-900">
+    Display
+  </h2>
+
+  <p className="mt-1 text-sm text-slate-500">
+    Choose which information appears on your bill cards.
+  </p>
+
+  <label className="mt-5 flex cursor-pointer items-start gap-3 rounded-xl border border-slate-200 p-4">
+    <input
+      type="checkbox"
+      checked={
+        displaySettings.showBillStatementDate
+      }
+      onChange={(event) =>
+        setDisplaySettings({
+          showBillStatementDate:
+            event.target.checked,
+        })
+      }
+      className="mt-1 h-5 w-5"
+    />
+
+    <div>
+      <p className="font-semibold text-slate-900">
+        Show Statement Date on Bill Cards
+      </p>
+
+      <p className="mt-1 text-sm text-slate-500">
+        Display each bill's statement date on the Bills page when one is available.
+      </p>
+    </div>
+  </label>
+</Card>
+
       {/* DATA & BACKUP */}
       <Card>
         <h2 className="text-xl font-bold text-slate-900">
