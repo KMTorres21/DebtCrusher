@@ -129,7 +129,7 @@ useEffect(() => {
     statementDate || undefined,
 
   statementBalance:
-    statementBalance
+    balance
       ? Number(balance)
       : undefined,
 
