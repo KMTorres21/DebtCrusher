@@ -46,7 +46,7 @@ export default function DebtCard({
         Original Balance
       </p>
 
-      <p className="font-semibold text-slate-900">
+      <p className="text-xs font-semibold text-slate-900">
         {formatCurrency(debt.originalBalance)}
       </p>
     </div>
@@ -76,7 +76,7 @@ export default function DebtCard({
         Current Balance
       </p>
 
-      <p className="text-sm font-semibold text-slate-900">
+      <p className="text-xs font-semibold text-slate-900">
         {formatCurrency(currentBalance)}
       </p>
     </div>
