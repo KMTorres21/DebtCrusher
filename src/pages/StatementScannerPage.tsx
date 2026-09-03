@@ -173,23 +173,33 @@ const handleEditBill = (bill:
   };
 
 const handleAddDebt = (bill: ExtractedBill) => {
+  const latestBalance =
+    typeof bill.statementBalance === "number"
+      ? bill.statementBalance
+      : typeof bill.currentBalance === "number"
+        ? bill.currentBalance
+        : 0;
+
   setDebtPrefill({
     name: bill.name,
     type: "Credit Card",
 
-    balance:
-      typeof bill.currentBalance === "number"
-        ? bill.currentBalance
-        : typeof bill.statementBalance === "number"
-          ? bill.statementBalance
-          : 0,
+    // Keep internal balance compatible with the debt model
+    balance: latestBalance,
 
+    // Statement information from scanner
     statementBalance:
       typeof bill.statementBalance === "number"
         ? bill.statementBalance
-        : typeof bill.statementBalance === "number"
-          ? bill.statementBalance
-          : 0,
+        : typeof bill.currentBalance === "number"
+          ? bill.currentBalance
+          : undefined,
+
+    statementDate:
+      bill.statementDate ?? undefined,
+
+    // Initial value until manually corrected, if necessary
+    originalBalance: latestBalance,
 
     interestRate:
       typeof bill.apr === "number"
@@ -200,14 +210,7 @@ const handleAddDebt = (bill: ExtractedBill) => {
 
     dueDate: bill.dueDate,
 
-    notes: [
-      bill.statementDate
-        ? `Statement date: ${bill.statementDate}`
-        : null,
-      bill.notes ?? null,
-    ]
-      .filter(Boolean)
-      .join("\n"),
+    notes: bill.notes ?? undefined,
   });
 };
   const handleSaveEditBill = (updatedBill: Bill) => {
