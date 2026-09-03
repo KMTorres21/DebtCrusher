@@ -70,9 +70,6 @@ export default async function handler(req, res) {
       apiKey: process.env.GEMINI_API_KEY,
     });
 
-    import multer from "multer";
-import { GoogleGenAI, Type } from "@google/genai";
-
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: {
