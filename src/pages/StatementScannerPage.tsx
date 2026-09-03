@@ -207,15 +207,15 @@ const handleAddDebt = (bill: ExtractedBill) => {
     // Initial value until manually corrected, if necessary
     originalBalance: latestBalance,
 
-    interestRate:
-      typeof bill.apr === "number"
-        ? bill.apr
-        : 0,
-
     creditLimit:
       typeof bill.creditLimit === "number"
         ? bill.creditLimit
         : undefined,
+
+    interestRate:
+      typeof bill.apr === "number"
+        ? bill.apr
+        : 0,
 
     minimumPayment: bill.amount,
 
