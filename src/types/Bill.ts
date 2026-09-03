@@ -24,6 +24,8 @@ export type BillFrequency =
 export interface Bill {
   id: string;
   name: string;
+  statementDate?: string;
+  statementBalance?: number;
   amount: number;
   dueDate: string;
   category: BillCategory;

@@ -37,6 +37,8 @@ export default function AddBillModal({
   onSave,
 }: AddBillModalProps) {
   const [name, setName] = useState("");
+  const [statementDate, setStatementDate] = useState("");
+  const [statementBalance, setStatementBalance] = useState("");
   const [amount, setAmount] = useState("");
   const [dueDate, setDueDate] = useState("");
   const [category, setCategory] =
@@ -55,6 +57,11 @@ export default function AddBillModal({
   useEffect(() => {
   if (bill) {
     setName(bill.name);
+    setStatementDate(bill.statementDate ?? "");
+    setStatementBalance(bill.statementBalance !== undefined
+      ? String(bill.statementBalance)
+      : ""
+    );
     setAmount(bill.amount.toString());
     setDueDate(bill.dueDate);
     setCategory(bill.category);
@@ -79,6 +86,8 @@ export default function AddBillModal({
 
   function resetForm() {
     setName("");
+    setStatementDate("");
+    setStatementBalance("");
     setAmount("");
     setDueDate("");
     setCategory("Other");
@@ -108,6 +117,10 @@ export default function AddBillModal({
     const newBill: Bill = {
     id: bill?.id ?? crypto.randomUUID(),
     name: name.trim(),
+    statementDate: statementDate || undefined,
+    statementBalance: statementBalance
+      ? Number(statementBalance)
+      : undefined,
     amount: numericAmount,
     dueDate,
     category,
