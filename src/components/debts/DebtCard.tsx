@@ -35,27 +35,53 @@ export default function DebtCard({
       </div>
 
       <div className="mt-5">
-        <div className="flex justify-between text-sm">
-          <span>Balance</span>
+  {/* Progress header */}
+  <div className="flex items-end justify-between gap-4">
+    <p className="text-sm font-medium text-slate-600">
+      Payoff Progress
+    </p>
 
-          <span className="font-semibold">
-            {formatCurrency(debt.balance)}
-          </span>
-        </div>
+    <div className="text-right">
+      <p className="text-xs text-slate-500">
+        Original Balance
+      </p>
 
-        <div className="mt-2 h-3 overflow-hidden rounded-full bg-slate-200">
-          <div
-            className="h-full rounded-full bg-green-500 transition-all"
-            style={{
-              width: `${Math.min(progress, 100)}%`,
-            }}
-          />
-        </div>
+      <p className="font-semibold text-slate-900">
+        {formatCurrency(debt.originalBalance)}
+      </p>
+    </div>
+  </div>
 
-        <p className="mt-2 text-xs text-slate-500">
-          {progress}% paid off
-        </p>
-      </div>
+  {/* Progress bar */}
+  <div className="mt-2 h-3 overflow-hidden rounded-full bg-slate-200">
+    <div
+      className="h-full rounded-full bg-green-500 transition-all"
+      style={{
+        width: `${Math.min(
+          Math.max(progress, 0),
+          100
+        )}%`,
+      }}
+    />
+  </div>
+
+  {/* Progress details */}
+  <div className="mt-2 flex items-start justify-between gap-4">
+    <p className="text-xs font-semibold text-green-700">
+      {progress}% paid off
+    </p>
+
+    <div className="text-right">
+      <p className="text-xs text-slate-500">
+        Current Balance
+      </p>
+
+      <p className="text-sm font-semibold text-slate-900">
+        {formatCurrency(currentBalance)}
+      </p>
+    </div>
+  </div>
+</div>
 
       <div className="mt-5 grid grid-cols-2 gap-3 text-sm">
         <div>
