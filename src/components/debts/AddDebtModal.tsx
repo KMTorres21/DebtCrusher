@@ -157,16 +157,25 @@ useEffect(() => {
           className="space-y-5 p-6"
         >
           {/* Debt Name */}
-          <input
-            placeholder="Debt Name"
-            value={name}
-            onChange={(e) =>
-              setName(e.target.value)
-            }
-            className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition 
+          <div>
+            <label
+              htmlFor="debt-name"
+              className="mb-2 block text-sm font-semibold text-slate-700"
+            >
+              Debt Name
+            </label>
+
+            <input
+              id="debt-name"
+              type="text"
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+              placeholder="Mortgage, Car Loan..."
+              required
+              className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none transition 
                 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-            required
-          />
+            />
+          </div>
 
           <select
             value={type}
