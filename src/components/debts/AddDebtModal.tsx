@@ -38,7 +38,8 @@ export default function AddDebtModal({
   const [statementDate, setStatementDate] = useState("");
   const [balance, setBalance] = useState("");
   const [originalBalance, setOriginalBalance] = useState("");
-  const [statementBalance, setCurrentBalance] = useState("");
+  const [currentBalance, setCurrentBalance] = useState("");
+  const [statementBalance, setStatementBalance] = useState("");
   const [interestRate, setInterestRate] = useState("");
   const [minimumPayment, setMinimumPayment] = useState("");
   const [dueDate, setDueDate] = useState("");
@@ -129,7 +130,7 @@ useEffect(() => {
 
   statementBalance:
     statementBalance
-      ? Number(statementBalance)
+      ? Number(currentBalance)
       : undefined,
 
   interestRate: Number(interestRate),
@@ -285,7 +286,7 @@ useEffect(() => {
                   type="number"
                   min="0.01"
                   step="0.01"
-                  value={statementBalance}
+                  value={currentBalance}
                   onChange={(event) =>
                     setCurrentBalance(event.target.value)
                   }
