@@ -14,6 +14,7 @@ interface ExtractedBill extends Bill{
   statementDate?: string;
   statementBalance?: number;
   currentBalance?: number;
+  creditLimit?: number;
 }
 
 export default function StatementScannerPage() {
@@ -74,6 +75,7 @@ const handleScan = async () => {
         statementDate?: string | null;
         statementBalance?: number | null;
         currentBalance?: number | null;
+        creditLimit?: number | null;
         category?: string | null;
         recurring?: boolean | null;
         paid?: boolean | null;
@@ -129,6 +131,10 @@ const handleScan = async () => {
         paid: bill.paid ?? false,
         recurring: bill.recurring ?? false,
         autoPay: bill.autoPay ?? false,
+        creditLimit:
+          typeof bill.creditLimit === "number"
+            ? bill.creditLimit
+            : undefined,
         notes: bill.notes ?? undefined,
         createdAt: new Date().toISOString(),
         confidence: bill.confidence ?? 0,
@@ -205,6 +211,11 @@ const handleAddDebt = (bill: ExtractedBill) => {
       typeof bill.apr === "number"
         ? bill.apr
         : 0,
+
+    creditLimit:
+      typeof bill.creditLimit === "number"
+        ? bill.creditLimit
+        : undefined,
 
     minimumPayment: bill.amount,
 
