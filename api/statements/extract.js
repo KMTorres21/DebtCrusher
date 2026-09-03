@@ -180,6 +180,12 @@ Rules:
 - If something cannot be determined, use null.
 - Identify actual bills from the document. Do not create example or
   placeholder bills.
+creditLimit:
+- The maximum credit line/credit limit for the account.
+- Look for labels such as "Credit Limit", "Credit Line", or "Total Credit Limit".
+- Return a number only.
+- Do NOT confuse available credit with the credit limit.
+- If it cannot be determined, return null.
 `;
 
     let response;
