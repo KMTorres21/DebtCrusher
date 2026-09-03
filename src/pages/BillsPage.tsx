@@ -27,11 +27,37 @@ export default function BillsPage() {
   const [editingBill, setEditingBill] =
     useState<Bill | null>(null);
   const [sortBy, setSortBy] = useState<"name" | "dueDate" | "statementDate">("dueDate");
-  const filteredBills = bills.filter((bill) =>
+  const filteredBills = bills
+  .filter((bill) =>
     bill.name
       .toLowerCase()
       .includes(search.toLowerCase())
-  );
+  )
+  .sort((a, b) => {
+    if (sortBy === "name") {
+      return a.name.localeCompare(
+        b.name,
+        undefined,
+        { sensitivity: "base" }
+      );
+    }
+
+    const aDate =
+      sortBy === "statementDate"
+        ? a.statementDate
+        : a.dueDate;
+
+    const bDate =
+      sortBy === "statementDate"
+        ? b.statementDate
+        : b.dueDate;
+
+    if (!aDate && !bDate) return 0;
+    if (!aDate) return 1;
+    if (!bDate) return -1;
+
+    return aDate.localeCompare(bDate);
+  });
 
   function handleEdit(bill: Bill) {
     setEditingBill(bill);
