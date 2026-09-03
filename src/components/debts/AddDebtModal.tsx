@@ -117,21 +117,36 @@ useEffect(() => {
     const now = new Date().toISOString();
 
     const debt: Debt = {
-      id: crypto.randomUUID(),
-      name: name.trim(),
-      type,
-      balance: Number(balance),
-      originalBalance: Number(originalBalance),
-      interestRate: Number(interestRate),
-      minimumPayment: Number(minimumPayment),
-      dueDate,
-      creditLimit: creditLimit
-        ? Number(creditLimit)
-        : undefined,
-      notes: notes.trim() || undefined,
-      createdAt: prefill?.createdAt ?? now,
-      updatedAt: now,
-    };
+  id: prefill?.id ?? crypto.randomUUID(),
+
+  name: name.trim(),
+  type,
+
+  balance: Number(balance),
+  originalBalance: Number(originalBalance),
+
+  statementDate:
+    statementDate || undefined,
+
+  statementBalance:
+    statementBalance
+      ? Number(statementBalance)
+      : undefined,
+
+  interestRate: Number(interestRate),
+  minimumPayment: Number(minimumPayment),
+
+  dueDate,
+
+  creditLimit: creditLimit
+    ? Number(creditLimit)
+    : undefined,
+
+  notes: notes.trim() || undefined,
+
+  createdAt: prefill?.createdAt ?? now,
+  updatedAt: now,
+};
 
     onSave(debt);
 
