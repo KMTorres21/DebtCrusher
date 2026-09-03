@@ -320,6 +320,35 @@ useEffect(() => {
           {/* Current Balance + APR */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
 
+<div>
+  <label
+    htmlFor="current-balance"
+    className="mb-2 block text-sm font-semibold text-slate-700"
+  >
+    Current Balance
+  </label>
+
+  <div className="relative">
+    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+      $
+    </span>
+
+    <input
+      id="current-balance"
+      type="number"
+      min="0"
+      step="0.01"
+      value={balance}
+      onChange={(event) =>
+        setBalance(event.target.value)
+      }
+      placeholder="0.00"
+      required
+      className="w-full rounded-xl border border-slate-200 py-3 pl-8 pr-4 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+    />
+  </div>
+</div>
+
             <div>
               <label
                 htmlFor="original-balance"
