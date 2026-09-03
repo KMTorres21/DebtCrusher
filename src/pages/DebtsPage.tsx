@@ -43,7 +43,7 @@ export default function DebtsPage() {
       setEditingDebt(debt);
       setIsAddModalOpen(true);
     }
-    
+
   const filteredDebts = debts
   .filter((debt) =>
     debt.name
@@ -161,7 +161,10 @@ export default function DebtsPage() {
 
       <Button
         type="button"
-        onClick={() => setIsAddModalOpen(true)}
+        onClick={() => {
+          setEditingDebt(null);
+          setIsAddModalOpen(true);
+        }}
         className="fixed bottom-24 right-6 z-50 flex h-16 w-16 items-center justify-center rounded-full p-0 shadow-xl"
       >
         <Plus size={32} />
