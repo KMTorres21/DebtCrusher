@@ -72,32 +72,6 @@ export default function BillsPage() {
         subtitle="Track and manage your bills"
       />
 
-<select
-  id="bill-sort"
-  value={sortBy}
-  onChange={(event) =>
-    setSortBy(
-      event.target.value as
-        | "name"
-        | "dueDate"
-        | "statementDate"
-    )
-  }
-  className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm"
->
-  <option value="name">
-    Name
-  </option>
-
-  <option value="dueDate">
-    Due Date
-  </option>
-
-  <option value="statementDate">
-    Statement Date
-  </option>
-</select>
-
       <SearchBar
         value={search}
         onChange={setSearch}
