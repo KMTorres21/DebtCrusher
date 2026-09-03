@@ -38,7 +38,6 @@ export default function AddDebtModal({
   const [statementDate, setStatementDate] = useState("");
   const [balance, setBalance] = useState("");
   const [originalBalance, setOriginalBalance] = useState("");
-  const [currentBalance, setCurrentBalance] = useState("");
   const [statementBalance, setStatementBalance] = useState("");
   const [interestRate, setInterestRate] = useState("");
   const [minimumPayment, setMinimumPayment] = useState("");
@@ -70,9 +69,9 @@ useEffect(() => {
     setStatementDate(prefill?.statementDate ?? ""
 
     );
-    setCurrentBalance(
-      prefill?.balance !== undefined
-        ? String(prefill.balance)
+    setStatementBalance(
+      prefill?.statementBalance !== undefined
+        ? String(prefill.statementBalance)
         : ""
     );
     setMinimumPayment(
@@ -99,7 +98,6 @@ useEffect(() => {
     setOriginalBalance("");
     setInterestRate("");
     setStatementDate("");
-    setCurrentBalance("");
     setMinimumPayment("");
     setDueDate("");
     setCreditLimit("");
@@ -254,9 +252,9 @@ useEffect(() => {
               <input
                 id="debt-due-date"
                 type="date"
-                value={statementDate}
+                value={dueDate}
                 onChange={(event) =>
-                  setStatementDate(event.target.value)
+                  setDueDate(event.target.value)
                 }
                 required
                 className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
@@ -286,9 +284,9 @@ useEffect(() => {
                   type="number"
                   min="0.01"
                   step="0.01"
-                  value={balance}
+                  value={statementBalance}
                   onChange={(event) =>
-                    setBalance(event.target.value)
+                    setStatementBalance(event.target.value)
                   }
                   placeholder="0.00"
                   required
@@ -307,9 +305,9 @@ useEffect(() => {
               <input
                 id="statement-date"
                 type="date"
-                value={dueDate}
+                value={statementDate}
                 onChange={(event) =>
-                  setDueDate(event.target.value)
+                  setStatementDate(event.target.value)
                 }
                 required
                 className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
