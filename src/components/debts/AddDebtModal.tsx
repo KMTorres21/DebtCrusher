@@ -71,8 +71,8 @@ useEffect(() => {
 
     );
     setCurrentBalance(
-      prefill?.statementBalance !== undefined
-        ? String(prefill.statementBalance)
+      prefill?.balance !== undefined
+        ? String(prefill.balance)
         : ""
     );
     setMinimumPayment(
@@ -130,7 +130,7 @@ useEffect(() => {
 
   statementBalance:
     statementBalance
-      ? Number(currentBalance)
+      ? Number(balance)
       : undefined,
 
   interestRate: Number(interestRate),
@@ -270,7 +270,7 @@ useEffect(() => {
 
             <div>
               <label
-                htmlFor="current-balance"
+                htmlFor="balance"
                 className="mb-2 block text-sm font-semibold text-slate-700"
               >
                 Statement Balance
@@ -282,13 +282,13 @@ useEffect(() => {
                 </span>
 
                 <input
-                  id="current-balance"
+                  id="balance"
                   type="number"
                   min="0.01"
                   step="0.01"
-                  value={currentBalance}
+                  value={balance}
                   onChange={(event) =>
-                    setCurrentBalance(event.target.value)
+                    setBalance(event.target.value)
                   }
                   placeholder="0.00"
                   required
