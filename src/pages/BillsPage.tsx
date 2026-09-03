@@ -72,7 +72,6 @@ export default function BillsPage() {
         subtitle="Track and manage your bills"
       />
 
-<Sort Bar
 <select
   id="bill-sort"
   value={sortBy}
