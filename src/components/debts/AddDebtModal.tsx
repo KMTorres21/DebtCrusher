@@ -386,7 +386,6 @@ useEffect(() => {
               variant="secondary"
               onClick={handleClose}
               className="flex-1"
-
             >
               Cancel
             </Button>
