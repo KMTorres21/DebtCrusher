@@ -29,6 +29,21 @@ export default function DebtsPage() {
     useState<Debt | null>(null);
   const [sortBy, setSortBy] = useState<"name" | "dueDate" | "statementDate">("dueDate"
   );
+
+  const navigate = useNavigate();
+    const totalDebt = debts.reduce(
+      (sum, debt) => sum + debt.balance,
+      0
+    );
+    const totalMinimumPayments = debts.reduce(
+      (sum, debt) => sum + debt.minimumPayment,
+      0
+    );
+    function handleEdit(debt: Debt) {
+      setEditingDebt(debt);
+      setIsAddModalOpen(true);
+    }
+    
   const filteredDebts = debts
   .filter((debt) =>
     debt.name
@@ -53,6 +68,7 @@ export default function DebtsPage() {
       sortBy === "statementDate"
         ? b.statementDate
         : b.dueDate;
+
 
     if (!aDate && !bDate) return 0;
     if (!aDate) return 1;
