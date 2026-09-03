@@ -13,55 +13,21 @@ export default function DebtCard({
   onDelete,
 }: DebtCardProps) {
   const currentBalance = debt.statementBalance ?? debt.balance ?? 0;
-  const progress = {isCreditCard && debt.creditLimit ? (
-  <div className="mt-5">
-    <div className="flex items-end justify-between gap-4">
-      <p className="text-sm font-medium text-slate-600">
-        Credit Utilization
-      </p>
+  const progress = debt.originalBalance > 0
+    ? Math.round(((debt.originalBalance - currentBalance) / debt.originalBalance) * 100)
+    : 0;
+  return (
+    <div className="rounded-2xl bg-white p-5 shadow-md border border-slate-100">
+      <div className="flex items-start justify-between">
+        <div>
+          <h3 className="text-xl font-bold text-slate-900">
+            {debt.name}
+          </h3>
 
-      <div className="text-right">
-        <p className="text-xs text-slate-500">
-          Credit Limit
-        </p>
-
-        <p className="font-semibold text-slate-900">
-          {formatCurrency(debt.creditLimit)}
-        </p>
-      </div>
-    </div>
-
-    <div className="mt-2 h-3 overflow-hidden rounded-full bg-slate-200">
-      <div
-        className="h-full rounded-full bg-green-500 transition-all"
-        style={{
-          width: `${Math.min(
-            Math.max(utilization, 0),
-            100
-          )}%`,
-        }}
-      />
-    </div>
-
-    <div className="mt-2 flex items-start justify-between gap-4">
-      <p className="text-xs font-semibold text-green-700">
-        {utilization}% utilized
-      </p>
-
-      <div className="text-right">
-        <p className="text-xs text-slate-500">
-          Statement Balance
-        </p>
-
-        <p className="text-sm font-semibold text-slate-900">
-          {formatCurrency(currentBalance)}
-        </p>
-      </div>
-    </div>
-  </div>
-) : (
-  // keep your existing payoff-progress section here
-)}
+          <p className="text-sm text-slate-500">
+            {debt.type}
+          </p>
+        </div>
 
         <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700">
           {debt.interestRate}% APR
