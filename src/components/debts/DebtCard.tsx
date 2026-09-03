@@ -42,7 +42,7 @@ export default function DebtCard({
     </p>
 
     <div className="text-right">
-      <p className="text-xs text-slate-300">
+      <p className="text-xs text-slate-500">
         Original Balance
       </p>
 
@@ -72,7 +72,7 @@ export default function DebtCard({
     </p>
 
     <div className="text-right">
-      <p className="text-xs text-slate-300">
+      <p className="text-xs text-slate-500">
         Current Balance
       </p>
 
