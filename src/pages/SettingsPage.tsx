@@ -7,7 +7,7 @@ import {
 import PageContainer from "../components/common/PageContainer";
 import PageHeader from "../components/common/PageHeader";
 import Card from "../components/common/Card";
-
+import { useDisplaySettings } from "../hooks/useDisplaySettings";
 import { usePaydayStrategySettings } from "../hooks/usePaydayStrategySettings";
 
 import {
@@ -18,6 +18,11 @@ import {
 } from "../utils/backup";
 
 export default function SettingsPage() {
+  const {
+    settings: displaySettings,
+    setSettings: setDisplaySettings,
+  } = useDisplaySettings();
+
   const {
     settings,
     setSettings,
