@@ -46,7 +46,7 @@ export default function BillCard({
           </p>
           {showStatementDate && bill.statementDate && (
             <p className="text-sm text-slate-500">
-              Statement {bill.statementDate}
+              Statement Date: {bill.statementDate}
             </p>
           )}
         </div>
