@@ -336,6 +336,11 @@ Rules:
     );
 
     console.log(
+      "Gemini extracted data:",
+      JSON.stringify(extracted, null, 2)
+    )
+
+    console.log(
       `Extracted ${
         extracted.bills?.length ?? 0
       } bill(s) from ${req.file.originalname}`
