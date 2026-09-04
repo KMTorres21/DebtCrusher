@@ -63,6 +63,7 @@ export default function FinancialTimeline({
       date: item.nextPayDate,
       title: item.source,
       icon: "💵",
+    });
   });
 
   const upcomingEvents = events
