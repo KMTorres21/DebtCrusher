@@ -132,6 +132,74 @@ const handleScan = async () => {
         currentBalance?: number | null;
         creditLimit?: number | null;
         category?: string | null;
+const scannedName =
+  bill.name ?? "";
+
+const normalizedScannedName =
+  normalizeName(scannedName);
+
+const exactDebtMatch =
+  existingDebts.find(
+    (debt) =>
+      normalizeName(debt.name) ===
+      normalizedScannedName
+  );
+
+const exactBillMatch =
+  existingBills.find(
+    (existingBill) =>
+      normalizeName(existingBill.name) ===
+      normalizedScannedName
+  );
+
+const possibleDebtMatch =
+  existingDebts.find(
+    (debt) =>
+      namesPossiblyMatch(
+        scannedName,
+        debt.name
+      )
+  );
+
+const possibleBillMatch =
+  existingBills.find(
+    (existingBill) =>
+      namesPossiblyMatch(
+        scannedName,
+        existingBill.name
+      )
+  );
+
+const exactMatch =
+  exactDebtMatch ??
+  exactBillMatch;
+
+const possibleMatch =
+  possibleDebtMatch ??
+  possibleBillMatch;
+
+const matchedRecord =
+  exactMatch ??
+  possibleMatch;
+
+const matchStatus: MatchStatus =
+  exactMatch
+    ? "existing"
+    : possibleMatch
+      ? "possible"
+      : "new";
+
+const matchedRecordType:
+  MatchRecordType | undefined =
+  matchedRecord
+    ? existingDebts.some(
+        (debt) =>
+          debt.id ===
+          matchedRecord.id
+      )
+      ? "debt"
+      : "bill"
+    : undefined;
         recurring?: boolean | null;
         paid?: boolean | null;
         autoPay?: boolean | null;
