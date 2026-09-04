@@ -707,44 +707,53 @@ function allocateNormally(
     );
 
   /*
-   * Work backward so the bill is funded
-   * as close to its due date as possible.
+    * Work forward through eligible paychecks
+    * Earlier-due obligations are processed first,
+    * so available money is used for them before
+    * later-due obligations.
    */
   for (
-  let position = 0;
-  position < eligibleIndexes.length &&
-  remainingCents > 0;
-  position++
-) {
-  const index =
-    eligibleIndexes[position];
+    let position =
+      eligibleIndexes.length -
+      1;
+    position >= 0 &&
+    remainingCents > 0;
+    position--
+  ) {
+    const index =
+      eligibleIndexes[position];
 
-  const available =
-    availableCents[index];
+    const available =
+      availableCents[index];
 
-  if (available <= 0) {
-    continue;
-  }
+    if (available <= 0) {
+      continue;
+    }
 
-  const allocation =
-    Math.min(
-      remainingCents,
-      available
+    const allocation =
+      Math.min(
+        remainingCents,
+        available
+      );
+
+    paydayPlans[index].bills.push(
+      {
+        bill: occurrence.bill,
+        dueDate:
+          occurrence.dueDate,
+        allocatedAmount:
+          allocation / 100,
+      }
     );
 
-  paydayPlans[index].bills.push({
-    bill: occurrence.bill,
-    dueDate: occurrence.dueDate,
-    allocatedAmount:
-      allocation / 100,
-  });
+    availableCents[index] -=
+      allocation;
 
-  availableCents[index] -=
-    allocation;
-
-  remainingCents -=
-    allocation;
+    remainingCents -=
+      allocation;
+  }
 }
+
 function allocateBills(
   bills: Bill[],
   paydayPlans: PaydayPlan[],
