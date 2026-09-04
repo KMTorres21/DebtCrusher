@@ -221,9 +221,8 @@ export default function AddBillModal({
                 <input
                   id="bill-amount"
                   type="number"
-                  min="0.01"
                   step="0.01"
-                  value={Number(amount).toFixed(2)}
+                  value={amount}
                   onChange={(event) =>
                     setAmount(event.target.value)
                   }
