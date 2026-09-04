@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Plus } from "lucide-react";
-
+import FinancialTimeline from "../components/dashboard/FinancialTimeline";
 import { Bill } from "../types/Bill";
 import { formatCurrency } from "../utils/formatCurrency";
 
@@ -154,6 +154,11 @@ export default function DashboardPage() {
         </p>
 
       </Card>
+      <FinancialTimeline
+        bills={bills}
+        debts={debts}
+        income={income}
+      />
 
       <AddBillModal
         open={isAddBillOpen}
