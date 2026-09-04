@@ -79,24 +79,30 @@ export function parseBackup(
 ): DebtBeGoneBackup {
   let parsed: unknown;
 
-  const backup = 
-    parsed as
-    Partial<DebtBeGoneBackup>;
+  try {
+    parsed = JSON.parse(fileContents);
+  } catch {
+    throw new Error(
+      "This file is not valid JSON."
+    );
+  }
 
-  for (const [key, value] of
-    Object.entries(
-      backupData
-    )) {
-    if (!isDebtBeGoneStorageKey(key)) {
-      throw new Error(
-        `Invalid storage key found in backup: ${key}`
-      );
-    }
-    if (typeof value !== "string") {
-      throw new Error(
-        `Invalid data found for ${key}.`
-      );
-    }
+  if (
+    typeof parsed !== "object" ||
+    parsed === null
+  ) {
+    throw new Error(
+      "This is not a valid DebtBeGone!! backup."
+    );
+  }
+
+  const backup =
+    parsed as Partial<DebtBeGoneBackup>;
+
+  if (backup.app !== "DebtBeGone!!") {
+    throw new Error(
+      "This file was not created by DebtBeGone!!."
+    );
   }
 
   if (backup.version !== 1) {
@@ -115,8 +121,11 @@ export function parseBackup(
     );
   }
 
+  const backupData =
+    backup.data as Record<string, string>;
+
   for (const [key, value] of Object.entries(
-    backup.data
+    backupData
   )) {
     if (!isDebtBeGoneStorageKey(key)) {
       throw new Error(
