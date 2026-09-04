@@ -525,15 +525,32 @@ const handleAddDebt = (bill: ExtractedBill) => {
       onSave={handleSaveEditBill}
     />
     <AddDebtModal
-      open={debtPrefill !== null}
-      prefill={debtPrefill ?? undefined}
-      onClose={() => setDebtPrefill(null)}
-      onSave={(debt) => {
-        addDebt(debt);
-        setDebtPrefill(null);
-        // Handle saving the debt here
-      }}
-    />
+  open={debtPrefill !== null}
+  prefill={debtPrefill ?? undefined}
+  onClose={() => {
+    setDebtPrefill(null);
+    setConvertingBillId(null);
+  }}
+  onSave={(debt) => {
+    addDebt(debt);
+
+    setBills((current) => {
+      const remainingBills = current.filter(
+        (bill) => bill.id !== convertingBillId
+      );
+
+      if (remainingBills.length === 0) {
+        setHasScanned(false);
+        setFile(null);
+      }
+
+      return remainingBills;
+    });
+
+    setDebtPrefill(null);
+    setConvertingBillId(null);
+  }}
+/>
   </>
   );
 }
