@@ -731,6 +731,19 @@ const handleAddDebt = (bill: ExtractedBill) => {
   </div>
 ))}
 
+{bill.matchStatus === "existing" &&
+  bill.matchedRecordType === "debt" && (
+    <button
+      type="button"
+      onClick={() =>
+        handleUpdateExistingDebt(bill)
+      }
+      className="mt-2 w-full rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-700"
+    >
+      Update Existing Debt
+    </button>
+)}
+
               <button
                 type="button"
                 onClick={addSelectedBills}
