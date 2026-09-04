@@ -18,8 +18,15 @@ interface ExtractedBill extends Bill{
 }
 
 export default function StatementScannerPage() {
-  const { addBill } = useBills();
-  const { addDebt } = useDebts();
+  const {
+  bills: existingBills,
+  addBill,
+} = useBills();
+
+const {
+  debts: existingDebts,
+  addDebt,
+} = useDebts();
   const [file, setFile] = useState<File | null>(null);
   const [isScanning, setIsScanning] = useState(false);
   const [hasScanned, setHasScanned] = useState(false);
