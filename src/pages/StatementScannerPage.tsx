@@ -7,6 +7,15 @@ import { formatCurrency } from "../utils/formatCurrency";
 import AddBillModal from "../components/bills/AddBillModal";
 import AddDebtModal from "../components/debts/AddDebtModal";
 
+type MatchStatus =
+  | "new"
+  | "possible"
+  | "existing";
+
+type MatchRecordType =
+  | "bill"
+  | "debt";
+
 interface ExtractedBill extends Bill {
   confidence: number;
   selected: boolean;
