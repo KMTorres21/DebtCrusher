@@ -608,6 +608,8 @@ const handleAddDebt = (bill: ExtractedBill) => {
           )}
         </div>
 
+        
+
         {/* Edit */}
         <button
           type="button"
