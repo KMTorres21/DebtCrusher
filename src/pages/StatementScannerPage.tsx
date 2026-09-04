@@ -726,12 +726,7 @@ const handleAddDebt = (bill: ExtractedBill) => {
             Add as Debt
           </button>
         )}
-      </div>
-    </div>
-  </div>
-))}
-
-{bill.matchStatus === "existing" &&
+        {bill.matchStatus === "existing" &&
   bill.matchedRecordType === "debt" && (
     <button
       type="button"
@@ -743,6 +738,10 @@ const handleAddDebt = (bill: ExtractedBill) => {
       Update Existing Debt
     </button>
 )}
+      </div>
+    </div>
+  </div>
+))}
 
               <button
                 type="button"
