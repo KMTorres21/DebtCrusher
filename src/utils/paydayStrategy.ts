@@ -693,59 +693,57 @@ function allocateNormally(
   paydayPlans: PaydayPlan[],
   availableCents: number[]
 ): void {
-  if (
-    eligibleIndexes.length ===
-    0
-  ) {
+  if (eligibleIndexes.length === 0) {
     return;
   }
 
   let remainingCents =
     Math.round(
-      occurrence.bill.amount *
-        100
+      occurrence.bill.amount * 100
     );
 
   /*
-    * Work forward through eligible paychecks
-    * Earlier-due obligations are processed first,
-    * so available money is used for them before
-    * later-due obligations.
+   * Work forward through eligible paychecks.
+   *
+   * Earlier-due obligations are processed first,
+   * so available money is used for them before
+   * later-due obligations can consume it.
    */
   for (
-  let position = 0;
-  position < eligibleIndexes.length &&
-  remainingCents > 0;
-  position++
-) {
-  const index =
-    eligibleIndexes[position];
+    let position = 0;
+    position < eligibleIndexes.length &&
+    remainingCents > 0;
+    position++
+  ) {
+    const index =
+      eligibleIndexes[position];
 
-  const available =
-    availableCents[index];
+    const available =
+      availableCents[index];
 
-  if (available <= 0) {
-    continue;
+    if (available <= 0) {
+      continue;
+    }
+
+    const allocation =
+      Math.min(
+        remainingCents,
+        available
+      );
+
+    paydayPlans[index].bills.push({
+      bill: occurrence.bill,
+      dueDate: occurrence.dueDate,
+      allocatedAmount:
+        allocation / 100,
+    });
+
+    availableCents[index] -=
+      allocation;
+
+    remainingCents -=
+      allocation;
   }
-
-  const allocation =
-    Math.min(
-      remainingCents,
-      available
-    );
-
-  paydayPlans[index].bills.push({
-    bill: occurrence.bill,
-    dueDate: occurrence.dueDate,
-    allocatedAmount:
-      allocation / 100,
-  });
-
-  availableCents[index] -=
-    allocation;
-
-  remainingCents -=
-    allocation;
 }
 
 function allocateBills(
