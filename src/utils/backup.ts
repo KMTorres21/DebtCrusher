@@ -5,12 +5,15 @@ export interface DebtBeGoneBackup {
   data: Record<string, string>;
 }
 
-const ALLOWED_STORAGE_KEYS = [
-  "debtcrusher-bills",
-  "debtcruser-debts",
-  "debtcrusher_income",
-  "debtcrusher-display-settings",
-];
+function isDebtBeGoneStorageKey(
+  key: string
+): boolean {
+  return (
+    key.startsWith("debtcrusher-") ||
+    key.startsWith("debtcrusher_") ||
+    key.startsWith("debtbegone-")
+  );
+}
 
 export function createBackup(): DebtBeGoneBackup {
   const data: Record<string, string> = {};
@@ -19,7 +22,8 @@ export function createBackup(): DebtBeGoneBackup {
     const key = localStorage.key(i);
 
     if (!key || 
-      !ALLOWED_STORAGE_KEYS.includes(key)) {
+      !isDebtBeGoneStorageKey(key)
+    ) {
       continue;
     }
 
@@ -72,14 +76,6 @@ export function parseBackup(
 ): DebtBeGoneBackup {
   let parsed: unknown;
 
-  try {
-    parsed = JSON.parse(fileContents);
-  } catch {
-    throw new Error(
-      "This file is not valid JSON."
-    );
-  }
-
   if (
     typeof parsed !== "object" ||
     parsed === null
@@ -117,7 +113,7 @@ export function parseBackup(
   for (const [key, value] of Object.entries(
     backup.data
   )) {
-    if (!ALLOWED_STORAGE_KEYS.includes(key)) {
+    if (!isDebtBeGoneStorageKey(key)) {
       throw new Error(
         `Invalid storage key found in backup: ${key}`
       );
@@ -145,7 +141,7 @@ export function restoreBackup(
 
     if (
       key &&
-      ALLOWED_STORAGE_KEYS.includes(key)
+      isDebtBeGoneStorageKey(key)
     ) {
       keysToRemove.push(key);
     }
