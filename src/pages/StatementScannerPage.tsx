@@ -311,6 +311,86 @@ const handleEditBill = (bill:
     setEditingBill(bill);
   };
 
+const handleUpdateExistingDebt = (
+  bill: ExtractedBill
+) => {
+  if (
+    bill.matchedRecordType !== "debt" ||
+    !bill.matchedRecordId
+  ) {
+    return;
+  }
+
+  const existingDebt =
+    existingDebts.find(
+      (debt) =>
+        debt.id === bill.matchedRecordId
+    );
+
+  if (!existingDebt) {
+    return;
+  }
+
+  const latestBalance =
+    typeof bill.currentBalance === "number"
+      ? bill.currentBalance
+      : typeof bill.statementBalance === "number"
+        ? bill.statementBalance
+        : existingDebt.balance;
+
+  const updatedDebt: Debt = {
+    ...existingDebt,
+
+    balance: latestBalance,
+
+    statementDate:
+      bill.statementDate ??
+      existingDebt.statementDate,
+
+    statementBalance:
+      typeof bill.statementBalance === "number"
+        ? bill.statementBalance
+        : existingDebt.statementBalance,
+
+    minimumPayment:
+      bill.amount > 0
+        ? bill.amount
+        : existingDebt.minimumPayment,
+
+    dueDate:
+      bill.dueDate ||
+      existingDebt.dueDate,
+
+    interestRate:
+      typeof bill.apr === "number"
+        ? bill.apr
+        : existingDebt.interestRate,
+
+    creditLimit:
+      typeof bill.creditLimit === "number"
+        ? bill.creditLimit
+        : existingDebt.creditLimit,
+
+    updatedAt:
+      new Date().toISOString(),
+  };
+
+  updateDebt(updatedDebt);
+
+  setBills((current) => {
+    const remaining = current.filter(
+      (item) => item.id !== bill.id
+    );
+
+    if (remaining.length === 0) {
+      setHasScanned(false);
+      setFile(null);
+    }
+
+    return remaining;
+  });
+};
+
 const handleAddDebt = (bill: ExtractedBill) => {
   const latestBalance =
     typeof bill.statementBalance === "number"
