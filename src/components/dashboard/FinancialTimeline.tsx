@@ -59,6 +59,30 @@ export default function FinancialTimeline({
     });
   });
 
+  income.forEach((item) => {
+    for
+        (let offset = 0; offset <= 2; offset++) {
+            const targetDate = new Date(
+                today.getFullYear(),
+                today.getMonth() + offset,
+                1
+            );
+            const occurrences =
+            getIncomeOccurrences(
+                item,
+                targetDate.getFullYear(),
+                targetDate.getMonth()
+            );
+            occurrences.forEach((occurrence) => {
+                events.push({
+                    date: occurrence,
+                    title: item.source,
+                    icon: "💵",
+                });
+            });
+        }
+  });
+
   const upcomingEvents = events
     .filter((event) => new Date(event.date) >= today)
     .sort((a, b) => a.date.localeCompare(b.date))
