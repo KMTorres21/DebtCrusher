@@ -713,45 +713,39 @@ function allocateNormally(
     * later-due obligations.
    */
   for (
-    let position =
-      eligibleIndexes.length -
-      1;
-    position >= 0 &&
-    remainingCents > 0;
-    position--
-  ) {
-    const index =
-      eligibleIndexes[position];
+  let position = 0;
+  position < eligibleIndexes.length &&
+  remainingCents > 0;
+  position++
+) {
+  const index =
+    eligibleIndexes[position];
 
-    const available =
-      availableCents[index];
+  const available =
+    availableCents[index];
 
-    if (available <= 0) {
-      continue;
-    }
+  if (available <= 0) {
+    continue;
+  }
 
-    const allocation =
-      Math.min(
-        remainingCents,
-        available
-      );
-
-    paydayPlans[index].bills.push(
-      {
-        bill: occurrence.bill,
-        dueDate:
-          occurrence.dueDate,
-        allocatedAmount:
-          allocation / 100,
-      }
+  const allocation =
+    Math.min(
+      remainingCents,
+      available
     );
 
-    availableCents[index] -=
-      allocation;
+  paydayPlans[index].bills.push({
+    bill: occurrence.bill,
+    dueDate: occurrence.dueDate,
+    allocatedAmount:
+      allocation / 100,
+  });
 
-    remainingCents -=
-      allocation;
-  }
+  availableCents[index] -=
+    allocation;
+
+  remainingCents -=
+    allocation;
 }
 
 function allocateBills(
