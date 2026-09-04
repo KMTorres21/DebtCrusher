@@ -67,6 +67,7 @@ function isDebtBeGoneStorageKey(
 }
 
 export function createBackup(): DebtBeGoneBackup {
+
   const data: Record<string, string> = {};
 
   for (let i = 0; i < localStorage.length; i++) {
@@ -77,13 +78,6 @@ export function createBackup(): DebtBeGoneBackup {
     ) {
       continue;
     }
-
-import {
-  downloadBackup,
-  getBackupPreview,
-  parseBackup,
-  restoreBackup,
-} from "../utils/backup";
 
     const value = localStorage.getItem(key);
 
@@ -102,56 +96,6 @@ const backupPreview =
     data,
   };
 }
-
-<div className="mt-4 rounded-xl bg-slate-50 p-4">
-  <p className="text-sm font-semibold text-slate-700">
-    Backup Preview
-  </p>
-
-  <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
-    <div>
-      <p className="text-slate-500">
-        Bills
-      </p>
-
-      <p className="font-bold text-slate-900">
-        {backupPreview.bills}
-      </p>
-    </div>
-
-    <div>
-      <p className="text-slate-500">
-        Debts
-      </p>
-
-      <p className="font-bold text-slate-900">
-        {backupPreview.debts}
-      </p>
-    </div>
-
-    <div>
-      <p className="text-slate-500">
-        Income Sources
-      </p>
-
-      <p className="font-bold text-slate-900">
-        {backupPreview.incomeSources}
-      </p>
-    </div>
-
-    <div>
-      <p className="text-slate-500">
-        Settings
-      </p>
-
-      <p className="font-bold text-slate-900">
-        {backupPreview.settings
-          ? "Included"
-          : "None"}
-      </p>
-    </div>
-  </div>
-</div>
 
 export function downloadBackup() {
   const backup = createBackup();

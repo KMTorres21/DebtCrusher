@@ -13,6 +13,7 @@ import { usePaydayStrategySettings } from "../hooks/usePaydayStrategySettings";
 import {
   DebtBeGoneBackup,
   downloadBackup,
+  getBackupPreview,
   parseBackup,
   restoreBackup,
 } from "../utils/backup";
@@ -126,6 +127,8 @@ export default function SettingsPage() {
         pendingBackup.data
       ).length
     : 0;
+
+  const backupPreview = getBackupPreview();
 
   return (
     <PageContainer>
@@ -424,6 +427,57 @@ export default function SettingsPage() {
               Download your DebtBeGone!! data as a JSON
               backup file.
             </p>
+
+        <div className="mt-4 rounded-xl bg-slate-50 p-4">
+          <p className="text-sm font-semibold text-slate-700">
+            Backup Preview
+          </p>
+
+
+          <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
+            <div>
+              <p className="text-slate-500">
+                Bills
+              </p>
+
+              <p className="font-bold text-slate-900">
+                {backupPreview.bills}
+              </p>
+            </div>
+
+            <div>
+              <p className="text-slate-500">
+                Debts
+              </p>
+
+              <p className="font-bold text-slate-900">
+                {backupPreview.debts}
+              </p>
+            </div>
+
+            <div>
+              <p className="text-slate-500">
+                Income Sources
+              </p>
+
+              <p className="font-bold text-slate-900">
+                {backupPreview.incomeSources}
+              </p>
+            </div>
+
+            <div>
+              <p className="text-slate-500">
+                Settings
+              </p>
+
+              <p className="font-bold text-slate-900">
+                {backupPreview.settings
+                  ? "Included"
+                  : "None"}
+              </p>
+            </div>
+          </div>
+        </div>
 
             <button
               type="button"
