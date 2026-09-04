@@ -223,7 +223,7 @@ export default function AddBillModal({
                   type="number"
                   min="0.01"
                   step="0.01"
-                  value={amount}
+                  value={Number(amount).toFixed(2)}
                   onChange={(event) =>
                     setAmount(event.target.value)
                   }
@@ -300,7 +300,7 @@ export default function AddBillModal({
           type="number"
           min="0"
           step="0.01"
-          value={statementBalance}
+          value={Number(statementBalance).toFixed(2)}
           onChange={(event) =>
             setStatementBalance(event.target.value)
           }
