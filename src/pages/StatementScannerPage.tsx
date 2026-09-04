@@ -1,4 +1,36 @@
+import { ChangeEvent, useState } from "react";
+import { Bill } from "../types/Bill";
+import { Debt } from "../types/Debt";
+import { useDebts } from "../hooks/useDebts";
+import { useBills } from "../hooks/useBills";
+import { formatCurrency } from "../utils/formatCurrency";
+import AddBillModal from "../components/bills/AddBillModal";
+import AddDebtModal from "../components/debts/AddDebtModal";
 
+type MatchStatus =
+  | "new"
+  | "possible"
+  | "existing";
+
+type MatchRecordType =
+  | "bill"
+  | "debt";
+
+interface ExtractedBill extends Bill {
+  confidence: number;
+  selected: boolean;
+
+  apr?: number;
+  statementDate?: string;
+  statementBalance?: number;
+  currentBalance?: number;
+  creditLimit?: number;
+
+  matchStatus: MatchStatus;
+  matchedRecordType?: MatchRecordType;
+  matchedRecordId?: string;
+  matchedRecordName?: string;
+}
 
 function normalizeName(
   value: string
