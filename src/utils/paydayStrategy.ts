@@ -945,4 +945,4 @@ export function buildAllPaydayPlans(
     paydayPlans,
     protectedPaycheckAmount
   );
-}}
+}
