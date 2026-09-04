@@ -182,7 +182,7 @@ useEffect(() => {
             <input
               id="debt-name"
               type="text"
-              value={name}
+              value={Number(minimumPayment).toFixed(2)}
               onChange={(event) => setName(event.target.value)}
               placeholder="Mortgage, Car Loan..."
               required
@@ -230,7 +230,7 @@ useEffect(() => {
                   type="number"
                   min="0.01"
                   step="0.01"
-                  value={minimumPayment}
+                  value={Number(minimumPayment).toFixed(2)}
                   onChange={(event) =>
                     setMinimumPayment(event.target.value)
                   }
@@ -284,7 +284,7 @@ useEffect(() => {
                   type="number"
                   min="0.01"
                   step="0.01"
-                  value={statementBalance}
+                  value={Number(statementBalance).toFixed(2)}
                   onChange={(event) =>
                     setStatementBalance(event.target.value)
                   }
@@ -336,7 +336,7 @@ useEffect(() => {
                   type="number"
                   min="0"
                   step="0.01"
-                  value={originalBalance}
+                  value={Number(originalBalance).toFixed(2)}
                   onChange={(event) =>
                     setOriginalBalance(event.target.value)
                   }
@@ -382,7 +382,7 @@ useEffect(() => {
           <input
             type="number"
             placeholder="Credit Limit (optional)"
-            value={creditLimit}
+            value={Number(creditLimit).toFixed(2)}
             onChange={(e) =>
               setCreditLimit(e.target.value)
             }
