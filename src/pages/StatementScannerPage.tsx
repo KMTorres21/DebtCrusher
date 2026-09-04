@@ -173,7 +173,7 @@ const handleScan = async () => {
         : "Other";
 
       const scannedName =
-  bill.name ?? "";
+        bill.name ?? "";
 
       const normalizedScannedName =
         normalizeName(scannedName);
