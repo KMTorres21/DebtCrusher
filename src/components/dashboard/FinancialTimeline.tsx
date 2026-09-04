@@ -25,6 +25,8 @@ export default function FinancialTimeline({
   const today = new Date();
     today.setHours(0, 0, 0);
 
+{console.log(income)}
+
   const events: TimelineEvent[] = [];
 
   bills.forEach((bill) => {
