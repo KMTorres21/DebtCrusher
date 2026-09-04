@@ -112,7 +112,7 @@ export default function FinancialTimeline({
               </span>
 
               <span className="text-sm text-slate-500">
-                {new Date(event.date).toLocaleDateString()}
+                {event.date}
               </span>
             </div>
           ))
