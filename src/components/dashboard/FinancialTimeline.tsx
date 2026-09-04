@@ -2,6 +2,7 @@ import Card from "../common/Card";
 import { Bill } from "../../types/Bill";
 import { Debt } from "../../types/Debt";
 import { Income } from "../../types/Income";
+import { formatDate } from "../../utils/formatDate";
 
 interface Props {
   bills: Bill[];
