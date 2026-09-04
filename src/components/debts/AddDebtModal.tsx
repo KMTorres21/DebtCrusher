@@ -182,7 +182,7 @@ useEffect(() => {
             <input
               id="debt-name"
               type="text"
-              value={Number(minimumPayment).toFixed(2)}
+              value={name}
               onChange={(event) => setName(event.target.value)}
               placeholder="Mortgage, Car Loan..."
               required
