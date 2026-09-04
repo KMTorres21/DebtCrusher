@@ -17,17 +17,64 @@ type MatchRecordType =
   | "debt";
 
 interface ExtractedBill extends Bill {
+  type MatchStatus =
+  | "new"
+  | "possible"
+  | "existing";
+
+type MatchRecordType =
+  | "bill"
+  | "debt";
+
+interface ExtractedBill extends Bill {
   confidence: number;
   selected: boolean;
+
   apr?: number;
   statementDate?: string;
   statementBalance?: number;
   currentBalance?: number;
   creditLimit?: number;
+
   matchStatus: MatchStatus;
   matchedRecordType?: MatchRecordType;
   matchedRecordId?: string;
   matchedRecordName?: string;
+}
+
+function normalizeName(
+  value: string
+): string {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function namesPossiblyMatch(
+  first: string,
+  second: string
+): boolean {
+  const a = normalizeName(first);
+  const b = normalizeName(second);
+
+  if (!a || !b) {
+    return false;
+  }
+
+  if (a === b) {
+    return true;
+  }
+
+  if (a.length < 4 || b.length < 4) {
+    return false;
+  }
+
+  return (
+    a.includes(b) ||
+    b.includes(a)
+  );
 }
 
 export default function StatementScannerPage() {
