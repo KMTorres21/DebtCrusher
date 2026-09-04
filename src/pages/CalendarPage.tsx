@@ -9,6 +9,9 @@ export default function CalendarPage() {
   const today = new Date();
   const [month, setMonth] = useState(today.getMonth());
   const [year, setYear] = useState(today.getFullYear());
+  const [editingBill, setEditingBill] = useState<Bill | null>(null);
+  const [editingIncome, setEditingIncome] = useState<Income | null>(null);
+  const [editingDebt, setEditingDebt] = useState<Debt | null>(null);
   const { bills } = useBills();
   const { income } = useIncome();
   const { debts } = useDebts();
@@ -52,13 +55,17 @@ export default function CalendarPage() {
         </button>
       </div>
 
-<CalendarGrid
-  year={year}
-  month={month}
-  bills={bills}
-  income={income}
-  debts={debts}
-/>
+    <CalendarGrid
+      year={year}
+      month={month}
+      bills={bills}
+      income={income}
+      debts={debts}
+      onEditBill={setEditingBill}
+      onEditIncome={setEditingIncome}
+      onEditDebt={setEditingDebt}   
+      />
+    )
     </div>
   );
 }

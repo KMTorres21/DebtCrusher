@@ -11,6 +11,9 @@ interface Props {
   bills: Bill[];
   income: Income[];
   debts: Debt[];
+  onEditBill?: (bill: Bill) => void;
+  onEditIncome?: (income: Income) => void;
+  onEditDebt?: (debt: Debt) => void;
 }
 
 export default function CalendarGrid({
@@ -19,6 +22,9 @@ export default function CalendarGrid({
   bills,
   income,
   debts,
+  onEditBill,
+  onEditIncome,
+  onEditDebt,
 }: Props) {
   const weekDays = [
     "Sun",
@@ -106,9 +112,11 @@ export default function CalendarGrid({
         {/* Bills */}
         <div className="mt-2 space-y-1">
           {dayBills.map((bill) => (
-            <div
+            <button
               key={bill.id}
-              className={`truncate rounded px-2 py-1 text-xs font-medium text-white ${
+              type="button"
+              onClick={() => onEditBill?.(bill)}
+              className={`w-full truncate rounded px-2 py-1 text-left text-xs font-medium text-white ${
                 bill.paid
                   ? "bg-green-500"
                   : "bg-red-500"
@@ -118,37 +126,41 @@ export default function CalendarGrid({
               <div>
                 ${bill.amount.toFixed(2)}
               </div>
-            </div>
+            </button>
           ))}
         </div>
 
         {/* Income */}
         <div className="mt-1 space-y-1">
           {dayIncome.map((item) => (
-            <div
+            <button
               key={item.id}
-              className="truncate rounded bg-green-600 px-2 py-1 text-xs font-medium text-white"
+              type="button"
+              onClick={() => onEditIncome?.(item)}
+              className="w-full truncate rounded bg-green-600 px-2 py-1 text-left text-xs font-medium text-white"
             >
               <div>💵 {item.source}</div>
               <div>
                 ${item.amount.toFixed(2)}
               </div>
-            </div>
+            </button>
           ))}
         </div>
 
         {/* Debt Payments */}
         <div className="mt-1 space-y-1">
           {dayDebts.map((debt) => (
-            <div
+            <button
               key={debt.id}
-              className="truncate rounded bg-orange-500 px-2 py-1 text-xs font-medium text-white"
+              type="button"
+              onClick={() => onEditDebt?.(debt)}
+              className="w-full truncate rounded bg-orange-500 px-2 py-1 text-left text-xs font-medium text-white"
             >
               <div>💳 {debt.name}</div>
               <div>
                 ${debt.minimumPayment.toFixed(2)}
               </div>
-            </div>
+            </button>
           ))}
         </div>
       </div>
