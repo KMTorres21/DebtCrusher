@@ -230,7 +230,7 @@ const matchedRecordType:
 
       return {
         id: `scan-${Date.now()}-${index}`,
-        name: scannedName,
+        name: bill.name ?? "",
         amount:
           typeof bill.amount === "number"
             ? bill.amount
@@ -262,10 +262,6 @@ const matchedRecordType:
         createdAt: new Date().toISOString(),
         confidence: bill.confidence ?? 0,
         selected: true,
-        matchStatus,
-        matchedRecordType,
-        matchedRecordId: matchedRecord?.id,
-        matchedRecordName: matchedRecord?.name,
       };
     }
   );
@@ -573,6 +569,23 @@ const handleAddDebt = (bill: ExtractedBill) => {
         </div>
 
         {/* Tags */}
+{bill.matchStatus === "existing" && (
+  <span className="rounded-full bg-orange-100 px-3 py-1 text-xs font-semibold text-orange-700">
+    Existing {bill.matchedRecordType}
+  </span>
+)}
+
+{bill.matchStatus === "possible" && (
+  <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700">
+    Possible Match
+  </span>
+)}
+
+{bill.matchStatus === "new" && (
+  <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
+    New
+  </span>
+)}
         <div className="mt-4 flex flex-wrap gap-2">
           <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold">
             {bill.category}
