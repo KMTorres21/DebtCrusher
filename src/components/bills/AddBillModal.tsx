@@ -298,9 +298,8 @@ export default function AddBillModal({
         <input
           id="statement-balance"
           type="number"
-          min="0"
           step="0.01"
-          value={Number(statementBalance).toFixed(2)}
+          value={statementBalance}
           onChange={(event) =>
             setStatementBalance(event.target.value)
           }
