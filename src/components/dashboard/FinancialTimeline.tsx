@@ -63,7 +63,6 @@ export default function FinancialTimeline({
       date: item.nextPayDate,
       title: item.source,
       icon: "💵",
-    });
   });
 
   const upcomingEvents = events
@@ -93,7 +92,7 @@ export default function FinancialTimeline({
               </span>
 
               <span className="text-sm text-slate-500">
-                {event.date}
+                {new Date(event.date).toLocaleDateString()}
               </span>
             </div>
           ))
