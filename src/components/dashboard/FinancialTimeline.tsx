@@ -3,6 +3,7 @@ import { Bill } from "../../types/Bill";
 import { Debt } from "../../types/Debt";
 import { Income } from "../../types/Income";
 import { formatDate } from "../../utils/formatDate";
+import { getIncomeOccurrences } from "../../utils/calendarOccurrences";
 
 interface Props {
   bills: Bill[];
@@ -55,14 +56,6 @@ export default function FinancialTimeline({
       date: debt.dueDate,
       title: `${debt.name} Due`,
       icon: "💳",
-    });
-  });
-
-  income.forEach((item) => {
-    events.push({
-      date: item.nextPayDate,
-      title: item.source,
-      icon: "💵",
     });
   });
 
