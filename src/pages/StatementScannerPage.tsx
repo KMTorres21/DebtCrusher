@@ -75,6 +75,7 @@ export default function StatementScannerPage() {
   const {
     debts: existingDebts,
     addDebt,
+    updateDebt,
     } = useDebts();
   const [file, setFile] = useState<File | null>(null);
   const [isScanning, setIsScanning] = useState(false);
