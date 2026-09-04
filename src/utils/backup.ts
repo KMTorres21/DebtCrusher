@@ -4,6 +4,54 @@ export interface DebtBeGoneBackup {
   exportedAt: string;
   data: Record<string, string>;
 }
+export interface BackupPreview {
+  bills: number;
+  debts: number;
+  incomeSources: number;
+  settings: boolean;
+}
+
+function countStoredArray(
+  key: string
+): number {
+  const value = localStorage.getItem(key);
+
+  if (!value) {
+    return 0;
+  }
+
+  try {
+    const parsed = JSON.parse(value);
+
+    return Array.isArray(parsed)
+      ? parsed.length
+      : 0;
+  } catch {
+    return 0;
+  }
+}
+
+export function getBackupPreview(): BackupPreview {
+  return {
+    bills: countStoredArray(
+      "debtcrusher-bills"
+    ),
+
+    debts: countStoredArray(
+      "debtcrusher-debts"
+    ),
+
+    incomeSources: countStoredArray(
+      "debtcrusher_income"
+    ),
+
+    settings:
+      localStorage.getItem(
+        "debtbegone-display-settings"
+      ) !== null,
+  };
+}
+
 
 const STORAGE_PREFIXES = [
   "debtbegone-",
@@ -30,12 +78,22 @@ export function createBackup(): DebtBeGoneBackup {
       continue;
     }
 
+import {
+  downloadBackup,
+  getBackupPreview,
+  parseBackup,
+  restoreBackup,
+} from "../utils/backup";
+
     const value = localStorage.getItem(key);
 
     if (value !== null) {
       data[key] = value;
     }
   }
+
+const backupPreview =
+  getBackupPreview();
 
   return {
     app: "DebtBeGone!!",
@@ -44,6 +102,56 @@ export function createBackup(): DebtBeGoneBackup {
     data,
   };
 }
+
+<div className="mt-4 rounded-xl bg-slate-50 p-4">
+  <p className="text-sm font-semibold text-slate-700">
+    Backup Preview
+  </p>
+
+  <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
+    <div>
+      <p className="text-slate-500">
+        Bills
+      </p>
+
+      <p className="font-bold text-slate-900">
+        {backupPreview.bills}
+      </p>
+    </div>
+
+    <div>
+      <p className="text-slate-500">
+        Debts
+      </p>
+
+      <p className="font-bold text-slate-900">
+        {backupPreview.debts}
+      </p>
+    </div>
+
+    <div>
+      <p className="text-slate-500">
+        Income Sources
+      </p>
+
+      <p className="font-bold text-slate-900">
+        {backupPreview.incomeSources}
+      </p>
+    </div>
+
+    <div>
+      <p className="text-slate-500">
+        Settings
+      </p>
+
+      <p className="font-bold text-slate-900">
+        {backupPreview.settings
+          ? "Included"
+          : "None"}
+      </p>
+    </div>
+  </div>
+</div>
 
 export function downloadBackup() {
   const backup = createBackup();
