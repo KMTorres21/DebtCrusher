@@ -549,8 +549,8 @@ const handleAddDebt = (bill: ExtractedBill) => {
 
     setDebtPrefill(null);
     setConvertingBillId(null);
-  }}
-/>
+     }}
+    />
   </>
   );
 }
