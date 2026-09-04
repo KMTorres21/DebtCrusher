@@ -7,7 +7,7 @@ import { formatCurrency } from "../utils/formatCurrency";
 import AddBillModal from "../components/bills/AddBillModal";
 import AddDebtModal from "../components/debts/AddDebtModal";
 
-interface ExtractedBill extends Bill{
+interface ExtractedBill extends Bill {
   confidence: number;
   selected: boolean;
   apr?: number;
@@ -15,6 +15,10 @@ interface ExtractedBill extends Bill{
   statementBalance?: number;
   currentBalance?: number;
   creditLimit?: number;
+  matchStatus: MatchStatus;
+  matchedRecordType?: MatchRecordType;
+  matchedRecordId?: string;
+  matchedRecordName?: string;
 }
 
 export default function StatementScannerPage() {
