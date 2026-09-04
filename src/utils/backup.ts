@@ -5,7 +5,12 @@ export interface DebtBeGoneBackup {
   data: Record<string, string>;
 }
 
-const STORAGE_PREFIX = "debtbegone-";
+const ALLOWED_STORAGE_KEYS = [
+  "debtcrusher-bills",
+  "debtcruser-debts",
+  "debtcrusher_income",
+  "debtcrusher-display-settings",
+];
 
 export function createBackup(): DebtBeGoneBackup {
   const data: Record<string, string> = {};
@@ -13,7 +18,8 @@ export function createBackup(): DebtBeGoneBackup {
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i);
 
-    if (!key || !key.startsWith(STORAGE_PREFIX)) {
+    if (!key || 
+      !ALLOWED_STORAGE_KEYS.includes(key)) {
       continue;
     }
 
@@ -111,7 +117,7 @@ export function parseBackup(
   for (const [key, value] of Object.entries(
     backup.data
   )) {
-    if (!key.startsWith(STORAGE_PREFIX)) {
+    if (!ALLOWED_STORAGE_KEYS.includes(key)) {
       throw new Error(
         `Invalid storage key found in backup: ${key}`
       );
@@ -139,7 +145,7 @@ export function restoreBackup(
 
     if (
       key &&
-      key.startsWith(STORAGE_PREFIX)
+      ALLOWED_STORAGE_KEYS.includes(key)
     ) {
       keysToRemove.push(key);
     }
