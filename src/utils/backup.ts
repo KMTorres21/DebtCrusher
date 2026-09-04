@@ -5,14 +5,17 @@ export interface DebtBeGoneBackup {
   data: Record<string, string>;
 }
 
+const STORAGE_PREFIXES = [
+  "debtbegone-",
+  "debtbegone_",
+  "debtcrusher-",
+  "debtcrusher_",
+];
 function isDebtBeGoneStorageKey(
   key: string
 ): boolean {
-  return (
-    key.startsWith("debtcrusher-") ||
-    key.startsWith("debtcrusher_") ||
-    key.startsWith("debtbegone-")
-  );
+  return STORAGE_PREFIXES.some(
+    prefix => key.startsWith(prefix));
 }
 
 export function createBackup(): DebtBeGoneBackup {
@@ -76,22 +79,24 @@ export function parseBackup(
 ): DebtBeGoneBackup {
   let parsed: unknown;
 
-  if (
-    typeof parsed !== "object" ||
-    parsed === null
-  ) {
-    throw new Error(
-      "This is not a valid DebtBeGone!! backup."
-    );
-  }
+  const backup = 
+    parsed as
+    Partial<DebtBeGoneBackup>;
 
-  const backup =
-    parsed as Partial<DebtBeGoneBackup>;
-
-  if (backup.app !== "DebtBeGone!!") {
-    throw new Error(
-      "This file was not created by DebtBeGone!!."
-    );
+  for (const [key, value] of
+    Object.entries(
+      backupData
+    )) {
+    if (!isDebtBeGoneStorageKey(key)) {
+      throw new Error(
+        `Invalid storage key found in backup: ${key}`
+      );
+    }
+    if (typeof value !== "string") {
+      throw new Error(
+        `Invalid data found for ${key}.`
+      );
+    }
   }
 
   if (backup.version !== 1) {
