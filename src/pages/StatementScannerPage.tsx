@@ -17,6 +17,16 @@ type MatchRecordType =
   | "debt";
 
 interface ExtractedBill extends Bill {
+  type MatchStatus =
+  | "new"
+  | "possible"
+  | "existing";
+
+type MatchRecordType =
+  | "bill"
+  | "debt";
+
+interface ExtractedBill extends Bill {
   confidence: number;
   selected: boolean;
 
@@ -265,6 +275,12 @@ const handleScan = async () => {
         createdAt: new Date().toISOString(),
         confidence: bill.confidence ?? 0,
         selected: true,
+        matchStatus,
+        matchedRecordType,
+        matchedRecordId:
+          matchedRecord?.id,
+        matchedRecordName:
+          matchedRecord?.name,
       };
     }
   );
