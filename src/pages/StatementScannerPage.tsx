@@ -608,7 +608,14 @@ const handleAddDebt = (bill: ExtractedBill) => {
           )}
         </div>
 
-        
+        {bill.matchedRecordName && (
+  <div className="mt-3 rounded-xl bg-amber-50 p-3 text-sm text-amber-800">
+    Possible existing record:{" "}
+    <span className="font-semibold">
+      {bill.matchedRecordName}
+    </span>
+  </div>
+)}
 
         {/* Edit */}
         <button
