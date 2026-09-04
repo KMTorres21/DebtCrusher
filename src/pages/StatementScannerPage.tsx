@@ -17,16 +17,6 @@ type MatchRecordType =
   | "debt";
 
 interface ExtractedBill extends Bill {
-  type MatchStatus =
-  | "new"
-  | "possible"
-  | "existing";
-
-type MatchRecordType =
-  | "bill"
-  | "debt";
-
-interface ExtractedBill extends Bill {
   confidence: number;
   selected: boolean;
 
