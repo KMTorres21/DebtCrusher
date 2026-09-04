@@ -228,9 +228,8 @@ useEffect(() => {
                 <input
                   id="debt-amount"
                   type="number"
-                  min="0.01"
                   step="0.01"
-                  value={Number(minimumPayment).toFixed(2)}
+                  value={minimumPayment}
                   onChange={(event) =>
                     setMinimumPayment(event.target.value)
                   }
@@ -284,7 +283,7 @@ useEffect(() => {
                   type="number"
                   min="0.01"
                   step="0.01"
-                  value={Number(statementBalance).toFixed(2)}
+                  value={statementBalance}
                   onChange={(event) =>
                     setStatementBalance(event.target.value)
                   }
@@ -336,7 +335,7 @@ useEffect(() => {
                   type="number"
                   min="0"
                   step="0.01"
-                  value={Number(originalBalance).toFixed(2)}
+                  value={originalBalance}
                   onChange={(event) =>
                     setOriginalBalance(event.target.value)
                   }
@@ -382,7 +381,7 @@ useEffect(() => {
           <input
             type="number"
             placeholder="Credit Limit (optional)"
-            value={Number(creditLimit).toFixed(2)}
+            value={creditLimit}
             onChange={(e) =>
               setCreditLimit(e.target.value)
             }
