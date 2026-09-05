@@ -27,7 +27,7 @@ export interface Debt {
   statementDate?: string;
   statementBalance?: number;
   statementReviewed?: boolean;
-  statementReviewedAt?: ActivityEntry[];
+  statementReviewedAt?: string;
   activityHistory?: ActivityEntry[];
   creditLimit?: number;
   notes?: string;
