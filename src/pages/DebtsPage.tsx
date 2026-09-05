@@ -5,7 +5,7 @@ import { useBills } from "../hooks/useBills";
 import { Debt } from "../types/Debt";
 import { useDebts } from "../hooks/useDebts";
 import { formatCurrency } from "../utils/formatCurrency";
-
+import { Bill } from "../types/Bill";
 import Button from "../components/common/Button";
 import PageContainer from "../components/common/PageContainer";
 import PageHeader from "../components/common/PageHeader";
