@@ -1,11 +1,13 @@
 import { Bill } from "../../types/Bill";
 import BillCard from "./BillCard";
+import { onConvertToDebt } from "../../types/Bill";
 
 interface BillListProps {
   bills: Bill[];
   onTogglePaid: (id: string) => void;
   onEdit: (bill: Bill) => void;
   onDelete: (id: string) => void;
+  onConvertToDebt: (bill: Bill) => void;
 }
 
 export default function BillList({
@@ -31,6 +33,7 @@ export default function BillList({
           onTogglePaid={onTogglePaid}
           onEdit={onEdit}
           onDelete={onDelete}
+          onConvertToDebt={onConvertToDebt}
         />
       ))}
     </div>
