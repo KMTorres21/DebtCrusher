@@ -25,9 +25,9 @@ export default function FinancialTimeline({
   const today = new Date();
     today.setHours(0, 0, 0);
 
-{console.log(income)}
-{console.log(bills)}
-{console.log(debts)}
+bills.forEach((bill) => console.log(bill.name, bill.statementDate, bill.dueDate));
+debts.forEach((debt) => console.log(debt.name, debt.statementDate, debt.dueDate));
+income.forEach((item) => console.log(item.source, item.amount, item.frequency));
 
   const events: TimelineEvent[] = [];
   const reviewsNeeded: {
@@ -117,6 +117,8 @@ export default function FinancialTimeline({
         }
   });
 
+  console.log("ALL EVENTS", events);
+  
   const upcomingEvents = events
     .filter((event) => new Date(event.date) >= today)
     .sort((a, b) => a.date.localeCompare(b.date))
