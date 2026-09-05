@@ -146,21 +146,24 @@ useEffect(() => {
       : undefined,
 
   interestRate: Number(interestRate),
-  promoInterestRate: promoInterestRate
-    ? Number(promoInterestRate)
-    : undefined,
-  promoEndDate: promoEndDate || undefined,
-  promoDeferredInterest,
-      promoEndDate
-      ? promoDeferredInterest
-      : undefined,
+  
   minimumPayment: Number(minimumPayment),
-
+  
   dueDate,
 
   creditLimit: creditLimit
     ? Number(creditLimit)
     : undefined,
+
+  promoInterestRate:
+      promoInterestRate !== ""
+        ? Number(promoInterestRate)
+        : undefined,
+  promoEndDate: promoEndDate || undefined,
+  promoDeferredInterest:
+      promoEndDate
+      ? promoDeferredInterest
+      : undefined,
 
   notes: notes.trim() || undefined,
 

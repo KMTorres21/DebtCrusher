@@ -208,22 +208,6 @@ export default function DebtPlannerPage() {
 
     let remainingExtra = extraAmount;
 
-    const allocatedExtraPayment =
-      extraPaymentAllocations.reduce(
-        (sum, item) => sum + item.amount,
-        0
-      );
-
-    const debtsEliminated =
-      extraPaymentAllocations.filter(
-        (item) => item.remainingBalance === 0
-      ).length;
-
-    const unusedExtraPayment = Math.max(
-      0,
-      extraAmount - allocatedExtraPayment
-    );
-
     for (const item of sortedDebts) {
       if (remainingExtra <= 0) {
         break;
@@ -282,6 +266,22 @@ export default function DebtPlannerPage() {
     return allocations;
   }, [debts, strategy, extraAmount]);
 
+    const allocatedExtraPayment =
+    extraPaymentAllocations.reduce(
+      (sum, item) => sum + item.amount,
+      0
+    );
+
+    const debtsEliminated =
+      extraPaymentAllocations.filter(
+        (item) => item.remainingBalance === 0
+      ).length;
+
+    const unusedExtraPayment = Math.max(
+      0,
+      extraAmount - allocatedExtraPayment
+    );
+
   const interestSaved =
     snowballPlan.totalInterest -
     avalanchePlan.totalInterest;
@@ -317,10 +317,7 @@ export default function DebtPlannerPage() {
         (a.statementBalance ?? a.balance) -
         (b.statementBalance ?? b.balance)
     )[0];
-  }, [debts, strategy]);
 
-  if (debts.length === 0) {
-    return (
       <PageContainer>
         <PageHeader
           title="Debt Payoff Planner"
@@ -342,7 +339,6 @@ export default function DebtPlannerPage() {
           </div>
         </Card>
       </PageContainer>
-    );
   }
 
   return (
