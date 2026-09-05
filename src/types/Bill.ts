@@ -28,7 +28,7 @@ export interface Bill {
   name: string;
   statementDate?: string;
   statementReviewed?: boolean;
-  statementReviewedAt?: ActivityEntry[];
+  statementReviewedAt?: string;
   statementBalance?: number;
   amount: number;
   dueDate: string;
@@ -42,4 +42,5 @@ export interface Bill {
   notes?: string;
   createdAt: string;
   updatedAt?: string;
+  activityHistory?: ActivityEntry[];
 }

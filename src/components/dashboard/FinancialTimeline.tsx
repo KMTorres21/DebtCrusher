@@ -56,7 +56,15 @@ export default function FinancialTimeline({
 
         updateBill({
           ...bill,
-          statementReviewed: true,
+          activityHistory: [
+            ...(bill.activityHistory ?? []),
+            {
+              id: crypto.randomUUID(),
+              date: new Date().toISOString(),
+              action: "Statement Reviewed",
+            },
+          ],
+          
           statementReviewedAt: now,
         });
       }
@@ -70,7 +78,14 @@ export default function FinancialTimeline({
 
         updateDebt({
           ...debt,
-          statementReviewed: true,
+          activityHistory: [
+            ...(debt.activityHistory ?? []),
+            {
+              id: crypto.randomUUID(),
+              date: new Date().toISOString(),
+              action: "Statement Reviewed",
+            },
+          ],
           statementReviewedAt: now,
         });
       }

@@ -49,6 +49,14 @@ export function useBills() {
                 ...bill,
                 paid: !bill.paid,
                 updatedAt: new Date().toISOString(),
+                activityHistory: [
+                  ...(bill.activityHistory ?? []),
+                  {
+                    id: crypto.randomUUID(),
+                    date: new Date().toISOString(),
+                    action: bill.paid ? "Marked Unpaid" : "Marked Paid",
+                  },
+                ],
               }
             : bill
         )
