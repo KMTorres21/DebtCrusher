@@ -170,20 +170,24 @@ export default function DebtCard({
         </div>
       </div>
 
-      <div className="mt-6 flex gap-3">
-        <button
-          onClick={() => onEdit(debt)}
-          className="flex-1 rounded-xl bg-slate-100 py-2 font-medium hover:bg-slate-200"
-        >
-          Edit
-        </button>
+      <div className="mt-6 space-y-2">
+        <div className="flex gap-3">
 
-        <button
-          onClick={() => onDelete(debt.id)}
-          className="flex-1 rounded-xl bg-red-500 py-2 font-medium text-white hover:bg-red-600"
-        >
-          Delete
-        </button>
+          <button
+            onClick={() => onEdit(debt)}
+            className="flex-1 rounded-xl bg-slate-100 py-2 font-medium hover:bg-slate-200"
+          >
+            Edit
+          </button>
+
+          <button
+            onClick={() => onDelete(debt.id)}
+            className="flex-1 rounded-xl bg-red-500 py-2 font-medium text-white hover:bg-red-600"
+          >
+            Delete
+          </button>
+
+        </div>
 
         <button
           onClick={() => onConvertToBill(debt)}
@@ -191,6 +195,7 @@ export default function DebtCard({
         >
           🔄 Convert to Bill
         </button>
+
       </div>
     </div>
   );
