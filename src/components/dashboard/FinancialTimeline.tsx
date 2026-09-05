@@ -15,6 +15,7 @@ interface TimelineEvent {
   date: string;
   title: string;
   icon: string;
+  reviewNeeded?: boolean;
 }
 
 export default function FinancialTimeline({
@@ -37,10 +38,14 @@ export default function FinancialTimeline({
 
   bills.forEach((bill) => {
     if (bill.statementDate) {
-      events.push({
-        date: bill.statementDate,
-        title: `${bill.name} Statement`,
-        icon: "📄",
+     events.push({
+      date: bill.dueDate,
+      title: `${bill.name} Due`,
+      icon: "💳",
+      reviewNeeded:
+        !!bill.statementDate &&
+        bill.statementDate <= today.toISOString().slice(0, 10) &&
+        bill.dueDate >= today.toISOString().slice(0, 10),
       });
     }
 
@@ -66,9 +71,13 @@ export default function FinancialTimeline({
   debts.forEach((debt) => {
     if (debt.statementDate) {
       events.push({
-        date: debt.statementDate,
-        title: `${debt.name} Statement`,
-        icon: "📄",
+      date: debt.dueDate,
+      title: `${debt.name} Due`,
+      icon: "💳",
+      reviewNeeded:
+        !!debt.statementDate &&
+        debt.statementDate <= today.toISOString().slice(0, 10) &&
+        debt.dueDate >= today.toISOString().slice(0, 10),
       });
 
     if (
@@ -185,9 +194,17 @@ export default function FinancialTimeline({
               key={`${event.date}-${index}`}
               className="flex items-center justify-between"
             >
-              <span className="font-medium">
-                {event.icon} {event.title}
-              </span>
+              <div>
+                <div className="font-medium">
+                  {event.icon} {event.title}
+                </div>
+
+                {event.reviewNeeded && (
+                  <div className="text-xs font-semibold text-amber-600">
+                    👀 Review Needed
+                  </div>
+                )}
+              </div>
 
               <span className="text-sm text-slate-500">
                 {formatDate(event.date)}
