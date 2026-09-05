@@ -27,8 +27,23 @@ export default function DebtsPage() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingDebt, setEditingDebt] =
     useState<Debt | null>(null);
-  const [sortBy, setSortBy] = useState<"name" | "dueDate" | "statementDate">("dueDate"
-  );
+  const [sortBy, setSortBy] = useState<
+      "name" | "dueDate" | "statementDate"
+    >(() => {
+      const saved = localStorage.getItem(
+        "debtSortBy"
+      );
+
+      if (
+        saved === "name" ||
+        saved === "dueDate" ||
+        saved === "statementDate"
+      ) {
+        return saved;
+      }
+
+      return "dueDate";
+    });
 
   const navigate = useNavigate();
     const totalDebt = debts.reduce(
@@ -122,14 +137,20 @@ export default function DebtsPage() {
         <select
           id="debt-sort"
           value={sortBy}
-          onChange={(event) =>
-            setSortBy(
+          onChange={(event) => {
+            const value =
               event.target.value as
                 | "name"
                 | "dueDate"
-                | "statementDate"
-            )
-          }
+                | "statementDate";
+
+            setSortBy(value);
+
+            localStorage.setItem(
+              "debtSortBy",
+              value
+            );
+          }}
           className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm"
         >
           <option value="name">Name</option>
