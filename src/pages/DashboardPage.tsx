@@ -20,8 +20,8 @@ import { useIncome } from "../hooks/useIncome";
 import { calculateFinancialSummary } from "../utils/cashFlow";
 
 export default function DashboardPage() {
-  const { bills, addBill } = useBills();
-  const { debts } = useDebts();
+  const { bills, addBill, updateBill } = useBills();
+  const { debts, updateDebt } = useDebts();
   const { income } = useIncome();
 
   const [isAddBillOpen, setIsAddBillOpen] = useState(false);
@@ -158,6 +158,8 @@ export default function DashboardPage() {
         bills={bills}
         debts={debts}
         income={income}
+        updateBill={updateBill}
+        updateDebt={updateDebt}
       />
 
       <AddBillModal

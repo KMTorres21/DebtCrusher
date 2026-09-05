@@ -9,6 +9,8 @@ interface Props {
   bills: Bill[];
   debts: Debt[];
   income: Income[];
+  updateBill: (bill: Bill) => void;
+  updateDebt: (debt: Debt) => void;
 }
 
 interface TimelineEvent {
@@ -22,6 +24,8 @@ export default function FinancialTimeline({
   bills,
   debts,
   income,
+  updateBill,
+  updateDebt,
 }: Props) {
   const today = new Date();
     today.setHours(0, 0, 0);
@@ -30,11 +34,47 @@ export default function FinancialTimeline({
 
   const events: TimelineEvent[] = [];
   const reviewsNeeded: {
+  id: string;
+  type: "bill" | "debt";
   name: string;
   statementDate: string;
   dueDate: string;
     }[] = [];
 
+    function markStatementReviewed(
+      id: string,
+      type: "bill" | "debt"
+    ) {
+      const now = new Date().toISOString();
+
+      if (type === "bill") {
+        const bill = bills.find(
+          (b) => b.id === id
+        );
+
+        if (!bill) return;
+
+        updateBill({
+          ...bill,
+          statementReviewed: true,
+          statementReviewedAt: now,
+        });
+      }
+
+      if (type === "debt") {
+        const debt = debts.find(
+          (d) => d.id === id
+        );
+
+        if (!debt) return;
+
+        updateDebt({
+          ...debt,
+          statementReviewed: true,
+          statementReviewedAt: now,
+        });
+      }
+    }
 
   bills.forEach((bill) => {
     if (bill.statementDate) {
@@ -60,13 +100,17 @@ export default function FinancialTimeline({
         bill.statementDate <= today.toISOString().slice(0, 10) &&
         bill.dueDate >= today.toISOString().slice(0, 10)
         ) {
-        reviewsNeeded.push({
+        if (!bill.statementReviewed) {
+          reviewsNeeded.push({
+            id: bill.id,
+            type: "bill",
             name: bill.name,
             statementDate: bill.statementDate,
             dueDate: bill.dueDate,
-        });
+          });
         }
-    });
+
+    };
 
   debts.forEach((debt) => {
     if (debt.statementDate) {
@@ -85,12 +129,15 @@ export default function FinancialTimeline({
         debt.statementDate <= today.toISOString().slice(0, 10) &&
         debt.dueDate >= today.toISOString().slice(0, 10)
         ) {
+        if (!debt.statementReviewed) {
         reviewsNeeded.push({
-            name: debt.name,
-            statementDate: debt.statementDate,
-            dueDate: debt.dueDate,
+          id: debt.id,
+          type: "debt",
+          name: debt.name,
+          statementDate: debt.statementDate,
+          dueDate: debt.dueDate,
         });
-        }
+      }
     }
 
     events.push({
@@ -98,7 +145,7 @@ export default function FinancialTimeline({
       title: `${debt.name} Due`,
       icon: "💳",
     });
-  });
+  };
 
   income.forEach((item) => {
     for
@@ -170,6 +217,18 @@ export default function FinancialTimeline({
         </div>
 
         <div className="text-sm font-medium text-amber-700">
+          <button
+            type="button"
+            onClick={() =>
+              markStatementReviewed(
+                item.id,
+                item.type
+              )
+            }
+        className="mt-2 rounded-lg bg-green-600 px-3 py-1 text-xs font-semibold text-white hover:bg-green-700"
+>
+  ✅ Mark Reviewed
+</button>
             {daysUntilDue === 0
             ? "Due Today"
             : daysUntilDue === 1
@@ -215,4 +274,4 @@ export default function FinancialTimeline({
       </div>
     </Card>
   );
-}
+};
