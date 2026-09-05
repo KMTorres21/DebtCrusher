@@ -7,7 +7,8 @@ import { useDisplaySettings } from "../hooks/useDisplaySettings";
 import Button from "../components/common/Button";
 import BillCard from "../components/bills/BillCard";
 import AddBillModal from "../components/bills/AddBillModal";
-
+import { Debt } from "../types/Debt";
+import { useDebts } from "../hooks/useDebts";
 import PageContainer from "../components/common/PageContainer";
 import PageHeader from "../components/common/PageHeader";
 import SearchBar from "../components/common/SearchBar";
@@ -21,6 +22,7 @@ export default function BillsPage() {
     togglePaid,
     deleteBill,
   } = useBills();
+  const { addDebt } = useDebts();
   const {
     settings: displaySettings}
      = useDisplaySettings();
@@ -82,6 +84,53 @@ export default function BillsPage() {
     setEditingBill(bill);
     setIsAddModalOpen(true);
   }
+
+  function handleConvertToDebt(bill: Bill) {
+      const confirmed = window.confirm(
+        `Convert "${bill.name}" to a Debt?\n\nThe Bill will be removed and a new Debt will be created.`
+      );
+
+      if (!confirmed) return;
+
+      const now = new Date().toISOString();
+
+      const newDebt: Debt = {
+        id: crypto.randomUUID(),
+
+        name: bill.name,
+        type: "Credit Card",
+
+        balance:
+          bill.statementBalance ??
+          bill.amount,
+
+        originalBalance:
+          bill.statementBalance ??
+          bill.amount,
+
+        statementBalance:
+          bill.statementBalance,
+
+        minimumPayment:
+          bill.amount,
+
+        statementDate:
+          bill.statementDate,
+
+        dueDate:
+          bill.dueDate,
+
+        interestRate: 0,
+
+        notes: bill.notes,
+
+        createdAt: now,
+        updatedAt: now,
+      };
+
+      addDebt(newDebt);
+      deleteBill(bill.id);
+    }
 
   return (
     <PageContainer>
@@ -153,6 +202,7 @@ export default function BillsPage() {
               onTogglePaid={togglePaid}
               onEdit={handleEdit}
               onDelete={deleteBill}
+              onConvertToDebt={() => {}}
             />
           ))}
         </div>
