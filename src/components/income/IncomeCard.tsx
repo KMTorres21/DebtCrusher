@@ -1,5 +1,5 @@
 import { Pencil, Trash2, Calendar, DollarSign } from "lucide-react";
-
+import { getIncomeOccurrences } from "../../utils/calendarOccurrences";
 import { Income } from "../../types/Income";
 import { formatCurrency } from "../../utils/formatCurrency";
 
@@ -7,6 +7,36 @@ interface IncomeCardProps {
   income: Income;
   onEdit: (income: Income) => void;
   onDelete: (id: string) => void;
+}
+
+function getNextPayDate(income: Income) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const dates: string[] = [];
+
+  for (let offset = 0; offset <= 12; offset++) {
+    const targetDate = new Date(
+      today.getFullYear(),
+      today.getMonth() + offset,
+      1
+    );
+
+    const occurrences =
+      getIncomeOccurrences(
+        income,
+        targetDate.getFullYear(),
+        targetDate.getMonth()
+      );
+
+    dates.push(...occurrences);
+  }
+
+  return dates
+    .filter((date) =>
+      new Date(`${date}T12:00:00`) >= today
+    )
+    .sort()[0];
 }
 
 export default function IncomeCard({
@@ -34,7 +64,7 @@ export default function IncomeCard({
           <div className="mt-2 flex items-center gap-2 text-slate-600">
             <Calendar size={18} />
             <span>
-              Next Pay: {income.nextPayDate}
+              Next Pay: {getNextPayDate(income)}
             </span>
           </div>
 

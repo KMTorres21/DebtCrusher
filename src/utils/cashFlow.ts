@@ -2,15 +2,18 @@ import { Bill } from "../types/Bill";
 import { Debt } from "../types/Debt";
 import { Income } from "../types/Income";
 import { FinancialSummary } from "../types/FinancialSummary";
+import { calculateMonthlyIncome } from "./calculateMonthlyIncome";
 
 export function calculateFinancialSummary(
   bills: Bill[],
   debts: Debt[],
   income: Income[]
 ): FinancialSummary {
-  const totalIncome = income.reduce(
-    (sum, item) => sum + item.amount,
-    0
+  const today = new Date();
+  const totalIncome = calculateMonthlyIncome(
+    income,
+    today.getFullYear(),
+    today.getMonth()
   );
 
   const totalBills = bills.reduce(

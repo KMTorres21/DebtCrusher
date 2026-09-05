@@ -75,7 +75,7 @@ export default function DashboardPage() {
       <div className="grid grid-cols-2 gap-4">
 
         <StatCard
-          title="Monthly Income"
+          title="Income This Month"
           value={formatCurrency(summary.totalIncome)}
           valueClassName="text-green-600"
         />

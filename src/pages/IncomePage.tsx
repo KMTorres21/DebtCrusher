@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Income } from "../types/Income";
 import { useIncome } from "../hooks/useIncome";
 import { formatCurrency } from "../utils/formatCurrency";
-
+import { calculateMonthlyIncome } from "../utils/calculateMonthlyIncome";
 import Button from "../components/common/Button";
 import PageContainer from "../components/common/PageContainer";
 import PageHeader from "../components/common/PageHeader";
@@ -32,9 +32,12 @@ export default function IncomePage() {
     item.source.toLowerCase().includes(search.toLowerCase())
   );
 
-  const totalIncome = income.reduce(
-    (sum, item) => sum + item.amount,
-    0
+  const today = new Date();
+
+  const totalIncome = calculateMonthlyIncome(
+    income,
+    today.getFullYear(),
+    today.getMonth()
   );
 
   const nextPayday = (() => {
@@ -106,7 +109,7 @@ export default function IncomePage() {
 
       <div className="grid grid-cols-2 gap-4">
         <StatCard
-          title="Monthly Income"
+          title="Income This Month"
           value={formatCurrency(totalIncome)}
           valueClassName="text-green-600"
         />
