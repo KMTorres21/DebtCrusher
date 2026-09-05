@@ -1,6 +1,5 @@
 import { Bill } from "../../types/Bill";
 import BillCard from "./BillCard";
-import { onConvertToDebt } from "../../types/Bill";
 
 interface BillListProps {
   bills: Bill[];
@@ -15,6 +14,7 @@ export default function BillList({
   onTogglePaid,
   onEdit,
   onDelete,
+  onConvertToDebt,
 }: BillListProps) {
   if (bills.length === 0) {
     return (
