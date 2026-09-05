@@ -109,7 +109,7 @@ export default function FinancialTimeline({
                 events.push({
                     date: occurrence,
                     title: item.source,
-                    icon: "💵",
+                    icon: "💰",
                 });
             });
         }
