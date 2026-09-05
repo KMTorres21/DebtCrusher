@@ -15,7 +15,6 @@ interface TimelineEvent {
   date: string;
   title: string;
   icon: string;
-  reviewNeeded?: boolean;
 }
 
 export default function FinancialTimeline({
@@ -26,9 +25,7 @@ export default function FinancialTimeline({
   const today = new Date();
     today.setHours(0, 0, 0);
 
-bills.forEach((bill) => console.log(bill.name, bill.statementDate, bill.dueDate));
-debts.forEach((debt) => console.log(debt.name, debt.statementDate, debt.dueDate));
-income.forEach((item) => console.log(item.source, item.amount, item.frequency));
+{console.log(income)}
 
   const events: TimelineEvent[] = [];
   const reviewsNeeded: {
@@ -51,10 +48,6 @@ income.forEach((item) => console.log(item.source, item.amount, item.frequency));
       date: bill.dueDate,
       title: `${bill.name} Due`,
       icon: "💳",
-      reviewNeeded:
-        !!bill.statementDate &&
-        bill.statementDate <= today.toISOString().slice(0, 10) &&
-        bill.dueDate >= today.toISOString().slice(0, 10)
     });
 
     if (
@@ -73,13 +66,9 @@ income.forEach((item) => console.log(item.source, item.amount, item.frequency));
   debts.forEach((debt) => {
     if (debt.statementDate) {
       events.push({
-      date: debt.dueDate,
-      title: `${debt.name} Due`,
-      icon: "💳",
-      reviewNeeded:
-        !!debt.statementDate &&
-        debt.statementDate <= today.toISOString().slice(0, 10) &&
-        debt.dueDate >= today.toISOString().slice(0, 10),
+        date: debt.statementDate,
+        title: `${debt.name} Statement`,
+        icon: "📄",
       });
 
     if (
@@ -120,13 +109,11 @@ income.forEach((item) => console.log(item.source, item.amount, item.frequency));
                 events.push({
                     date: occurrence,
                     title: item.source,
-                    icon: "💰",
+                    icon: "💵",
                 });
             });
         }
   });
-
-  console.log("ALL EVENTS", events);
 
   const upcomingEvents = events
     .filter((event) => new Date(event.date) >= today)
@@ -198,17 +185,9 @@ income.forEach((item) => console.log(item.source, item.amount, item.frequency));
               key={`${event.date}-${index}`}
               className="flex items-center justify-between"
             >
-              <div>
-              <div className="font-medium">
+              <span className="font-medium">
                 {event.icon} {event.title}
-              </div>
-
-              {event.reviewNeeded && (
-                <div className="text-xs font-semibold text-amber-600">
-                  👀 Review Needed
-                </div>
-              )}
-            </div>
+              </span>
 
               <span className="text-sm text-slate-500">
                 {formatDate(event.date)}

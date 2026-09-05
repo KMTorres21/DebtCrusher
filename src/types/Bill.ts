@@ -25,6 +25,8 @@ export interface Bill {
   id: string;
   name: string;
   statementDate?: string;
+  statementReviewed?: boolean;
+  statementReviewedAt?: string;
   statementBalance?: number;
   amount: number;
   dueDate: string;

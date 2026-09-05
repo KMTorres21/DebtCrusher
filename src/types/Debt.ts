@@ -24,6 +24,8 @@ export interface Debt {
 
   statementDate?: string;
   statementBalance?: number;
+  statementReviewed?: boolean;
+  statementReviewedAt?: string;
 
   creditLimit?: number;
   notes?: string;
