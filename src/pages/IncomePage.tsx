@@ -14,6 +14,7 @@ import EmptyState from "../components/common/EmptyState";
 import { getIncomeOccurrences } from "../utils/calendarOccurrences";
 import IncomeCard from "../components/income/IncomeCard";
 import AddIncomeModal from "../components/income/AddIncomeModal";
+import { formatDate } from "../utils/formatDate";
 
 export default function IncomePage() {
   const {
@@ -116,7 +117,7 @@ export default function IncomePage() {
 
         <StatCard
           title="Next Payday"
-          value={nextPayday}
+          value={formatDate(nextPayday)}
         />
       </div>
 

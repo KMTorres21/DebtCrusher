@@ -2,6 +2,7 @@ import { Pencil, Trash2, Calendar, DollarSign } from "lucide-react";
 import { getIncomeOccurrences } from "../../utils/calendarOccurrences";
 import { Income } from "../../types/Income";
 import { formatCurrency } from "../../utils/formatCurrency";
+import { formatDate } from "../../utils/formatDate";
 
 interface IncomeCardProps {
   income: Income;
@@ -64,7 +65,7 @@ export default function IncomeCard({
           <div className="mt-2 flex items-center gap-2 text-slate-600">
             <Calendar size={18} />
             <span>
-              Next Pay: {getNextPayDate(income)}
+              Next Pay: {formatDate(getNextPayDate(income))}
             </span>
           </div>
 
