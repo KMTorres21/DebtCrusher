@@ -86,10 +86,11 @@ export default function BillsPage() {
   }
 
   function handleConvertToDebt(bill: Bill) {
+    console.log("HANDLECONVERT START", bill);
       const confirmed = window.confirm(
         `Convert "${bill.name}" to a Debt?\n\nThe Bill will be removed and a new Debt will be created.`
       );
-
+      console.log("CONFIRMED?", confirmed);
       if (!confirmed) return;
 
       const now = new Date().toISOString();
@@ -130,6 +131,7 @@ export default function BillsPage() {
 
       addDebt(newDebt);
       deleteBill(bill.id);
+      console.log("HANDLECONVERT", bill);
     }
 
   return (
@@ -202,7 +204,7 @@ export default function BillsPage() {
               onTogglePaid={togglePaid}
               onEdit={handleEdit}
               onDelete={deleteBill}
-              onConvertToDebt={() => {}}
+              onConvertToDebt={handleConvertToDebt}
             />
           ))}
         </div>

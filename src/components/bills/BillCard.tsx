@@ -80,7 +80,10 @@ export default function BillCard({
           
             <Button
               className="bg-orange-500 hover:bg-orange-600 text-white"
-              onClick={() => onConvertToDebt(bill)}
+              onClick={() => {
+                console.log("BUTTON CLICKED", bill);
+                onConvertToDebt(bill);
+                }}
               >
               🔄 Convert to Debt
             </Button>
