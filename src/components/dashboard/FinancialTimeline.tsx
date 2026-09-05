@@ -15,6 +15,7 @@ interface TimelineEvent {
   date: string;
   title: string;
   icon: string;
+  reviewNeeded?: boolean;
 }
 
 export default function FinancialTimeline({
@@ -50,6 +51,9 @@ income.forEach((item) => console.log(item.source, item.amount, item.frequency));
       date: bill.dueDate,
       title: `${bill.name} Due`,
       icon: "💳",
+      reviewNeeded:
+        !!bill.statementDate &&
+        bill.statementDate <= today.toISOString().slice(0, 10),
     });
 
     if (
@@ -68,10 +72,13 @@ income.forEach((item) => console.log(item.source, item.amount, item.frequency));
   debts.forEach((debt) => {
     if (debt.statementDate) {
       events.push({
-        date: debt.statementDate,
-        title: `${debt.name} Statement`,
-        icon: "📄",
-      });
+      date: debt.dueDate,
+      title: `${debt.name} Due`,
+      icon: "💳",
+      reviewNeeded:
+        !!debt.statementDate &&
+        debt.statementDate <= today.toISOString().slice(0, 10),
+    });
 
     if (
         debt.statementDate &&
@@ -118,7 +125,7 @@ income.forEach((item) => console.log(item.source, item.amount, item.frequency));
   });
 
   console.log("ALL EVENTS", events);
-  
+
   const upcomingEvents = events
     .filter((event) => new Date(event.date) >= today)
     .sort((a, b) => a.date.localeCompare(b.date))
@@ -189,9 +196,17 @@ income.forEach((item) => console.log(item.source, item.amount, item.frequency));
               key={`${event.date}-${index}`}
               className="flex items-center justify-between"
             >
-              <span className="font-medium">
+              <div>
+              <div className="font-medium">
                 {event.icon} {event.title}
-              </span>
+              </div>
+
+              {event.reviewNeeded && (
+                <div className="text-xs font-semibold text-amber-600">
+                  👀 Review Needed
+                </div>
+              )}
+            </div>
 
               <span className="text-sm text-slate-500">
                 {formatDate(event.date)}
