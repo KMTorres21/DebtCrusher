@@ -191,7 +191,7 @@ export default function DebtCard({
 
         <button
           onClick={() => onConvertToBill(debt)}
-          className="w-full rounded-xl bg-orange-500 py-2 font-medium text-white hover:bg-orange-600"
+          className="w-full rounded-xl bg-amber-500 py-2 font-medium text-white hover:bg-amber-600"
         >
           🔄 Convert to Bill
         </button>
