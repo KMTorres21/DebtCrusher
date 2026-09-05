@@ -53,7 +53,8 @@ income.forEach((item) => console.log(item.source, item.amount, item.frequency));
       icon: "💳",
       reviewNeeded:
         !!bill.statementDate &&
-        bill.statementDate <= today.toISOString().slice(0, 10),
+        bill.statementDate <= today.toISOString().slice(0, 10) &&
+        bill.dueDate >= today.toISOString().slice(0, 10)
     });
 
     if (
@@ -77,8 +78,9 @@ income.forEach((item) => console.log(item.source, item.amount, item.frequency));
       icon: "💳",
       reviewNeeded:
         !!debt.statementDate &&
-        debt.statementDate <= today.toISOString().slice(0, 10),
-    });
+        debt.statementDate <= today.toISOString().slice(0, 10) &&
+        debt.dueDate >= today.toISOString().slice(0, 10),
+      });
 
     if (
         debt.statementDate &&
