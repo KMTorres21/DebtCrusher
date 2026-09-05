@@ -28,6 +28,12 @@ export default function FinancialTimeline({
 {console.log(income)}
 
   const events: TimelineEvent[] = [];
+  const reviewsNeeded: {
+  name: string;
+  statementDate: string;
+  dueDate: string;
+    }[] = [];
+
 
   bills.forEach((bill) => {
     if (bill.statementDate) {
@@ -43,7 +49,19 @@ export default function FinancialTimeline({
       title: `${bill.name} Due`,
       icon: "💳",
     });
-  });
+
+    if (
+        bill.statementDate &&
+        bill.statementDate <= today.toISOString().slice(0, 10) &&
+        bill.dueDate >= today.toISOString().slice(0, 10)
+        ) {
+        reviewsNeeded.push({
+            name: bill.name,
+            statementDate: bill.statementDate,
+            dueDate: bill.dueDate,
+        });
+        }
+    });
 
   debts.forEach((debt) => {
     if (debt.statementDate) {
@@ -52,6 +70,18 @@ export default function FinancialTimeline({
         title: `${debt.name} Statement`,
         icon: "📄",
       });
+
+    if (
+        debt.statementDate &&
+        debt.statementDate <= today.toISOString().slice(0, 10) &&
+        debt.dueDate >= today.toISOString().slice(0, 10)
+        ) {
+        reviewsNeeded.push({
+            name: debt.name,
+            statementDate: debt.statementDate,
+            dueDate: debt.dueDate,
+        });
+        }
     }
 
     events.push({
@@ -95,6 +125,55 @@ export default function FinancialTimeline({
       <h3 className="mb-4 text-lg font-bold">
         📅 Upcoming Financial Timeline
       </h3>
+
+        {reviewsNeeded.length > 0 && (
+    <div className="mb-5 rounded-xl border border-amber-300 bg-amber-50 p-4">
+        <h4 className="mb-3 font-semibold text-amber-800">
+        ⚠ Statement Review Needed
+        </h4>
+
+        <div className="space-y-3">
+        {reviewsNeeded.map((item) => {
+            const due = new Date(
+                `${item.dueDate}T12:00:00`
+            );
+
+            const daysUntilDue = Math.ceil(
+                (
+                due.getTime() -
+                today.getTime()
+                ) /
+                (1000 * 60 * 60 * 24)
+            );
+
+    return (
+        <div key={item.name}>
+        <div className="font-medium">
+            {item.name}
+        </div>
+
+        <div className="text-sm text-slate-600">
+            Statement Available: {formatDate(item.statementDate)}
+        </div>
+
+        <div className="text-sm text-slate-600">
+            Due: {formatDate(item.dueDate)}
+        </div>
+
+        <div className="text-sm font-medium text-amber-700">
+            {daysUntilDue === 0
+            ? "Due Today"
+            : daysUntilDue === 1
+            ? "Due Tomorrow"
+            : `Due in ${daysUntilDue} days`}
+        </div>
+        </div>
+         );
+        })}
+        </div>
+    </div>
+    )}
+    ``
 
       <div className="space-y-3">
         {upcomingEvents.length === 0 ? (
