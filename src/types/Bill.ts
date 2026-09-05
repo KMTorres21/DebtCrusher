@@ -1,3 +1,5 @@
+import { ActivityEntry } from "src/types/ActivityEntry";
+
 export type BillCategory =
   | "Housing"
   | "Utilities"
@@ -26,7 +28,7 @@ export interface Bill {
   name: string;
   statementDate?: string;
   statementReviewed?: boolean;
-  statementReviewedAt?: string;
+  statementReviewedAt?: ActivityEntry[];
   statementBalance?: number;
   amount: number;
   dueDate: string;

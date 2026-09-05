@@ -1,3 +1,5 @@
+import { ActivityEntry } from "./ActivityEntry";
+
 export type DebtType =
   | "Credit Card"
   | "Auto Loan"
@@ -25,7 +27,7 @@ export interface Debt {
   statementDate?: string;
   statementBalance?: number;
   statementReviewed?: boolean;
-  statementReviewedAt?: string;
+  statementReviewedAt?: ActivityEntry[];
 
   creditLimit?: number;
   notes?: string;
