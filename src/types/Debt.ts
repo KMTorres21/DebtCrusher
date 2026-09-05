@@ -12,18 +12,13 @@ export type DebtType =
 
 export interface Debt {
   id: string;
-
   name: string;
   type: DebtType;
-
   balance: number;
   originalBalance: number;
-
   interestRate: number;
   minimumPayment: number;
-
   dueDate: string;
-
   statementDate?: string;
   statementBalance?: number;
   statementReviewed?: boolean;
@@ -31,7 +26,9 @@ export interface Debt {
   activityHistory?: ActivityEntry[];
   creditLimit?: number;
   notes?: string;
-
+  promoInterestRate?: number;
+  promoEndDate?: string;
+  promoDeferredInterest?: boolean;
   createdAt: string;
   updatedAt: string;
 }

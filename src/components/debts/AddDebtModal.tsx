@@ -40,6 +40,9 @@ export default function AddDebtModal({
   const [originalBalance, setOriginalBalance] = useState("");
   const [statementBalance, setStatementBalance] = useState("");
   const [interestRate, setInterestRate] = useState("");
+  const [promoInterestRate, setPromoInterestRate] = useState("");
+  const [promoEndDate, setPromoEndDate] = useState("");
+  const [promoDeferredInterest, setPromoDeferredInterest] = useState(false);
   const [minimumPayment, setMinimumPayment] = useState("");
   const [dueDate, setDueDate] = useState("");
   const [creditLimit, setCreditLimit] = useState("");
@@ -66,8 +69,16 @@ useEffect(() => {
         ? String(prefill.interestRate)
         : ""
     );
+    setPromoInterestRate(
+      prefill?.promoInterestRate !== undefined
+        ? String(prefill.promoInterestRate)
+        : ""
+    );
+    setPromoEndDate(prefill?.promoEndDate ?? ""
+    );
+    setPromoDeferredInterest(prefill?.promoDeferredInterest ?? false
+    );
     setStatementDate(prefill?.statementDate ?? ""
-
     );
     setStatementBalance(
       prefill?.statementBalance !== undefined
@@ -97,6 +108,9 @@ useEffect(() => {
     setBalance("");
     setOriginalBalance("");
     setInterestRate("");
+    setPromoInterestRate("");
+    setPromoEndDate("");
+    setPromoDeferredInterest(false);
     setStatementDate("");
     setMinimumPayment("");
     setDueDate("");
@@ -132,6 +146,14 @@ useEffect(() => {
       : undefined,
 
   interestRate: Number(interestRate),
+  promoInterestRate: promoInterestRate
+    ? Number(promoInterestRate)
+    : undefined,
+  promoEndDate: promoEndDate || undefined,
+  promoDeferredInterest,
+      promoEndDate
+      ? promoDeferredInterest
+      : undefined,
   minimumPayment: Number(minimumPayment),
 
   dueDate,
@@ -343,6 +365,90 @@ useEffect(() => {
                   required
                   className="w-full rounded-xl border border-slate-200 py-3 pl-8 pr-4 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                 />
+                <div className="rounded-2xl bg-blue-50 p-4">
+                  <h3 className="font-semibold text-slate-800">
+                    Promotional Financing
+                  </h3>
+
+                  <p className="mt-1 text-sm text-slate-500">
+                    Complete this section when the debt has a temporary
+                    promotional interest rate.
+                  </p>
+
+                  <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div>
+                      <label
+                        htmlFor="promo-interest-rate"
+                        className="mb-2 block text-sm font-semibold text-slate-700"
+                      >
+                        Promotional APR
+                      </label>
+
+                      <div className="relative">
+                        <input
+                          id="promo-interest-rate"
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          value={promoInterestRate}
+                          onChange={(event) =>
+                            setPromoInterestRate(event.target.value)
+                          }
+                          placeholder="0.00"
+                          className="w-full rounded-xl border border-slate-200 px-4 py-3 pr-9 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                        />
+
+                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400">
+                          %
+                        </span>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label
+                        htmlFor="promo-end-date"
+                        className="mb-2 block text-sm font-semibold text-slate-700"
+                      >
+                        Promotion End Date
+                      </label>
+
+                      <input
+                        id="promo-end-date"
+                        type="date"
+                        value={promoEndDate}
+                        onChange={(event) =>
+                          setPromoEndDate(event.target.value)
+                        }
+                        className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                      />
+                    </div>
+                  </div>
+
+  {promoEndDate && (
+    <label className="mt-4 flex items-start gap-3">
+      <input
+        type="checkbox"
+        checked={promoDeferredInterest}
+        onChange={(event) =>
+          setPromoDeferredInterest(event.target.checked)
+        }
+        className="mt-1 h-5 w-5"
+      />
+
+      <div>
+        <div className="font-semibold text-slate-800">
+          Deferred-interest promotion
+        </div>
+
+        <p className="text-sm text-slate-500">
+          Interest may be charged retroactively if the balance
+          is not paid before the promotion ends.
+        </p>
+      </div>
+    </label>
+  )}
+</div>
+
               </div>
             </div>
 

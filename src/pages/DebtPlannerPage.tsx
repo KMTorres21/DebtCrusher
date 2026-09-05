@@ -72,6 +72,216 @@ export default function DebtPlannerPage() {
     [debts, extraAmount]
   );
 
+  const extraPaymentAllocations =
+  useMemo<ExtraPaymentAllocation[]>(() => {
+    if (debts.length === 0 || extraAmount <= 0) {
+      return [];
+    }
+
+    const today = new Date();
+    today.setHours(12, 0, 0, 0);
+
+    const preparedDebts = debts
+      .map((debt) => {
+        const balance =
+          debt.statementBalance ??
+          debt.balance ??
+          0;
+
+        const promoEnd = debt.promoEndDate
+          ? new Date(
+              `${debt.promoEndDate}T12:00:00`
+            )
+          : null;
+
+        const promoActive =
+          Boolean(promoEnd) &&
+          promoEnd!.getTime() >= today.getTime();
+
+        const monthsUntilPromoEnds =
+          promoActive && promoEnd
+            ? Math.max(
+                1,
+                Math.ceil(
+                  (
+                    promoEnd.getTime() -
+                    today.getTime()
+                  ) /
+                    (
+                      1000 *
+                      60 *
+                      60 *
+                      24 *
+                      30.4375
+                    )
+                )
+              )
+            : undefined;
+
+        const effectiveInterestRate =
+          promoActive
+            ? debt.promoInterestRate ?? 0
+            : debt.interestRate;
+
+        const projectedMinimumPayments =
+          monthsUntilPromoEnds !== undefined
+            ? debt.minimumPayment *
+              monthsUntilPromoEnds
+            : 0;
+
+        const cannotFinishBeforePromoEnds =
+          promoActive &&
+          monthsUntilPromoEnds !== undefined &&
+          projectedMinimumPayments < balance;
+
+        const promoExpiringSoon =
+          promoActive &&
+          monthsUntilPromoEnds !== undefined &&
+          monthsUntilPromoEnds <= 3;
+
+        const promoUrgent =
+          promoActive &&
+          Boolean(debt.promoDeferredInterest) &&
+          (
+            cannotFinishBeforePromoEnds ||
+            promoExpiringSoon
+          );
+
+        return {
+          debt,
+          balance,
+          promoActive,
+          promoUrgent,
+          monthsUntilPromoEnds,
+          effectiveInterestRate,
+        };
+      })
+      .filter((item) => item.balance > 0);
+
+    const sortedDebts = [...preparedDebts].sort(
+      (a, b) => {
+        /*
+         * Deferred-interest promotions that are in danger
+         * of expiring receive first priority.
+         */
+        if (a.promoUrgent !== b.promoUrgent) {
+          return a.promoUrgent ? -1 : 1;
+        }
+
+        /*
+         * Active, non-urgent promotional balances are deferred
+         * behind debts that are currently accruing interest.
+         */
+        if (
+          a.promoActive !== b.promoActive &&
+          !a.promoUrgent &&
+          !b.promoUrgent
+        ) {
+          return a.promoActive ? 1 : -1;
+        }
+
+        if (strategy === "avalanche") {
+          const rateDifference =
+            b.effectiveInterestRate -
+            a.effectiveInterestRate;
+
+          if (rateDifference !== 0) {
+            return rateDifference;
+          }
+
+          return a.balance - b.balance;
+        }
+
+        const balanceDifference =
+          a.balance - b.balance;
+
+        if (balanceDifference !== 0) {
+          return balanceDifference;
+        }
+
+        return (
+          b.effectiveInterestRate -
+          a.effectiveInterestRate
+        );
+      }
+    );
+
+    let remainingExtra = extraAmount;
+
+    const allocatedExtraPayment =
+      extraPaymentAllocations.reduce(
+        (sum, item) => sum + item.amount,
+        0
+      );
+
+    const debtsEliminated =
+      extraPaymentAllocations.filter(
+        (item) => item.remainingBalance === 0
+      ).length;
+
+    const unusedExtraPayment = Math.max(
+      0,
+      extraAmount - allocatedExtraPayment
+    );
+
+    for (const item of sortedDebts) {
+      if (remainingExtra <= 0) {
+        break;
+      }
+
+      const amount = Math.min(
+        item.balance,
+        remainingExtra
+      );
+
+      const remainingBalance = Math.max(
+        0,
+        item.balance - amount
+      );
+
+      let reason: string;
+
+      if (item.promoUrgent) {
+        reason = item.monthsUntilPromoEnds === 1
+          ? "Deferred-interest promotion expires in about 1 month."
+          : `Deferred-interest promotion expires in about ${item.monthsUntilPromoEnds} months.`;
+      } else if (item.promoActive) {
+        reason = item.monthsUntilPromoEnds === 1
+          ? "Promotional rate is active for about 1 more month."
+          : `Promotional rate is active for about ${item.monthsUntilPromoEnds} more months.`;
+      } else if (strategy === "avalanche") {
+        reason =
+          "Prioritized because of its current interest rate.";
+      } else {
+        reason =
+          "Prioritized because of its current balance.";
+      }
+
+      allocations.push({
+        debtId: item.debt.id,
+        name: item.debt.name,
+        balance: item.balance,
+        amount,
+        remainingBalance,
+        interestRate: item.debt.interestRate,
+        effectiveInterestRate:
+          item.effectiveInterestRate,
+        promoEndDate: item.debt.promoEndDate,
+        promoDeferredInterest:
+          item.debt.promoDeferredInterest,
+        promoActive: item.promoActive,
+        promoUrgent: item.promoUrgent,
+        monthsUntilPromoEnds:
+          item.monthsUntilPromoEnds,
+        reason,
+      });
+
+      remainingExtra -= amount;
+    }
+
+    return allocations;
+  }, [debts, strategy, extraAmount]);
+
   const interestSaved =
     snowballPlan.totalInterest -
     avalanchePlan.totalInterest;
@@ -80,10 +290,21 @@ export default function DebtPlannerPage() {
     snowballPlan.totalMonths - 
     avalanchePlan.totalMonths;
 
-  const recommendedDebt = useMemo(() => {
-    if (debts.length === 0) {
-      return null;
-    }
+  interface ExtraPaymentAllocation {
+    debtId: string;
+    name: string;
+    balance: number;
+    amount: number;
+    remainingBalance: number;
+    interestRate: number;
+    effectiveInterestRate: number;
+    promoEndDate?: string;
+    promoDeferredInterest?: boolean;
+    promoActive: boolean;
+    promoUrgent: boolean;
+    monthsUntilPromoEnds?: number;
+    reason: string;
+  }
 
     if (strategy === "avalanche") {
       return [...debts].sort(
@@ -292,6 +513,176 @@ export default function DebtPlannerPage() {
             </div>
           ) : (
             <p>No debt recommendation available.</p>
+          )}
+        </Card>
+
+        <Card>
+          <h2 className="text-lg font-bold">
+            🎯 Recommended Extra Payment Allocation
+          </h2>
+
+          <p className="mt-1 text-sm text-slate-500">
+            Recommendations use your selected payoff strategy and
+            active promotional financing.
+          </p>
+
+          {extraAmount <= 0 ? (
+            <div className="mt-4 rounded-xl bg-slate-50 p-4">
+              <p className="text-sm text-slate-600">
+                Enter an extra monthly payment to see a recommended
+                allocation.
+              </p>
+            </div>
+          ) : (
+            <>
+              <div className="mt-4 grid grid-cols-2 gap-3">
+                <div className="rounded-xl bg-blue-50 p-3">
+                  <p className="text-xs text-slate-500">
+                    Extra Available
+                  </p>
+
+                  <p className="mt-1 font-bold text-blue-700">
+                    {formatCurrency(extraAmount)}
+                  </p>
+                </div>
+
+                <div className="rounded-xl bg-green-50 p-3">
+                  <p className="text-xs text-slate-500">
+                    Debts Eliminated
+                  </p>
+
+                  <p className="mt-1 font-bold text-green-700">
+                    {debtsEliminated}
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-4 space-y-3">
+                {extraPaymentAllocations.map(
+                  (allocation, index) => (
+                    <div
+                      key={allocation.debtId}
+                      className={
+                        allocation.promoUrgent
+                          ? "rounded-xl border border-amber-300 bg-amber-50 p-4"
+                          : "rounded-xl border border-slate-200 bg-slate-50 p-4"
+                      }
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-600 text-sm font-bold text-white">
+                          {index + 1}
+                        </div>
+
+                        <div className="min-w-0 flex-1">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <p className="font-bold text-slate-900">
+                              {allocation.name}
+                            </p>
+
+                            {allocation.promoUrgent && (
+                              <span className="rounded-full bg-amber-200 px-2 py-1 text-xs font-semibold text-amber-900">
+                                Promo Expiring
+                              </span>
+                            )}
+
+                            {allocation.promoActive &&
+                              !allocation.promoUrgent && (
+                                <span className="rounded-full bg-blue-100 px-2 py-1 text-xs font-semibold text-blue-700">
+                                  Promo Protected
+                                </span>
+                              )}
+
+                            {allocation.remainingBalance === 0 && (
+                              <span className="rounded-full bg-green-100 px-2 py-1 text-xs font-semibold text-green-700">
+                                Paid Off
+                              </span>
+                            )}
+                          </div>
+
+                          <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
+                            <div>
+                              <p className="text-slate-500">
+                                Current Balance
+                              </p>
+
+                              <p className="font-semibold">
+                                {formatCurrency(
+                                  allocation.balance
+                                )}
+                              </p>
+                            </div>
+
+                            <div>
+                              <p className="text-slate-500">
+                                Apply Extra
+                              </p>
+
+                              <p className="font-bold text-green-600">
+                                {formatCurrency(
+                                  allocation.amount
+                                )}
+                              </p>
+                            </div>
+
+                            <div>
+                              <p className="text-slate-500">
+                                Current APR
+                              </p>
+
+                              <p className="font-semibold">
+                                {allocation.effectiveInterestRate.toFixed(
+                                  2
+                                )}
+                                %
+                              </p>
+                            </div>
+
+                            <div>
+                              <p className="text-slate-500">
+                                Balance After
+                              </p>
+
+                              <p className="font-semibold">
+                                {formatCurrency(
+                                  allocation.remainingBalance
+                                )}
+                              </p>
+                            </div>
+                          </div>
+
+                          {allocation.promoActive &&
+                            allocation.promoEndDate && (
+                              <p className="mt-3 text-sm font-medium text-blue-700">
+                                Promotional rate ends{" "}
+                                {new Date(
+                                  `${allocation.promoEndDate}T12:00:00`
+                                ).toLocaleDateString("en-US")}
+                              </p>
+                            )}
+
+                          <p className="mt-2 text-xs text-slate-600">
+                            {allocation.reason}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )
+                )}
+              </div>
+
+              {unusedExtraPayment > 0 && (
+                <div className="mt-4 rounded-xl border border-green-200 bg-green-50 p-4">
+                  <p className="font-semibold text-green-800">
+                    All listed debts can be paid off.
+                  </p>
+
+                  <p className="mt-1 text-sm text-green-700">
+                    Unallocated amount:{" "}
+                    {formatCurrency(unusedExtraPayment)}
+                  </p>
+                </div>
+              )}
+            </>
           )}
         </Card>
 
