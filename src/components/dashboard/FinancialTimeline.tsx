@@ -40,7 +40,7 @@ export default function FinancialTimeline({
   statementDate: string;
   dueDate: string;
     }[] = [];
-
+  
     function markStatementReviewed(
       id: string,
       type: "bill" | "debt"
@@ -109,8 +109,8 @@ export default function FinancialTimeline({
             dueDate: bill.dueDate,
           });
         }
-
     };
+  });
 
   debts.forEach((debt) => {
     if (debt.statementDate) {
@@ -121,14 +121,9 @@ export default function FinancialTimeline({
       reviewNeeded:
         !!debt.statementDate &&
         debt.statementDate <= today.toISOString().slice(0, 10) &&
-        debt.dueDate >= today.toISOString().slice(0, 10),
+        debt.dueDate >= today.toISOString().slice(0, 10)
       });
 
-    if (
-        debt.statementDate &&
-        debt.statementDate <= today.toISOString().slice(0, 10) &&
-        debt.dueDate >= today.toISOString().slice(0, 10)
-        ) {
         if (!debt.statementReviewed) {
         reviewsNeeded.push({
           id: debt.id,
@@ -145,7 +140,7 @@ export default function FinancialTimeline({
       title: `${debt.name} Due`,
       icon: "💳",
     });
-  };
+  });
 
   income.forEach((item) => {
     for
@@ -274,4 +269,4 @@ export default function FinancialTimeline({
       </div>
     </Card>
   );
-};
+}
