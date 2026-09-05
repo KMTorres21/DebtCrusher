@@ -10,6 +10,7 @@ interface BillCardProps {
   onTogglePaid: (id: string) => void;
   onEdit: (bill: Bill) => void;
   onDelete: (id: string) => void;
+  onConvertToDebt: (bill: Bill) => void;
 }
 
 export default function BillCard({
@@ -18,6 +19,7 @@ export default function BillCard({
   onTogglePaid,
   onEdit,
   onDelete,
+  onConvertToDebt,
 }: BillCardProps) {
   const status = bill.paid ? "paid" : "due";
 
@@ -72,6 +74,12 @@ export default function BillCard({
           onClick={() => onDelete(bill.id)}
         >
           Delete
+        </Button>
+        <Button
+          className="w-full bg-orange-500 hover:bg-orange-600 text-white"
+          onClick={() => onConvertToDebt(bill)}
+          >
+          🔄 Convert to Debt
         </Button>
       </div>
     </Card>
