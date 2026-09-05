@@ -29,7 +29,23 @@ export default function BillsPage() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingBill, setEditingBill] =
     useState<Bill | null>(null);
-  const [sortBy, setSortBy] = useState<"name" | "dueDate" | "statementDate">("dueDate");
+  const [sortBy, setSortBy] = useState<
+  "name" | "dueDate" | "statementDate"
+>(() => {
+  const saved = localStorage.getItem(
+    "debtSortBy"
+  );
+
+  if (
+    saved === "name" ||
+    saved === "dueDate" ||
+    saved === "statementDate"
+  ) {
+    return saved;
+  }
+
+  return "dueDate";
+});
   const filteredBills = bills
   .filter((bill) =>
     bill.name
@@ -92,14 +108,21 @@ export default function BillsPage() {
           <select
             id="bill-sort"
             value={sortBy}
-            onChange={(event) =>
-              setSortBy(
-                event.target.value as
-                  | "name"
-                  | "dueDate"
-                  | "statementDate"
-              )
-            }
+            onChange={(event) => {
+        const value =
+          event.target.value as
+            | "name"
+            | "dueDate"
+            | "statementDate";
+
+        setSortBy(value);
+
+        localStorage.setItem(
+          "debtSortBy",
+          value
+        );
+      }}
+      
             className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm"
           >
             <option value="name">Name</option>
