@@ -54,34 +54,37 @@ export default function BillCard({
         </div>
       </div>
 
-      <div className="flex gap-2">
-        <Button
-          variant="success"
-          onClick={() => onTogglePaid(bill.id)}
-        >
-          {bill.paid ? "Mark Unpaid" : "Mark Paid"}
-        </Button>
+      <div className="space-y-2">
+        <div className="flex gap-2">
+            <Button
+              variant="success"
+              onClick={() => onTogglePaid(bill.id)}
+            >
+              {bill.paid ? "Mark Unpaid" : "Mark Paid"}
+            </Button>
 
-        <Button
-          variant="secondary"
-          onClick={() => onEdit(bill)}
-        >
-          Edit
-        </Button>
+            <Button
+              variant="secondary"
+              onClick={() => onEdit(bill)}
+            >
+              Edit
+            </Button>
 
-        <Button
-          variant="danger"
-          onClick={() => onDelete(bill.id)}
-        >
-          Delete
-        </Button>
-        <Button
-          className="w-full bg-orange-500 hover:bg-orange-600 text-white"
-          onClick={() => onConvertToDebt(bill)}
-          >
-          🔄 Convert to Debt
-        </Button>
-      </div>
-    </Card>
+            <Button
+              variant="danger"
+              onClick={() => onDelete(bill.id)}
+            >
+              Delete
+            </Button>
+          </div>
+          
+            <Button
+              className="bg-orange-500 hover:bg-orange-600 text-white"
+              onClick={() => onConvertToDebt(bill)}
+              >
+              🔄 Convert to Debt
+            </Button>
+          </div>
+      </Card>
   );
 }
