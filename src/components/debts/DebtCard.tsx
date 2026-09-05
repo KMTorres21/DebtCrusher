@@ -5,12 +5,14 @@ interface DebtCardProps {
   debt: Debt;
   onEdit: (debt: Debt) => void;
   onDelete: (id: string) => void;
+  onConvertToBill: (debt: Debt) => void;
 }
 
 export default function DebtCard({
   debt,
   onEdit,
   onDelete,
+  onConvertToBill,
 }: DebtCardProps) {
   const currentBalance =
     debt.statementBalance ?? debt.balance ?? 0;
@@ -181,6 +183,13 @@ export default function DebtCard({
           className="flex-1 rounded-xl bg-red-500 py-2 font-medium text-white hover:bg-red-600"
         >
           Delete
+        </button>
+
+        <button
+          onClick={() => onConvertToBill(debt)}
+          className="w-full rounded-xl bg-orange-500 py-2 font-medium text-white hover:bg-orange-600"
+        >
+          🔄 Convert to Bill
         </button>
       </div>
     </div>

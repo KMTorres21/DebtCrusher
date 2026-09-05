@@ -86,7 +86,6 @@ export default function BillsPage() {
   }
 
   function handleConvertToDebt(bill: Bill) {
-    console.log("HANDLECONVERT START", bill);
       const confirmed = window.confirm(
         `Convert "${bill.name}" to a Debt?\n\nThe Bill will be removed and a new Debt will be created.`
       );
@@ -123,7 +122,12 @@ export default function BillsPage() {
 
         interestRate: 0,
 
-        notes: bill.notes,
+        notes: [
+          bill.notes,
+          `Converted from Bill on ${new Date().toLocaleDateString()}`
+          ]
+          .filter(Boolean)
+          .join("\n\n"),
 
         createdAt: now,
         updatedAt: now,
@@ -131,7 +135,6 @@ export default function BillsPage() {
 
       addDebt(newDebt);
       deleteBill(bill.id);
-      console.log("HANDLECONVERT", bill);
     }
 
   return (

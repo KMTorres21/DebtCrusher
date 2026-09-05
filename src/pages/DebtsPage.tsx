@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Plus } from "lucide-react";
+import { useBills } from "../hooks/useBills";
 
 import { Debt } from "../types/Debt";
 import { useDebts } from "../hooks/useDebts";
@@ -22,6 +23,8 @@ export default function DebtsPage() {
     updateDebt,
     deleteDebt,
   } = useDebts();
+  const { addBill 
+  } = useBills();
 
   const [search, setSearch] = useState("");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -58,6 +61,50 @@ export default function DebtsPage() {
       setEditingDebt(debt);
       setIsAddModalOpen(true);
     }
+
+    function handleConvertToBill(debt: Debt) {
+      const confirmed = window.confirm(
+        `Convert "${debt.name}" to a Bill?\n\nThe Debt will be removed and a new Bill will be created.`
+      );
+
+      if (!confirmed) return;
+
+      const now = new Date().toISOString();
+
+      const newBill: Bill = {
+        id: crypto.randomUUID(),
+
+        name: debt.name,
+
+        amount: debt.minimumPayment,
+
+        statementDate: debt.statementDate,
+
+        statementBalance: debt.statementBalance,
+
+        dueDate: debt.dueDate,
+
+        category: "Credit Card",
+
+        recurring: true,
+
+        frequency: "monthly",
+
+        autoPay: false,
+
+        paid: false,
+
+        notes: debt.notes,
+
+        createdAt: now,
+
+        updatedAt: now,
+      };
+
+      addBill(newBill);
+      deleteDebt(debt.id);
+    }
+
 
   const filteredDebts = debts
   .filter((debt) =>
@@ -175,6 +222,7 @@ export default function DebtsPage() {
               debt={debt}
               onEdit={handleEdit}
               onDelete={deleteDebt}
+              onConvertToBill={handleConvertToBill}
             />
           ))}
         </div>
