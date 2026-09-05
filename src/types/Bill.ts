@@ -1,4 +1,4 @@
-import { ActivityEntry } from "src/types/ActivityEntry";
+import { ActivityEntry } from "./ActivityEntry";
 
 export type BillCategory =
   | "Housing"
