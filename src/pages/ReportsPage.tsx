@@ -163,10 +163,10 @@ const monthsSaved = Math.max(
           />
 
           <StatCard
-  title="Average APR"
-  value={`${weightedApr.toFixed(2)}%`}
-  valueClassName="text-blue-600"
-/>
+          title="Average APR"
+          value={`${weightedApr.toFixed(2)}%`}
+          valueClassName="text-blue-600"
+        />
 
           <StatCard
             title="Monthly Minimums"
