@@ -80,6 +80,24 @@ export default function DebtPlannerPage() {
     snowballPlan.totalMonths - 
     avalanchePlan.totalMonths;
 
+  const recommendedDebt = useMemo(() => {
+    if (debts.length === 0) {
+      return null;
+    }
+
+    if (strategy === "avalanche") {
+      return [...debts].sort(
+        (a, b) => b.interestRate - a.interestRate
+      )[0];
+    }
+
+    return [...debts].sort(
+      (a, b) =>
+        (a.statementBalance ?? a.balance) -
+        (b.statementBalance ?? b.balance)
+    )[0];
+  }, [debts, strategy]);
+
   if (debts.length === 0) {
     return (
       <PageContainer>
@@ -206,7 +224,7 @@ export default function DebtPlannerPage() {
             className="w-full rounded-xl border border-slate-200 py-3 pl-8 pr-4 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
           />
           </div>
-          
+
           <div className="mt-3 flex items-center justify-between text-sm">
             <span className="text-slate-500">
               Available after obligations
@@ -230,8 +248,55 @@ export default function DebtPlannerPage() {
         </div>
       </Card>
 
-      {/* Summary */}
-      <div className="grid grid-cols-2 gap-4">
+        <Card>
+          <h2 className="text-lg font-bold">
+            🎯 Recommended Debt
+          </h2>
+
+          {recommendedDebt ? (
+            <div className="mt-4 space-y-2">
+
+              <p className="text-xl font-semibold">
+                {recommendedDebt.name}
+              </p>
+
+              <p className="text-slate-600">
+                Balance:
+                {" "}
+                {formatCurrency(
+                  recommendedDebt.statementBalance ??
+                  recommendedDebt.balance
+                )}
+              </p>
+
+              <p className="text-slate-600">
+                APR:
+                {" "}
+                {recommendedDebt.interestRate.toFixed(2)}%
+              </p>
+
+              <p className="font-medium text-green-600">
+                Apply your extra
+                {" "}
+                {formatCurrency(extraAmount)}
+                {" "}
+                here.
+              </p>
+
+              <div className="rounded-xl bg-blue-50 p-3 text-sm text-blue-800">
+                {strategy === "avalanche"
+                  ? "Highest interest rate in your portfolio. Paying this debt first minimizes total interest."
+                  : "Smallest balance in your portfolio. Paying this debt first builds momentum with quick wins."}
+              </div>
+
+            </div>
+          ) : (
+            <p>No debt recommendation available.</p>
+          )}
+        </Card>
+
+        {/* Summary */}
+        <div className="grid grid-cols-2 gap-4">
         <StatCard
           title="Total Debt"
           value={formatCurrency(
