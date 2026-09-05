@@ -173,7 +173,6 @@ export default function FinancialTimeline({
         </div>
     </div>
     )}
-    ``
 
       <div className="space-y-3">
         {upcomingEvents.length === 0 ? (
