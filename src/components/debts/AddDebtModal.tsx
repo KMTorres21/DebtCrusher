@@ -366,7 +366,8 @@ useEffect(() => {
                   placeholder="0.00"
                   required
                    className="w-full rounded-xl border border-slate-200 py-3 pl-8 pr-4 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                />
+                /> 
+   
                 <div className="rounded-2xl bg-blue-50 p-4">
                   <h3 className="font-semibold text-slate-800">
                     Promotional Financing
@@ -526,9 +527,9 @@ useEffect(() => {
               {prefill?.id ? "Save Changes" : "Save Debt"}
             </Button>
           </div>
-
-        </form>
-      </div>
+        </div>
+      </form>
     </div>
   );
 }
+        
