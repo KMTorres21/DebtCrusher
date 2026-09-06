@@ -306,16 +306,35 @@ export default function DebtPlannerPage() {
   avalanchePlan.totalInterest;
 
   const monthsSaved =
-    snowballPlan.totalMonths -
-    avalanchePlan.totalMonths;
+  snowballPlan.totalMonths -
+  avalanchePlan.totalMonths;
 
+  if (debts.length === 0) {
+    return (
+      <PageContainer>
+        <PageHeader
+          title="Debt Payoff Planner"
+          subtitle="Build your path to debt-free."
+        />
 
-  return (
-    <PageContainer>
-      <PageHeader
-        title="Debt Payoff Planner"
-        subtitle="Build your path to debt-free."
-      />
+        <Card>
+          <div className="text-center">
+            <div className="text-5xl">🎯</div>
+
+            <h2 className="mt-4 text-xl font-bold">
+              No debts yet
+            </h2>
+
+            <p className="mt-2 text-sm text-slate-500">
+              Add your debts first to build a payoff plan.
+            </p>
+          </div>
+        </Card>
+      </PageContainer>
+    );
+  }
+    return (
+      <PageContainer>
 
       {/* Strategy */}
       <Card>
@@ -365,244 +384,6 @@ export default function DebtPlannerPage() {
           </button>
         </div>
       </Card>
-
-      {/* Extra Payment */}
-      <Card>
-        <label
-          htmlFor="extra-payment"
-          className="block text-lg font-bold"
-        >
-          Extra Monthly Payment
-        </label>
-
-        <p className="mt-1 text-sm text-slate-500">
-          Additional money applied to your
-          payoff strategy each month.
-        </p>
-
-        <div className="relative">
-          <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
-             $
-            </span>
-
-          <input
-            id="extra-payment"
-            type="number"
-            min="0"
-            step="25"
-            value={extraPayment}
-            onChange={(event) => {
-              const value = event.target.value;
-              if (value === "") {
-                setExtraPayment("");
-                return;
-              }
-
-              const numericValue = Number(value);
-              if (Number.isNaN(numericValue)) {
-                return;
-              }
-              setExtraPayment(
-                String(Math.max(0,numericValue))
-              );
-              }}
-            className="w-full rounded-xl border border-slate-200 py-3 pl-8 pr-4 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-          />
-          </div>
-
-          <div className="mt-3 flex items-center justify-between text-sm">
-            <span className="text-slate-500">
-              Available after obligations
-            </span>
-            {extraAmount > maxExtraPayment && (
-              <p className="mt-2 text-sm font-semibold text-amber-600">
-                This extra payment IS GREATER than your currently calculated available cash.
-              </p>
-            )}
-            <span className="font-semibold text-green-600">
-              {formatCurrency(maxExtraPayment)}
-            </span>
-          </div>
-          <button
-            type="button"
-            onClick={() => setExtraPayment(String(maxExtraPayment))}
-            className="mt-3 w-full rounded-xl bg-blue-50 px-4 py-3 text-blue-700 transition hover:bg-blue-100"
-          >
-            Use All Available Cash
-          </button>
-        </div>
-      </Card>
-
-        <Card>
-          <h2 className="text-lg font-bold">
-            🎯 Recommended Extra Payment Allocation
-          </h2>
-
-          <p className="mt-1 text-sm text-slate-500">
-            Recommendations use your selected payoff strategy and
-            active promotional financing.
-          </p>
-
-          {extraAmount <= 0 ? (
-            <div className="mt-4 rounded-xl bg-slate-50 p-4">
-              <p className="text-sm text-slate-600">
-                Enter an extra monthly payment to see a recommended
-                allocation.
-              </p>
-            </div>
-          ) : (
-            <>
-              <div className="mt-4 grid grid-cols-2 gap-3">
-                <div className="rounded-xl bg-blue-50 p-3">
-                  <p className="text-xs text-slate-500">
-                    Extra Available
-                  </p>
-
-                  <p className="mt-1 font-bold text-blue-700">
-                    {formatCurrency(extraAmount)}
-                  </p>
-                </div>
-
-                <div className="rounded-xl bg-green-50 p-3">
-                  <p className="text-xs text-slate-500">
-                    Debts Eliminated
-                  </p>
-
-                  <p className="mt-1 font-bold text-green-700">
-                    {debtsEliminated}
-                  </p>
-                </div>
-              </div>
-
-              <div className="mt-4 space-y-3">
-                {extraPaymentAllocations.map(
-                  (allocation, index) => (
-                    <div
-                      key={allocation.debtId}
-                      className={
-                        allocation.promoUrgent
-                          ? "rounded-xl border border-amber-300 bg-amber-50 p-4"
-                          : "rounded-xl border border-slate-200 bg-slate-50 p-4"
-                      }
-                    >
-                      <div className="flex items-start gap-3">
-                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-600 text-sm font-bold text-white">
-                          {index + 1}
-                        </div>
-
-                        <div className="min-w-0 flex-1">
-                          <div className="flex flex-wrap items-center gap-2">
-                            <p className="font-bold text-slate-900">
-                              {allocation.name}
-                            </p>
-
-                            {allocation.promoUrgent && (
-                              <span className="rounded-full bg-amber-200 px-2 py-1 text-xs font-semibold text-amber-900">
-                                Promo Expiring
-                              </span>
-                            )}
-
-                            {allocation.promoActive &&
-                              !allocation.promoUrgent && (
-                                <span className="rounded-full bg-blue-100 px-2 py-1 text-xs font-semibold text-blue-700">
-                                  Promo Protected
-                                </span>
-                              )}
-
-                            {allocation.remainingBalance === 0 && (
-                              <span className="rounded-full bg-green-100 px-2 py-1 text-xs font-semibold text-green-700">
-                                Paid Off
-                              </span>
-                            )}
-                          </div>
-
-                          <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
-                            <div>
-                              <p className="text-slate-500">
-                                Current Balance
-                              </p>
-
-                              <p className="font-semibold">
-                                {formatCurrency(
-                                  allocation.balance
-                                )}
-                              </p>
-                            </div>
-
-                            <div>
-                              <p className="text-slate-500">
-                                Apply Extra
-                              </p>
-
-                              <p className="font-bold text-green-600">
-                                {formatCurrency(
-                                  allocation.amount
-                                )}
-                              </p>
-                            </div>
-
-                            <div>
-                              <p className="text-slate-500">
-                                Current APR
-                              </p>
-
-                              <p className="font-semibold">
-                                {allocation.effectiveInterestRate.toFixed(
-                                  2
-                                )}
-                                %
-                              </p>
-                            </div>
-
-                            <div>
-                              <p className="text-slate-500">
-                                Balance After
-                              </p>
-
-                              <p className="font-semibold">
-                                {formatCurrency(
-                                  allocation.remainingBalance
-                                )}
-                              </p>
-                            </div>
-                          </div>
-
-                          {allocation.promoActive &&
-                            allocation.promoEndDate && (
-                              <p className="mt-3 text-sm font-medium text-blue-700">
-                                Promotional rate ends{" "}
-                                {new Date(
-                                  `${allocation.promoEndDate}T12:00:00`
-                                ).toLocaleDateString("en-US")}
-                              </p>
-                            )}
-
-                          <p className="mt-2 text-xs text-slate-600">
-                            {allocation.reason}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  )
-                )}
-              </div>
-
-              {unusedExtraPayment > 0 && (
-                <div className="mt-4 rounded-xl border border-green-200 bg-green-50 p-4">
-                  <p className="font-semibold text-green-800">
-                    All listed debts can be paid off.
-                  </p>
-
-                  <p className="mt-1 text-sm text-green-700">
-                    Unallocated amount:{" "}
-                    {formatCurrency(unusedExtraPayment)}
-                  </p>
-                </div>
-              )}
-            </>
-          )}
-        </Card>
 
         {/* Summary */}
         <div className="grid grid-cols-2 gap-4">
@@ -760,5 +541,4 @@ export default function DebtPlannerPage() {
             ))}
         </div>
       </Card>
-    </PageContainer>
-  );
+</PageContainer>
