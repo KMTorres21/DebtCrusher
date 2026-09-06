@@ -49,13 +49,6 @@ export function calculateExtraPaymentAllocation(
 
     function promoPriority(debt: Debt): number {
 
-  if (
-    !debt.promoEndDate ||
-    !debt.promoDeferredInterest
-  ) {
-    return 0;
-  }
-
     if (
         !debt.promoEndDate ||
         !debt.promoDeferredInterest
