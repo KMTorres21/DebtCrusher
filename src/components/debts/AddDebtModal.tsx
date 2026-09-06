@@ -497,9 +497,13 @@ useEffect(() => {
                 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
           />
           </div>
-
+              <label
+                htmlFor="notes"
+                className="mb-2 block text-sm font-semibold text-slate-700"
+              >
+                Notes
+              </label>
           <textarea
-            placeholder="Notes"
             rows={3}
             value={notes}
             onChange={(e) =>
