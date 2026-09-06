@@ -5,7 +5,7 @@ import {
 } from "react";
 
 import { X } from "lucide-react";
-
+import ActivityHistory from "../common/ActivityHistory";
 import { Debt, DebtType } from "../../types/Debt";
 import Button from "../common/Button";
 
@@ -507,6 +507,9 @@ useEffect(() => {
             }
             className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition 
                 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+          />
+
+            <ActivityHistory items={prefill?.activityHistory} 
           />
 
           <div className="flex gap-3">
