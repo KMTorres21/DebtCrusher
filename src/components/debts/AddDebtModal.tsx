@@ -452,6 +452,7 @@ useEffect(() => {
                   </label>
                 )}
               </div>
+              </div>
 
             <div>
               <label
