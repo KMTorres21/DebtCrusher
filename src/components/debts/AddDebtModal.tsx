@@ -401,7 +401,7 @@ useEffect(() => {
                           className="w-full rounded-xl border border-slate-200 px-4 py-3 pr-9 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                         />
 
-                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400">
+                        <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
                           %
                         </span>
                       </div>
