@@ -178,7 +178,7 @@ useEffect(() => {
   }
 
   return (
-    <div className="fixed inset-0 z-[100]] flex items-end justify-center bg-black/50 sm:items-center">
+    <div className="fixed inset-0 z-[100] flex items-end justify-center bg-black/50 sm:items-center">
       <div className="max-h-[90vh] w-full overflow-y-auto rounded-t-3xl bg-white shadow-2xl sm:max-w-xl sm:rounded-3xl">
 
         <div className="flex items-center justify-between border-b px-6 py-5">
