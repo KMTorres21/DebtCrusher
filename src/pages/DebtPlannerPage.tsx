@@ -28,20 +28,6 @@ export default function DebtPlannerPage() {
   const [strategy, setStrategy] =
     useState<PayoffStrategy>("avalanche");
 
-  const [extraPayment, setExtraPayment] =
-    useState("0");
-
-  const extraAmount = Math.max(0, Number(extraPayment) || 0);
-  const extraPaymentAllocations = useMemo(
-          () =>
-            calculateExtraPaymentAllocation(
-              debts,
-              strategy,
-              extraAmount
-            ),
-          [debts, strategy, extraAmount]
-        );
-
         const [extraPayment, setExtraPayment] =
         useState("0");
 
@@ -65,8 +51,7 @@ export default function DebtPlannerPage() {
         debts,
         income
       );
-
-  const summary = calculateFinancialSummary(bills, debts, income);
+      
   const availableAfterObligations = summary.remainingCash;
   const maxExtraPayment = Math.max(0,
     Math.round(availableAfterObligations * 100) / 100);
