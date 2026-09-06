@@ -78,6 +78,16 @@ export default function FinancialTimeline({
 
         updateDebt({
           ...debt,
+
+          activityHistory: [
+            ...(debt.activityHistory ?? []),
+            {
+              id: crypto.randomUUID(),
+              date: now,
+              action: "Statement Reviewed",
+            },
+          ],
+
           statementReviewed: true,
           statementReviewedAt: now,
         });
