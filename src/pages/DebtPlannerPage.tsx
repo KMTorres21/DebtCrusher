@@ -32,6 +32,15 @@ export default function DebtPlannerPage() {
     useState("0");
 
   const extraAmount = Math.max(0, Number(extraPayment) || 0);
+  const extraPaymentAllocations = useMemo(
+    () =>
+      calculateExtraPaymentAllocation(
+        debts,
+        strategy,
+        extraAmount
+      ),
+    [debts, strategy, extraAmount]
+  );
   const summary = calculateFinancialSummary(bills, debts, income);
   const availableAfterObligations = summary.remainingCash;
   const maxExtraPayment = Math.max(0,
@@ -233,6 +242,11 @@ export default function DebtPlannerPage() {
           </button>
         </div>
       </Card>
+
+      <RecommendedAllocationCard
+        allocations={extraPaymentAllocations}
+        extraAmount={extraAmount}
+      />
 
       {/* Summary */}
       <div className="grid grid-cols-2 gap-4">
