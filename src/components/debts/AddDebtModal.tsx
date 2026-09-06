@@ -369,7 +369,7 @@ useEffect(() => {
                 /> 
                 </div>
    
-                <div className="rounded-2xl bg-blue-50 p-4">
+                <div className="mt-4 rounded-2xl bg-blue-50 p-4">
                   <h3 className="font-semibold text-slate-800">
                     Promotional Financing
                   </h3>
