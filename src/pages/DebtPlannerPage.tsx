@@ -16,22 +16,6 @@ import PageHeader from "../components/common/PageHeader";
 import Card from "../components/common/Card";
 import StatCard from "../components/common/StatCard";
 
-interface ExtraPaymentAllocation {
-  debtId: string;
-  name: string;
-  balance: number;
-  amount: number;
-  remainingBalance: number;
-  interestRate: number;
-  effectiveInterestRate: number;
-  promoEndDate?: string;
-  promoDeferredInterest?: boolean;
-  promoActive: boolean;
-  promoUrgent: boolean;
-  monthsUntilPromoEnds?: number;
-  reason: string;
-}
-
 export default function DebtPlannerPage() {
   const { debts } = useDebts();
   const { bills } = useBills();
@@ -88,226 +72,13 @@ export default function DebtPlannerPage() {
     [debts, extraAmount]
   );
 
-  const extraPaymentAllocations =
-  useMemo<ExtraPaymentAllocation[]>(() => {
-    if (debts.length === 0 || extraAmount <= 0) {
-      return [];
-    }
-
-    const today = new Date();
-    today.setHours(12, 0, 0, 0);
-
-    const preparedDebts = debts
-      .map((debt) => {
-        const balance =
-          debt.statementBalance ??
-          debt.balance ??
-          0;
-
-        const promoEnd = debt.promoEndDate
-          ? new Date(
-              `${debt.promoEndDate}T12:00:00`
-            )
-          : null;
-
-        const promoActive =
-          Boolean(promoEnd) &&
-          promoEnd!.getTime() >= today.getTime();
-
-        const monthsUntilPromoEnds =
-          promoActive && promoEnd
-            ? Math.max(
-                1,
-                Math.ceil(
-                  (
-                    promoEnd.getTime() -
-                    today.getTime()
-                  ) /
-                    (
-                      1000 *
-                      60 *
-                      60 *
-                      24 *
-                      30.4375
-                    )
-                )
-              )
-            : undefined;
-
-        const effectiveInterestRate =
-          promoActive
-            ? debt.promoInterestRate ?? 0
-            : debt.interestRate;
-
-        const projectedMinimumPayments =
-          monthsUntilPromoEnds !== undefined
-            ? debt.minimumPayment *
-              monthsUntilPromoEnds
-            : 0;
-
-        const cannotFinishBeforePromoEnds =
-          promoActive &&
-          monthsUntilPromoEnds !== undefined &&
-          projectedMinimumPayments < balance;
-
-        const promoExpiringSoon =
-          promoActive &&
-          monthsUntilPromoEnds !== undefined &&
-          monthsUntilPromoEnds <= 3;
-
-        const promoUrgent =
-          promoActive &&
-          Boolean(debt.promoDeferredInterest) &&
-          (
-            cannotFinishBeforePromoEnds ||
-            promoExpiringSoon
-          );
-
-        return {
-          debt,
-          balance,
-          promoActive,
-          promoUrgent,
-          monthsUntilPromoEnds,
-          effectiveInterestRate,
-        };
-      })
-      .filter((item) => item.balance > 0);
-
-    const sortedDebts = [...preparedDebts].sort(
-      (a, b) => {
-        /*
-         * Deferred-interest promotions that are in danger
-         * of expiring receive first priority.
-         */
-        if (a.promoUrgent !== b.promoUrgent) {
-          return a.promoUrgent ? -1 : 1;
-        }
-
-        /*
-         * Active, non-urgent promotional balances are deferred
-         * behind debts that are currently accruing interest.
-         */
-        if (
-          a.promoActive !== b.promoActive &&
-          !a.promoUrgent &&
-          !b.promoUrgent
-        ) {
-          return a.promoActive ? 1 : -1;
-        }
-
-        if (strategy === "avalanche") {
-          const rateDifference =
-            b.effectiveInterestRate -
-            a.effectiveInterestRate;
-
-          if (rateDifference !== 0) {
-            return rateDifference;
-          }
-
-          return a.balance - b.balance;
-        }
-
-        const balanceDifference =
-          a.balance - b.balance;
-
-        if (balanceDifference !== 0) {
-          return balanceDifference;
-        }
-
-        return (
-          b.effectiveInterestRate -
-          a.effectiveInterestRate
-        );
-      }
-    );
-
-    let remainingExtra = extraAmount;
-
-    const allocations: ExtraPaymentAllocation[] = [];
-
-    for (const item of sortedDebts) {
-      if (remainingExtra <= 0) {
-        break;
-      }
-
-      const amount = Math.min(
-        item.balance,
-        remainingExtra
-      );
-
-      const remainingBalance = Math.max(
-        0,
-        item.balance - amount
-      );
-
-      let reason: string;
-
-      if (item.promoUrgent) {
-        reason = item.monthsUntilPromoEnds === 1
-          ? "Deferred-interest promotion expires in about 1 month."
-          : `Deferred-interest promotion expires in about ${item.monthsUntilPromoEnds} months.`;
-      } else if (item.promoActive) {
-        reason = item.monthsUntilPromoEnds === 1
-          ? "Promotional rate is active for about 1 more month."
-          : `Promotional rate is active for about ${item.monthsUntilPromoEnds} more months.`;
-      } else if (strategy === "avalanche") {
-        reason =
-          "Prioritized because of its current interest rate.";
-      } else {
-        reason =
-          "Prioritized because of its current balance.";
-      }
-
-           allocations.push({
-        debtId: item.debt.id,
-        name: item.debt.name,
-        balance: item.balance,
-        amount,
-        remainingBalance,
-        interestRate: item.debt.interestRate,
-        effectiveInterestRate:
-          item.effectiveInterestRate,
-        promoEndDate: item.debt.promoEndDate,
-        promoDeferredInterest:
-          item.debt.promoDeferredInterest,
-        promoActive: item.promoActive,
-        promoUrgent: item.promoUrgent,
-        monthsUntilPromoEnds:
-          item.monthsUntilPromoEnds,
-        reason,
-      });
-
-      remainingExtra -= amount;
-    }
-
-    return allocations;
-      }, [debts, strategy, extraAmount]);
-
-    const allocatedExtraPayment =
-      extraPaymentAllocations.reduce(
-        (sum, item) => sum + item.amount,
-        0
-      );
-
-    const debtsEliminated =
-      extraPaymentAllocations.filter(
-        (item) => item.remainingBalance === 0
-      ).length;
-
-    const unusedExtraPayment = Math.max(
-      0,
-      extraAmount - allocatedExtraPayment
-    );
-  
-
   const interestSaved =
-  snowballPlan.totalInterest -
-  avalanchePlan.totalInterest;
+    snowballPlan.totalInterest -
+    avalanchePlan.totalInterest;
 
   const monthsSaved =
-  snowballPlan.totalMonths -
-  avalanchePlan.totalMonths;
+    snowballPlan.totalMonths - 
+    avalanchePlan.totalMonths;
 
   if (debts.length === 0) {
     return (
@@ -326,15 +97,21 @@ export default function DebtPlannerPage() {
             </h2>
 
             <p className="mt-2 text-sm text-slate-500">
-              Add your debts first to build a payoff plan.
+              Add your debts first to build a
+              payoff plan.
             </p>
           </div>
         </Card>
       </PageContainer>
     );
   }
-    return (
-      <PageContainer>
+
+  return (
+    <PageContainer>
+      <PageHeader
+        title="Debt Payoff Planner"
+        subtitle="Build your path to debt-free."
+      />
 
       {/* Strategy */}
       <Card>
@@ -385,9 +162,75 @@ export default function DebtPlannerPage() {
         </div>
       </Card>
 
+      {/* Extra Payment */}
+      <Card>
+        <label
+          htmlFor="extra-payment"
+          className="block text-lg font-bold"
+        >
+          Extra Monthly Payment
+        </label>
 
-        {/* Summary */}
-        <div className="grid grid-cols-2 gap-4">
+        <p className="mt-1 text-sm text-slate-500">
+          Additional money applied to your
+          payoff strategy each month.
+        </p>
+
+        <div className="relative mt-4">
+          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+            $
+          </span>
+
+          <input
+            id="extra-payment"
+            type="number"
+            min="0"
+            step="25"
+            value={extraPayment}
+            onChange={(event) => {
+              const value = event.target.value;
+
+              if (value === "") {
+                setExtraPayment("");
+                return;
+              }
+
+              const numericValue = Number(value);
+              if (Number.isNaN(numericValue)) {
+                return;
+              }
+              setExtraPayment(
+                String(Math.max(0,numericValue))
+              );
+              }}
+
+            className="w-full rounded-xl border border-slate-200 py-3 pl-8 pr-4 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+          />
+          <div className="mt-3 flex items-center justify-between text-sm">
+            <span className="text-slate-500">
+              Available after obligations
+            </span>
+            {extraAmount > maxExtraPayment && (
+              <p className="mt-2 text-sm font-semibold text-amber-600">
+                This extra payment IS GREATER than your currently calculated available cash.
+              </p>
+            )}
+            <span className="font-semibold text-green-600">
+              {formatCurrency(maxExtraPayment)}
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setExtraPayment(String(maxExtraPayment))}
+            className="mt-3 w-full rounded-xl bg-blue-50 px-4 py-3 text-blue-700 transition hover:bg-blue-100"
+          >
+            Use All Available Cash
+          </button>
+        </div>
+      </Card>
+
+      {/* Summary */}
+      <div className="grid grid-cols-2 gap-4">
         <StatCard
           title="Total Debt"
           value={formatCurrency(
@@ -542,6 +385,6 @@ export default function DebtPlannerPage() {
             ))}
         </div>
       </Card>
-</PageContainer>
-);
+    </PageContainer>
+  );
 }
