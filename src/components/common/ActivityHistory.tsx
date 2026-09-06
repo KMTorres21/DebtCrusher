@@ -1,5 +1,4 @@
-import type { ActivityEntry }
-  from "../../types/ActivityEntry";
+import type { ActivityEntry } from "../../types/ActivityEntry";
 
 interface ActivityHistoryProps {
   items?: ActivityEntry[];
@@ -26,7 +25,6 @@ function formatActivityDate(
 export default function ActivityHistory({
   items = [],
 }: ActivityHistoryProps) {
-
   const sortedItems = [...items].sort(
     (a, b) =>
       new Date(b.date).getTime() -
@@ -55,4 +53,18 @@ export default function ActivityHistory({
               </p>
 
               {item.details && (
-                <p className="mt
+                <p className="mt-1 whitespace-pre-line text-sm text-slate-600">
+                  {item.details}
+                </p>
+              )}
+
+              <p className="mt-1 text-xs text-slate-400">
+                {formatActivityDate(item.date)}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
