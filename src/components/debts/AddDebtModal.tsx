@@ -367,6 +367,7 @@ useEffect(() => {
                   required
                    className="w-full rounded-xl border border-slate-200 py-3 pl-8 pr-4 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                 /> 
+                </div>
    
                 <div className="rounded-2xl bg-blue-50 p-4">
                   <h3 className="font-semibold text-slate-800">
@@ -452,9 +453,6 @@ useEffect(() => {
                 )}
               </div>
 
-              </div>
-            </div>
-
             <div>
               <label
                 htmlFor="interest-rate"
@@ -477,7 +475,7 @@ useEffect(() => {
                 className="w-full rounded-xl border border-slate-200 pl-4 pr-10 py-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
               />
                 </div>
-              </div>
+
           <div>
             <label
               htmlFor="Credit Limit"
@@ -530,6 +528,6 @@ useEffect(() => {
         </div>
       </form>
     </div>
+    </div>
   );
 }
-        
