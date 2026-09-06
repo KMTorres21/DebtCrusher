@@ -20,31 +20,42 @@ export function calculateExtraPaymentAllocation(
 
   const sortedDebts = [...debts];
 
-    function promoPriority(debt: Debt): number {
-    function isProtectedPromoDebt(
-        debt: Debt
-        ): boolean {
-
-        if (
-            debt.promoInterestRate !== 0 ||
-            !debt.promoEndDate
-        ) {
-            return false;
-        }
-
-        const today = new Date();
-
-        const promoEnd = new Date(
-            `${debt.promoEndDate}T12:00:00`
-        );
-
-        const daysRemaining = Math.ceil(
-            (promoEnd.getTime() - today.getTime()) /
-            (1000 * 60 * 60 * 24)
-        );
-
   return daysRemaining > 90;
 }
+    function isProtectedPromoDebt(
+    debt: Debt
+    ): boolean {
+
+    if (
+        debt.promoInterestRate !== 0 ||
+        !debt.promoEndDate
+    ) {
+        return false;
+    }
+
+    const today = new Date();
+
+    const promoEnd = new Date(
+        `${debt.promoEndDate}T12:00:00`
+    );
+
+    const daysRemaining = Math.ceil(
+        (promoEnd.getTime() - today.getTime()) /
+        (1000 * 60 * 60 * 24)
+    );
+
+    return daysRemaining > 90;
+    }
+
+    function promoPriority(debt: Debt): number {
+
+  if (
+    !debt.promoEndDate ||
+    !debt.promoDeferredInterest
+  ) {
+    return 0;
+  }
+
     if (
         !debt.promoEndDate ||
         !debt.promoDeferredInterest
