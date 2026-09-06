@@ -49,7 +49,7 @@ const navItems = [
 
 export default function BottomNav() {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-slate-200 bg-white shadow-lg">
+    <nav className="fixed bottom-0 left-0 right-0 z-20 border-t border-slate-200 bg-white shadow-lg">
       <div className="mx-auto flex max-w-3xl items-stretch justify-around">
         {navItems.map(({ label, path, icon: Icon }) => (
           <NavLink
