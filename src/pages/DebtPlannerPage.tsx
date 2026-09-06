@@ -15,6 +15,10 @@ import PageContainer from "../components/common/PageContainer";
 import PageHeader from "../components/common/PageHeader";
 import Card from "../components/common/Card";
 import StatCard from "../components/common/StatCard";
+import {
+  calculateExtraPaymentAllocation,
+} from "../utils/extraPaymentAllocation";
+import RecommendedAllocationCard from "../components/debt-planner/RecommendedAllocationCard";
 
 export default function DebtPlannerPage() {
   const { debts } = useDebts();
