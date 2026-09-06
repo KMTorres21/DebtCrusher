@@ -16,6 +16,22 @@ import PageHeader from "../components/common/PageHeader";
 import Card from "../components/common/Card";
 import StatCard from "../components/common/StatCard";
 
+interface ExtraPaymentAllocation {
+  debtId: string;
+  name: string;
+  balance: number;
+  amount: number;
+  remainingBalance: number;
+  interestRate: number;
+  effectiveInterestRate: number;
+  promoEndDate?: string;
+  promoDeferredInterest?: boolean;
+  promoActive: boolean;
+  promoUrgent: boolean;
+  monthsUntilPromoEnds?: number;
+  reason: string;
+}
+
 export default function DebtPlannerPage() {
   const { debts } = useDebts();
   const { bills } = useBills();
@@ -208,6 +224,8 @@ export default function DebtPlannerPage() {
 
     let remainingExtra = extraAmount;
 
+    const allocations: ExtraPaymentAllocation[] = [];
+
     for (const item of sortedDebts) {
       if (remainingExtra <= 0) {
         break;
@@ -241,7 +259,7 @@ export default function DebtPlannerPage() {
           "Prioritized because of its current balance.";
       }
 
-      allocations.push({
+           allocations.push({
         debtId: item.debt.id,
         name: item.debt.name,
         balance: item.balance,
@@ -264,13 +282,13 @@ export default function DebtPlannerPage() {
     }
 
     return allocations;
-  }, [debts, strategy, extraAmount]);
+      }, [debts, strategy, extraAmount]);
 
     const allocatedExtraPayment =
-    extraPaymentAllocations.reduce(
-      (sum, item) => sum + item.amount,
-      0
-    );
+      extraPaymentAllocations.reduce(
+        (sum, item) => sum + item.amount,
+        0
+      );
 
     const debtsEliminated =
       extraPaymentAllocations.filter(
@@ -281,65 +299,16 @@ export default function DebtPlannerPage() {
       0,
       extraAmount - allocatedExtraPayment
     );
+  
 
   const interestSaved =
-    snowballPlan.totalInterest -
-    avalanchePlan.totalInterest;
+  snowballPlan.totalInterest -
+  avalanchePlan.totalInterest;
 
   const monthsSaved =
-    snowballPlan.totalMonths - 
+    snowballPlan.totalMonths -
     avalanchePlan.totalMonths;
 
-  interface ExtraPaymentAllocation {
-    debtId: string;
-    name: string;
-    balance: number;
-    amount: number;
-    remainingBalance: number;
-    interestRate: number;
-    effectiveInterestRate: number;
-    promoEndDate?: string;
-    promoDeferredInterest?: boolean;
-    promoActive: boolean;
-    promoUrgent: boolean;
-    monthsUntilPromoEnds?: number;
-    reason: string;
-  }
-
-    if (strategy === "avalanche") {
-      return [...debts].sort(
-        (a, b) => b.interestRate - a.interestRate
-      )[0];
-    }
-
-    return [...debts].sort(
-      (a, b) =>
-        (a.statementBalance ?? a.balance) -
-        (b.statementBalance ?? b.balance)
-    )[0];
-
-      <PageContainer>
-        <PageHeader
-          title="Debt Payoff Planner"
-          subtitle="Build your path to debt-free."
-        />
-
-        <Card>
-          <div className="text-center">
-            <div className="text-5xl">🎯</div>
-
-            <h2 className="mt-4 text-xl font-bold">
-              No debts yet
-            </h2>
-
-            <p className="mt-2 text-sm text-slate-500">
-              Add your debts first to build a
-              payoff plan.
-            </p>
-          </div>
-        </Card>
-      </PageContainer>
-  }
 
   return (
     <PageContainer>
@@ -464,53 +433,6 @@ export default function DebtPlannerPage() {
           </button>
         </div>
       </Card>
-
-        <Card>
-          <h2 className="text-lg font-bold">
-            🎯 Recommended Debt
-          </h2>
-
-          {recommendedDebt ? (
-            <div className="mt-4 space-y-2">
-
-              <p className="text-xl font-semibold">
-                {recommendedDebt.name}
-              </p>
-
-              <p className="text-slate-600">
-                Balance:
-                {" "}
-                {formatCurrency(
-                  recommendedDebt.statementBalance ??
-                  recommendedDebt.balance
-                )}
-              </p>
-
-              <p className="text-slate-600">
-                APR:
-                {" "}
-                {recommendedDebt.interestRate.toFixed(2)}%
-              </p>
-
-              <p className="font-medium text-green-600">
-                Apply your extra
-                {" "}
-                {formatCurrency(extraAmount)}
-                {" "}
-                here.
-              </p>
-
-              <div className="rounded-xl bg-blue-50 p-3 text-sm text-blue-800">
-                {strategy === "avalanche"
-                  ? "Highest interest rate in your portfolio. Paying this debt first minimizes total interest."
-                  : "Smallest balance in your portfolio. Paying this debt first builds momentum with quick wins."}
-              </div>
-
-            </div>
-          ) : (
-            <p>No debt recommendation available.</p>
-          )}
-        </Card>
 
         <Card>
           <h2 className="text-lg font-bold">
@@ -840,4 +762,3 @@ export default function DebtPlannerPage() {
       </Card>
     </PageContainer>
   );
-}
