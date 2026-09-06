@@ -542,3 +542,5 @@ export default function DebtPlannerPage() {
         </div>
       </Card>
 </PageContainer>
+);
+}
