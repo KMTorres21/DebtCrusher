@@ -178,7 +178,7 @@ useEffect(() => {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 sm:items-center">
+    <div className="fixed inset-0 z-[100]] flex items-end justify-center bg-black/50 sm:items-center">
       <div className="max-h-[90vh] w-full overflow-y-auto rounded-t-3xl bg-white shadow-2xl sm:max-w-xl sm:rounded-3xl">
 
         <div className="flex items-center justify-between border-b px-6 py-5">
@@ -508,7 +508,6 @@ useEffect(() => {
             className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition 
                 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
           />
-
             <ActivityHistory
               items={
                 prefill?.activityHistory ??
