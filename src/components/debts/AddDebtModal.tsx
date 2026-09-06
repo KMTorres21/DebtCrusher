@@ -365,7 +365,7 @@ useEffect(() => {
                   }
                   placeholder="0.00"
                   required
-                  className="w-full rounded-xl border border-slate-200 py-3 pl-8 pr-4 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                   className="w-full rounded-xl border border-slate-200 py-3 pl-8 pr-4 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                 />
                 <div className="rounded-2xl bg-blue-50 p-4">
                   <h3 className="font-semibold text-slate-800">
@@ -426,30 +426,30 @@ useEffect(() => {
                     </div>
                   </div>
 
-  {promoEndDate && (
-    <label className="mt-4 flex items-start gap-3">
-      <input
-        type="checkbox"
-        checked={promoDeferredInterest}
-        onChange={(event) =>
-          setPromoDeferredInterest(event.target.checked)
-        }
-        className="mt-1 h-5 w-5"
-      />
+                {promoEndDate && (
+                  <label className="mt-4 flex items-start gap-3">
+                    <input
+                      type="checkbox"
+                      checked={promoDeferredInterest}
+                      onChange={(event) =>
+                        setPromoDeferredInterest(event.target.checked)
+                      }
+                      className="mt-1 h-5 w-5"
+                    />
 
-      <div>
-        <div className="font-semibold text-slate-800">
-          Deferred-interest promotion
-        </div>
+                    <div>
+                      <div className="font-semibold text-slate-800">
+                        Deferred-interest promotion
+                      </div>
 
-        <p className="text-sm text-slate-500">
-          Interest may be charged retroactively if the balance
-          is not paid before the promotion ends.
-        </p>
-      </div>
-    </label>
-  )}
-</div>
+                      <p className="text-sm text-slate-500">
+                        Interest may be charged retroactively if the balance
+                        is not paid before the promotion ends.
+                      </p>
+                    </div>
+                  </label>
+                )}
+              </div>
 
               </div>
             </div>
