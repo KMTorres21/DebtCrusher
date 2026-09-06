@@ -20,14 +20,7 @@ export function calculateExtraPaymentAllocation(
 
   const sortedDebts = [...debts];
 
-     function promoPriority(debt: Debt): number {
-    if (
-        !debt.promoEndDate ||
-        !debt.promoDeferredInterest
-    ) {
-        return 0;
-    }
-
+    function promoPriority(debt: Debt): number {
     function isProtectedPromoDebt(
         debt: Debt
         ): boolean {
@@ -50,8 +43,14 @@ export function calculateExtraPaymentAllocation(
             (1000 * 60 * 60 * 24)
         );
 
-        return daysRemaining > 90;
-        }
+  return daysRemaining > 90;
+}
+    if (
+        !debt.promoEndDate ||
+        !debt.promoDeferredInterest
+    ) {
+        return 0;
+    }
 
     const today = new Date();
 
@@ -90,46 +89,22 @@ export function calculateExtraPaymentAllocation(
         promoPriority(a);
 
     if (promoDifference !== 0) {
-        return promoDifference;
+    return promoDifference;
     }
 
-  function getPromoPriority(debt: Debt): number {
-  if (
-    !debt.promoEndDate ||
-    !debt.promoDeferredInterest
-  ) {
-    return 0;
-  }
+    const aProtected =
+    isProtectedPromoDebt(a);
 
-  const today = new Date();
+    const bProtected =
+    isProtectedPromoDebt(b);
 
-  const promoEnd = new Date(
-    `${debt.promoEndDate}T12:00:00`
-  );
-
-  const daysRemaining = Math.ceil(
-    (promoEnd.getTime() - today.getTime()) /
-    (1000 * 60 * 60 * 24)
-  );
-
-  if (daysRemaining <= 30) {
-    return 3;
-  }
-
-  if (daysRemaining <= 60) {
-    return 2;
-  }
-
-  if (daysRemaining <= 90) {
-    return 1;
-  }
-
-  return 0;
-}
+    if (aProtected !== bProtected) {
+    return aProtected ? 1 : -1;
+    }
 
     return (
-        b.interestRate -
-        a.interestRate
+    b.interestRate -
+    a.interestRate
     );
     });
   } else {
@@ -153,10 +128,10 @@ export function calculateExtraPaymentAllocation(
     return aProtected ? 1 : -1;
     }
 
-return (
-  (a.statementBalance ?? a.balance) -
-  (b.statementBalance ?? b.balance)
-);
+    return (
+    (a.statementBalance ?? a.balance) -
+    (b.statementBalance ?? b.balance)
+    );
     });
   }
 
