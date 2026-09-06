@@ -20,17 +20,75 @@ export function calculateExtraPaymentAllocation(
 
   const sortedDebts = [...debts];
 
-  if (strategy === "avalanche") {
-    sortedDebts.sort(
-      (a, b) => b.interestRate - a.interestRate
+    function promoPriority(debt: Debt): number {
+    if (
+        !debt.promoEndDate ||
+        !debt.promoDeferredInterest
+    ) {
+        return 0;
+    }
+
+    const today = new Date();
+
+    const promoEnd = new Date(
+        `${debt.promoEndDate}T12:00:00`
     );
+
+    const daysRemaining = Math.ceil(
+        (
+        promoEnd.getTime() -
+        today.getTime()
+        ) /
+        (1000 * 60 * 60 * 24)
+    );
+
+    if (daysRemaining <= 30) {
+        return 3;
+    }
+
+    if (daysRemaining <= 60) {
+        return 2;
+    }
+
+    if (daysRemaining <= 90) {
+        return 1;
+    }
+
+    return 0;
+    }
+
+  if (strategy === "avalanche") {
+    sortedDebts.sort((a, b) => {
+
+    const promoDifference =
+        promoPriority(b) -
+        promoPriority(a);
+
+    if (promoDifference !== 0) {
+        return promoDifference;
+    }
+
+    return (
+        b.interestRate -
+        a.interestRate
+    );
+    });
   } else {
-    sortedDebts.sort(
-      (a, b) =>
+    sortedDebts.sort((a, b) => {
+
+    const promoDifference =
+        promoPriority(b) -
+        promoPriority(a);
+
+    if (promoDifference !== 0) {
+        return promoDifference;
+    }
+
+    return (
         (a.statementBalance ?? a.balance) -
         (b.statementBalance ?? b.balance)
     );
-  }
+    });
 
   let remainingExtra = extraAmount;
 
