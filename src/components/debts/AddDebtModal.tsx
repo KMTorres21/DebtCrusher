@@ -509,8 +509,18 @@ useEffect(() => {
                 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
           />
 
-            <ActivityHistory items={prefill?.activityHistory} 
-          />
+            <ActivityHistory
+              items={
+                prefill?.activityHistory ??
+                [
+                  {
+                    id: crypto.randomUUID(),
+                    date: new Date().toISOString(),
+                    action: "Created",
+                  },
+                ]
+              }
+            />
 
           <div className="flex gap-3">
             <Button
