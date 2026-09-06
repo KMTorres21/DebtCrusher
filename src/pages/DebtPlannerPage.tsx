@@ -46,12 +46,26 @@ export default function DebtPlannerPage() {
         [debts, strategy, extraAmount]
       );
 
+      const promoDebts = debts.filter((debt) => {
+        if (!debt.promoEndDate) {
+        return false;
+        }
+        
+        const today = new Date();
+        const promoEnd = new Date(
+        `${debt.promoEndDate}T12:00:00`
+        );
+        
+        return promoEnd >= today;
+        12
+        });
+
       const summary = calculateFinancialSummary(
         bills,
         debts,
         income
       );
-      
+
   const availableAfterObligations = summary.remainingCash;
   const maxExtraPayment = Math.max(0,
     Math.round(availableAfterObligations * 100) / 100);
@@ -252,6 +266,49 @@ export default function DebtPlannerPage() {
           </button>
         </div>
       </Card>
+
+          {promoDebts.length > 0 && (
+          <Card>
+            <h2 className="text-lg font-bold text-amber-600">
+              ⚠ Promotional Financing Alert
+            </h2>
+
+            <div className="mt-4 space-y-3">
+              {promoDebts.map((debt) => (
+                <div
+                  key={debt.id}
+                  className="rounded-xl bg-amber-50 p-4"
+                >
+                  <p className="font-semibold">
+                    {debt.name}
+                  </p>
+
+                  <p className="text-sm text-slate-600">
+                    Promotional APR:
+                    {" "}
+                    {debt.promoInterestRate ?? 0}%
+                  </p>
+
+                  <p className="text-sm text-slate-600">
+                    Promotion Ends:
+                    {" "}
+                    {new Date(
+                      `${debt.promoEndDate}T12:00:00`
+                    ).toLocaleDateString("en-US")}
+                  </p>
+
+                  {debt.promoDeferredInterest && (
+                    <p className="mt-2 text-sm font-medium text-amber-700">
+                      Deferred interest may apply if
+                      the balance is not paid before
+                      the promotion ends.
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </Card>
+        )}
 
       <RecommendedAllocationCard
         allocations={extraPaymentAllocations}
