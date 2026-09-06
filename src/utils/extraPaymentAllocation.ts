@@ -89,6 +89,7 @@ export function calculateExtraPaymentAllocation(
         (b.statementBalance ?? b.balance)
     );
     });
+  }
 
   let remainingExtra = extraAmount;
 
