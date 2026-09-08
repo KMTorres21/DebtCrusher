@@ -129,9 +129,23 @@ export default function BillsPage() {
           .filter(Boolean)
           .join("\n\n"),
 
+        activityHistory: [
+        {
+          id: crypto.randomUUID(),
+          date: now,
+          action: "Converted from Bill",
+          details: bill.name,
+        },
+        {
+          id: crypto.randomUUID(),
+          date: now,
+          action: "Created",
+        },
+      ],
+
         createdAt: now,
         updatedAt: now,
-      };
+              };
 
       addDebt(newDebt);
       deleteBill(bill.id);
