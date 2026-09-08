@@ -137,9 +137,9 @@ export default function BillsPage() {
         },
       ],
 
-      createdAt: now,
-      updatedAt: now,
-            };
+        createdAt: now,
+        updatedAt: now,
+              };
 
       addDebt(newDebt);
       deleteBill(bill.id);
