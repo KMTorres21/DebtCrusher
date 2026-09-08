@@ -122,13 +122,7 @@ export default function BillsPage() {
 
         interestRate: 0,
 
-        notes: [
-          bill.notes,
-          `Converted from Bill on ${new Date().toLocaleDateString()}`
-          ]
-          .filter(Boolean)
-          .join("\n\n"),
-
+        notes: bill.notes,
         activityHistory: [
         {
           id: crypto.randomUUID(),
@@ -143,9 +137,9 @@ export default function BillsPage() {
         },
       ],
 
-        createdAt: now,
-        updatedAt: now,
-              };
+      createdAt: now,
+      updatedAt: now,
+            };
 
       addDebt(newDebt);
       deleteBill(bill.id);
