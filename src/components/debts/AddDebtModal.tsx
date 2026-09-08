@@ -559,9 +559,8 @@ useEffect(() => {
               {prefill?.id ? "Save Changes" : "Save Debt"}
             </Button>
           </div>
-        </div>
-      </form>
-    </div>
+        </form>
+      </div>
     </div>
   );
 }
