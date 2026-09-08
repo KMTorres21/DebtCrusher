@@ -462,6 +462,7 @@ useEffect(() => {
                 APR / Interest Rate
               </label>
 
+          <div className="relative">
               <input
                 id="interest-rate"
                 type="number"
@@ -473,9 +474,13 @@ useEffect(() => {
                 }
                 placeholder="0.00"
                 required
-                className="w-full rounded-xl border border-slate-200 pl-4 pr-10 py-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                className="w-full rounded-xl border border-slate-200 py-3 pl-4 pr-10 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
               />
+              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+                %
+              </span>
                 </div>
+              </div>
 
           <div>
             <label
@@ -508,7 +513,8 @@ useEffect(() => {
             className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition 
                 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
           />
-            <ActivityHistory
+
+          <ActivityHistory
               items={
                 prefill?.activityHistory ??
                 [
