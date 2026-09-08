@@ -47,6 +47,7 @@ export default function AddDebtModal({
   const [dueDate, setDueDate] = useState("");
   const [creditLimit, setCreditLimit] = useState("");
   const [notes, setNotes] = useState("");
+  const [showHistory, setShowHistory] = useState(false);
 
 useEffect(() => {
   if (!open) return;
@@ -514,18 +515,29 @@ useEffect(() => {
                 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
           />
 
-          <ActivityHistory
-              items={
-                prefill?.activityHistory ??
-                [
-                  {
-                    id: crypto.randomUUID(),
-                    date: new Date().toISOString(),
-                    action: "Created",
-                  },
-                ]
+          <div className="rounded-2xl border border-slate-200">
+            <button
+              type="button"
+              onClick={() =>
+                setShowHistory(!showHistory)
               }
-            />
+              className="flex w-full items-center justify-between p-4 font-semibold"
+            >
+              <span>Activity History</span>
+
+              <span>
+                {showHistory ? "▲" : "▼"}
+              </span>
+            </button>
+
+            {showHistory && (
+              <div className="border-t p-4">
+                <ActivityHistory
+                  items={prefill?.activityHistory}
+                />
+              </div>
+            )}
+          </div>
 
           <div className="flex gap-3">
             <Button
