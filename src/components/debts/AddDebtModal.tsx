@@ -369,8 +369,70 @@ useEffect(() => {
                    className="w-full rounded-xl border border-slate-200 py-3 pl-8 pr-4 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                 /> 
                 </div>
-   
-                <div className="mt-4 rounded-2xl bg-blue-50 p-4">
+            </div>
+                
+
+            <div>
+              <label
+                htmlFor="interest-rate"
+                className="mb-2 block text-sm font-semibold text-slate-700"
+              >
+                APR / Interest Rate
+              </label>
+
+          <div className="relative">
+              <input
+                id="interest-rate"
+                type="number"
+                min="0"
+                step="0.01"
+                value={interestRate}
+                onChange={(event) =>
+                  setInterestRate(event.target.value)
+                }
+                placeholder="0.00"
+                required
+                className="w-full rounded-xl border border-slate-200 py-3 pl-4 pr-10 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+              />
+              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+                %
+              </span>
+                </div>
+              </div>
+
+          <div>
+            <label
+              htmlFor="Credit Limit"
+              className="mb-2 block text-sm font-semibold text-slate-700"
+            >
+              Credit Limit (optional)
+            </label>
+
+            
+          <input
+            type="number"
+            placeholder="Credit Limit (optional)"
+            value={creditLimit}
+            onChange={(e) =>
+              setCreditLimit(e.target.value)
+            }
+            className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition 
+                focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+          />
+          </div>
+
+          <textarea
+            placeholder="Notes"
+            rows={3}
+            value={notes}
+            onChange={(e) =>
+              setNotes(e.target.value)
+            }
+            className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition 
+                focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+          />
+
+          <div className="mt-4 rounded-2xl bg-blue-50 p-4">
                   <h3 className="font-semibold text-slate-800">
                     Promotional Financing
                   </h3>
@@ -455,65 +517,6 @@ useEffect(() => {
               </div>
               </div>
 
-            <div>
-              <label
-                htmlFor="interest-rate"
-                className="mb-2 block text-sm font-semibold text-slate-700"
-              >
-                APR / Interest Rate
-              </label>
-
-          <div className="relative">
-              <input
-                id="interest-rate"
-                type="number"
-                min="0"
-                step="0.01"
-                value={interestRate}
-                onChange={(event) =>
-                  setInterestRate(event.target.value)
-                }
-                placeholder="0.00"
-                required
-                className="w-full rounded-xl border border-slate-200 py-3 pl-4 pr-10 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-              />
-              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
-                %
-              </span>
-                </div>
-              </div>
-
-          <div>
-            <label
-              htmlFor="Credit Limit"
-              className="mb-2 block text-sm font-semibold text-slate-700"
-            >
-              Credit Limit (optional)
-            </label>
-
-            
-          <input
-            type="number"
-            placeholder="Credit Limit (optional)"
-            value={creditLimit}
-            onChange={(e) =>
-              setCreditLimit(e.target.value)
-            }
-            className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition 
-                focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-          />
-          </div>
-
-          <textarea
-            placeholder="Notes"
-            rows={3}
-            value={notes}
-            onChange={(e) =>
-              setNotes(e.target.value)
-            }
-            className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition 
-                focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-          />
 
           <div className="rounded-2xl border border-slate-200">
             <button
