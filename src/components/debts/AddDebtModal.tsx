@@ -287,6 +287,27 @@ useEffect(() => {
     });
   }
 
+  const oldPromoEndDate =
+  prefill?.promoEndDate;
+
+  const newPromoEndDate =
+    promoEndDate || undefined;
+
+  if (
+    prefill?.id &&
+    oldPromoEndDate &&
+    newPromoEndDate &&
+    oldPromoEndDate !== newPromoEndDate
+  ) {
+    history.push({
+      id: crypto.randomUUID(),
+      date: now,
+      action: "Promotion End Date Updated",
+      details:
+        `${oldPromoEndDate} → ${newPromoEndDate}`,
+    });
+  }
+
     return history;
   })(),
 
