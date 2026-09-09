@@ -98,30 +98,34 @@ export default function FinancialTimeline({
       }
     }
 
-  bills.forEach((bill) => {
-    if (bill.statementDate) {
-     events.push({
+    bills.forEach((bill) => {
+    events.push({
       date: bill.dueDate,
       title: `${bill.name} Due`,
       icon: "💳",
       reviewNeeded:
-      !!bill.statementDate &&
-      !bill.statementReviewedAt &&
-      bill.statementDate <= today.toISOString().slice(0, 10) &&
-      bill.dueDate >= today.toISOString().slice(0, 10),
-      });
-    }
+        !!bill.statementDate &&
+        !bill.statementReviewedAt &&
+        bill.statementDate <= today.toISOString().slice(0, 10) &&
+        bill.dueDate >= today.toISOString().slice(0, 10),
+    });
 
-  events.push({
-  date: bill.dueDate,
-  title: `${bill.name} Due`,
-  icon: "💳",
-  reviewNeeded:
-    !!bill.statementDate &&
-    !bill.statementReviewedAt &&
-    bill.statementDate <= today.toISOString().slice(0, 10) &&
-    bill.dueDate >= today.toISOString().slice(0, 10),
-});
+    if (
+      bill.statementDate &&
+      bill.statementDate <= today.toISOString().slice(0, 10) &&
+      bill.dueDate >= today.toISOString().slice(0, 10)
+    ) {
+      if (!bill.statementReviewedAt) {
+        reviewsNeeded.push({
+          id: bill.id,
+          type: "bill",
+          name: bill.name,
+          statementDate: bill.statementDate,
+          dueDate: bill.dueDate,
+        });
+      }
+    }
+  });
 
   if (
       bill.statementDate &&
@@ -141,29 +145,6 @@ export default function FinancialTimeline({
 });
 
   debts.forEach((debt) => {
-    if (debt.statementDate) {
-      events.push({
-      date: debt.dueDate,
-      title: `${debt.name} Due`,
-      icon: "💳",
-      reviewNeeded:
-        !!debt.statementDate &&
-        !debt.statementReviewedAt &&
-        debt.statementDate <= today.toISOString().slice(0, 10) &&
-        debt.dueDate >= today.toISOString().slice(0, 10)
-      });
-
-        if (!debt.statementReviewedAt) {
-        reviewsNeeded.push({
-          id: debt.id,
-          type: "debt",
-          name: debt.name,
-          statementDate: debt.statementDate,
-          dueDate: debt.dueDate,
-        });
-      }
-    }
-
   events.push({
     date: debt.dueDate,
     title: `${debt.name} Due`,
@@ -174,6 +155,23 @@ export default function FinancialTimeline({
       debt.statementDate <= today.toISOString().slice(0, 10) &&
       debt.dueDate >= today.toISOString().slice(0, 10),
   });
+
+  if (
+    debt.statementDate &&
+    debt.statementDate <= today.toISOString().slice(0, 10) &&
+    debt.dueDate >= today.toISOString().slice(0, 10)
+  ) {
+    if (!debt.statementReviewedAt) {
+      reviewsNeeded.push({
+        id: debt.id,
+        type: "debt",
+        name: debt.name,
+        statementDate: debt.statementDate,
+        dueDate: debt.dueDate,
+      });
+    }
+  }
+});
 
   income.forEach((item) => {
     for
