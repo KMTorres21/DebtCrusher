@@ -213,6 +213,29 @@ useEffect(() => {
       });
     }
 
+    const oldCreditLimit =
+    prefill?.creditLimit;
+
+  const newCreditLimit =
+    creditLimit
+      ? Number(creditLimit)
+      : undefined;
+
+  if (
+    prefill?.id &&
+    oldCreditLimit !== undefined &&
+    newCreditLimit !== undefined &&
+    oldCreditLimit !== newCreditLimit
+  ) {
+    history.push({
+      id: crypto.randomUUID(),
+      date: now,
+      action: "Credit Limit Updated",
+      details:
+        `$${oldCreditLimit.toFixed(2)} → $${newCreditLimit.toFixed(2)}`,
+    });
+  }
+
     return history;
   })(),
 
