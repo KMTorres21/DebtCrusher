@@ -370,8 +370,7 @@ useEffect(() => {
                    className="w-full rounded-xl border border-slate-200 py-3 pl-8 pr-4 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                 /> 
                 </div>
-            </div>
-  
+
 
             <div>
               <label
@@ -398,7 +397,8 @@ useEffect(() => {
               <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
                 %
               </span>
-                </div>
+            </div>
+          </div>
 
             <div>
               <label
