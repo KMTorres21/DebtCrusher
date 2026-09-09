@@ -366,6 +366,7 @@ useEffect(() => {
                   className="w-full rounded-xl border border-slate-200 py-3 pl-8 pr-4 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                 />
               </div>
+              </div>
 
               <label
                 htmlFor="interest-rate"
@@ -393,7 +394,6 @@ useEffect(() => {
               </span>
             </div>
           </div>
-        </div>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
