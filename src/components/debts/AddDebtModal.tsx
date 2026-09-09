@@ -370,7 +370,7 @@ useEffect(() => {
                 /> 
                 </div>
             </div>
-                
+          </div>      
 
             <div>
               <label
@@ -567,4 +567,3 @@ useEffect(() => {
       </form>
     </div>
   ),
-  
