@@ -428,6 +428,7 @@ useEffect(() => {
                 />
               </div>
             </div>
+          </div>
 
           <div>
             <label
@@ -448,17 +449,25 @@ useEffect(() => {
             />
           </div>
         
-          <div className="mt-4 space-y-4">
-            {/* Promotional APR */}
-            <div>
-              <label
+          <div className="grid grid-cols-1 items-start gap-4 sm:grid-cols-2">
+            {/* Promotional Financing */}
+            <div className="rounded-2xl bg-blue-50 p-4">
+              <h3 className="font-semibold text-slate-800">
+              Promotional Financing
+              </h3>
+              <p className="mt-1 text-sm text-slate-500">
+                Complete this section when the debt has a temporary
+                promotional interest rate.
+              </p>
+
+                <label
                 htmlFor="promo-interest-rate"
                 className="mb-2 block text-sm font-semibold text-slate-700"
-              >
+                >
                 Promotional APR
-              </label>
+                </label>
 
-              <div className="relative">
+              <div className="mt-4 space-y-4">
                 <input
                   id="promo-interest-rate"
                   type="number"
@@ -476,7 +485,6 @@ useEffect(() => {
                   %
                 </span>
               </div>
-            </div>
 
             {/* Promotion End Date */}
             <div>
@@ -524,6 +532,7 @@ useEffect(() => {
               </label>
             )}
           </div>
+
           {/* Activity History */}
           <div className="self-start rounded-2xl border border-slate-200 bg-white">
             <button
@@ -551,23 +560,23 @@ useEffect(() => {
           </div>
         </div>
 
-          <div className="flex gap-3">
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={handleClose}
-              className="flex-1"
-            >
-              Cancel
-            </Button>
-            </div>
-
-            <Button
-              type="submit"
-              className="flex-1"
-            >
-              {prefill?.id ? "Save Changes" : "Save Debt"}
-            </Button>
+        <div className="flex gap-3">
+          <Button
+          type="button"
+          variant="secondary"
+          onClick={handleClose}
+          className="flex-1"
+          >
+          Cancel
+          </Button>
+          
+          <Button
+          type="submit"
+          className="flex-1"
+          >
+          {prefill?.id ? "Save Changes" : "Save Debt"}
+          </Button>
+          </div>
           </form>
         </div>
         </div>
