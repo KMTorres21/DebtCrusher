@@ -550,6 +550,7 @@ useEffect(() => {
             >
               Cancel
             </Button>
+            </div>
 
             <Button
               type="submit"
