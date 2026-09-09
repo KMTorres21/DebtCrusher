@@ -105,9 +105,10 @@ export default function FinancialTimeline({
       title: `${bill.name} Due`,
       icon: "💳",
       reviewNeeded:
-        !!bill.statementDate &&
-        bill.statementDate <= today.toISOString().slice(0, 10) &&
-        bill.dueDate >= today.toISOString().slice(0, 10),
+      !!bill.statementDate &&
+      !bill.statementReviewedAt &&
+      bill.statementDate <= today.toISOString().slice(0, 10) &&
+      bill.dueDate >= today.toISOString().slice(0, 10),
       });
     }
 
@@ -142,6 +143,7 @@ export default function FinancialTimeline({
       icon: "💳",
       reviewNeeded:
         !!debt.statementDate &&
+        !debt.statementReviewedAt &&
         debt.statementDate <= today.toISOString().slice(0, 10) &&
         debt.dueDate >= today.toISOString().slice(0, 10)
       });
