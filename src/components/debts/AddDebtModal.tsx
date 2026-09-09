@@ -168,8 +168,36 @@ useEffect(() => {
 
   notes: notes.trim() || undefined,
 
-  createdAt: prefill?.createdAt ?? now,
-  updatedAt: now,
+  activityHistory: (() => {
+    const history = [
+      ...(prefill?.activityHistory ?? []),
+    ];
+
+    const oldBalance =
+      prefill?.balance;
+
+    const newBalance =
+      Number(statementBalance);
+
+    if (
+      prefill?.id &&
+      oldBalance !== undefined &&
+      oldBalance !== newBalance
+    ) {
+      history.push({
+        id: crypto.randomUUID(),
+        date: now,
+        action: "Balance Updated",
+        details:
+          `$${oldBalance.toFixed(2)} → $${newBalance.toFixed(2)}`,
+      });
+    }
+
+    return history;
+  })(),
+
+createdAt: prefill?.createdAt ?? now,
+updatedAt: now,
 };
 
     onSave(debt);
