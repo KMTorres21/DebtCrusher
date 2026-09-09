@@ -521,31 +521,33 @@ useEffect(() => {
                   </label>
                 )}
               </div>
+            </div>
 
-          <div className="rounded-2xl border border-slate-200">
-            <button
-              type="button"
-              onClick={() =>
-                setShowHistory(!showHistory)
-              }
-              className="flex w-full items-center justify-between p-4 font-semibold"
-            >
-              <span>Activity History</span>
+              {/* Activity History */}
+              <div className="rounded-2xl border border-slate-200 bg-white">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setShowHistory((current) => !current)
+                  }
+                  className="flex w-full items-center justify-between p-4 font-semibold"
+                  aria-expanded={showHistory}
+                >
+                  <span>Activity History</span>
 
-              <span>
-                {showHistory ? "▲" : "▼"}
-              </span>
-            </button>
+                  <span aria-hidden="true">
+                    {showHistory ? "▲" : "▼"}
+                  </span>
+                </button>
 
-            {showHistory && (
-              <div className="border-t p-4">
-                <ActivityHistory
-                  items={prefill?.activityHistory}
-                />
+                {showHistory && (
+                  <div className="border-t p-4">
+                    <ActivityHistory
+                      items={prefill?.activityHistory}
+                    />
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-          </div>
 
           <div className="flex gap-3">
             <Button
