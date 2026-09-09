@@ -110,6 +110,10 @@ export default function AddBillModal({
 
     const numericAmount = Number(amount);
 
+    const history = [
+      ...(bill?.activityHistory ?? []),
+    ];
+
     if (!name.trim() || !dueDate || numericAmount <= 0) {
       return;
     }
@@ -142,7 +146,168 @@ export default function AddBillModal({
     notes: notes.trim() || undefined,
     createdAt: bill?.createdAt ?? now,
     updatedAt: now,
+    activityHistory: history,
 };
+
+    const oldAmount =
+      bill?.amount;
+
+    const newAmount =
+      Number(amount);
+
+    if (
+      bill?.id &&
+      oldAmount !== undefined &&
+      oldAmount !== newAmount
+    ) {
+      history.push({
+        id: crypto.randomUUID(),
+        date: now,
+        action: "Amount Updated",
+        details:
+          `$${oldAmount.toFixed(2)} → $${newAmount.toFixed(2)}`,
+      });
+    }
+
+    const oldDueDate =
+  bill?.dueDate;
+
+const newDueDate =
+  dueDate;
+
+if (
+  bill?.id &&
+  oldDueDate &&
+  oldDueDate !== newDueDate
+) {
+  history.push({
+    id: crypto.randomUUID(),
+    date: now,
+    action: "Due Date Updated",
+    details:
+      `${oldDueDate} → ${newDueDate}`,
+  });
+}
+
+const oldStatementDate =
+  bill?.statementDate;
+
+const newStatementDate =
+  statementDate || undefined;
+
+if (
+  bill?.id &&
+  oldStatementDate &&
+  newStatementDate &&
+  oldStatementDate !== newStatementDate
+) {
+  history.push({
+    id: crypto.randomUUID(),
+    date: now,
+    action: "Statement Date Updated",
+    details:
+      `${oldStatementDate} → ${newStatementDate}`,
+  });
+}
+
+const oldStatementBalance =
+  bill?.statementBalance;
+
+const newStatementBalance =
+  statementBalance
+    ? Number(statementBalance)
+    : undefined;
+
+if (
+  bill?.id &&
+  oldStatementBalance !== undefined &&
+  newStatementBalance !== undefined &&
+  oldStatementBalance !== newStatementBalance
+) {
+  history.push({
+    id: crypto.randomUUID(),
+    date: now,
+    action: "Statement Balance Updated",
+    details:
+      `$${oldStatementBalance.toFixed(2)} → ${newStatementBalance.toFixed(2)}`,
+  });
+}
+
+if (
+  bill?.id &&
+  bill.recurring === false &&
+  recurring === true
+) {
+  history.push({
+    id: crypto.randomUUID(),
+    date: now,
+    action: "Recurring Enabled",
+  });
+}
+
+if (
+  bill?.id &&
+  bill.recurring === true &&
+  recurring === false
+) {
+  history.push({
+    id: crypto.randomUUID(),
+    date: now,
+    action: "Recurring Disabled",
+  });
+}
+
+const oldFrequency =
+  bill?.frequency;
+
+const newFrequency =
+  frequency;
+
+if (
+  bill?.id &&
+  oldFrequency &&
+  oldFrequency !== newFrequency
+) {
+  history.push({
+    id: crypto.randomUUID(),
+    date: now,
+    action: "Frequency Updated",
+    details:
+      `${oldFrequency} → ${newFrequency}`,
+  });
+}
+
+const oldCategory =
+  bill?.category;
+
+const newCategory =
+  category;
+
+if (
+  bill?.id &&
+  oldCategory &&
+  oldCategory !== newCategory
+) {
+  history.push({
+    id: crypto.randomUUID(),
+    date: now,
+    action: "Category Updated",
+    details:
+      `${oldCategory} → ${newCategory}`,
+  });
+}
+
+if (
+  bill?.id &&
+  (bill.notes ?? "") !==
+    (notes.trim() || "")
+) {
+  history.push({
+    id: crypto.randomUUID(),
+    date: now,
+    action: "Notes Updated",
+  });
+}
 
     onSave(newBill);
 
