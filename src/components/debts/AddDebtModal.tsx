@@ -193,6 +193,29 @@ useEffect(() => {
       });
     }
 
+    const oldStatementBalance =
+  prefill?.statementBalance;
+
+    const newStatementBalance =
+      statementBalance
+        ? Number(statementBalance)
+        : undefined;
+
+    if (
+      prefill?.id &&
+      oldStatementBalance !== undefined &&
+      newStatementBalance !== undefined &&
+      oldStatementBalance !== newStatementBalance
+    ) {
+      history.push({
+        id: crypto.randomUUID(),
+        date: now,
+        action: "Statement Balance Updated",
+        details:
+          `$${oldStatementBalance.toFixed(2)} → $${newStatementBalance.toFixed(2)}`,
+      });
+    }
+
     const oldAPR =
       prefill?.interestRate;
 
