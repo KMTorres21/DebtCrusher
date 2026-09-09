@@ -142,7 +142,7 @@ export default function AddBillModal({
     notes: notes.trim() || undefined,
     createdAt: bill?.createdAt ?? now,
     updatedAt: now,
-  };
+};
 
     onSave(newBill);
 

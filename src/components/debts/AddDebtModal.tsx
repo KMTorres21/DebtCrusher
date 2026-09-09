@@ -194,7 +194,7 @@ useEffect(() => {
     }
 
     const oldStatementBalance =
-  prefill?.statementBalance;
+    prefill?.statementBalance;
 
     const newStatementBalance =
       statementBalance
