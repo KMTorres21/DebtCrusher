@@ -328,8 +328,8 @@ if (
 
             <p className="mt-1 text-sm text-slate-500">
               {bill
-  ? "Update your bill details."
-  : "Add a bill to your DebtBeGone!! plan."}
+              ? "Update your bill details."
+              : "Add a bill to your DebtBeGone!! plan."}
             </p>
           </div>
 

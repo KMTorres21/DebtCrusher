@@ -85,17 +85,14 @@ export default function DebtsPage() {
         paid: false,
         notes: debt.notes,
           activityHistory: [
-          {
-          id: crypto.randomUUID(),
-          date: now,
-          action: "Converted from Debt",
-          details: debt.name,
-          },
-          {
-          id: crypto.randomUUID(),
-          date: now,
-          action: "Created",
-          },
+            ...(debt.activityHistory ?? []),
+
+            {
+              id: crypto.randomUUID(),
+              date: now,
+              action: "Converted to Bill",
+              details: debt.name,
+            },
           ],
           createdAt: now,
           updatedAt: now,

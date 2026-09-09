@@ -124,16 +124,12 @@ export default function BillsPage() {
 
         notes: bill.notes,
         activityHistory: [
-        {
-          id: crypto.randomUUID(),
-          date: now,
-          action: "Converted from Bill",
-          details: bill.name,
-        },
-        {
-          id: crypto.randomUUID(),
-          date: now,
-          action: "Created",
+      ...(bill.activityHistory ?? []),
+
+      {
+        id: crypto.randomUUID(),
+        date: now,
+        action: "Converted to Debt",
         },
       ],
 
