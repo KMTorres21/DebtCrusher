@@ -449,65 +449,67 @@ useEffect(() => {
             />
           </div>
         
-          <div className="grid grid-cols-1 items-start gap-4 sm:grid-cols-2">
-            {/* Promotional Financing */}
-            <div className="rounded-2xl bg-blue-50 p-4">
-              <h3 className="font-semibold text-slate-800">
+          {/* Promotional Financing */}
+          <div className="rounded-2xl bg-blue-50 p-4">
+            <h3 className="font-semibold text-slate-800">
               Promotional Financing
-              </h3>
-              <p className="mt-1 text-sm text-slate-500">
-                Complete this section when the debt has a temporary
-                promotional interest rate.
-              </p>
+            </h3>
+            <p className="mt-1 text-sm text-slate-500">
+              Complete this section when the debt has a temporary
+              promotional interest rate.
+            </p>
 
+            <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div>
                 <label
-                htmlFor="promo-interest-rate"
-                className="mb-2 block text-sm font-semibold text-slate-700"
+                  htmlFor="promo-interest-rate"
+                  className="mb-2 block text-sm font-semibold text-slate-700"
                 >
-                Promotional APR
+                  Promotional APR
                 </label>
 
-              <div className="mt-4 space-y-4">
-                <input
-                  id="promo-interest-rate"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={promoInterestRate}
-                  onChange={(event) =>
-                    setPromoInterestRate(event.target.value)
-                  }
-                  placeholder="0.00"
-                  className="w-full rounded-xl border border-slate-200 py-3 pl-4 pr-10 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                />
+                <div className="relative">
+                  <input
+                    id="promo-interest-rate"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={promoInterestRate}
+                    onChange={(event) =>
+                      setPromoInterestRate(event.target.value)
+                    }
+                    placeholder="0.00"
+                    className="w-full rounded-xl border border-slate-200 py-3 pl-4 pr-10 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                  />
 
-                <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
-                  %
-                </span>
+                  <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+                    %
+                  </span>
+                </div>
               </div>
 
-            {/* Promotion End Date */}
-            <div>
-              <label
-                htmlFor="promo-end-date"
-                className="mb-2 block text-sm font-semibold text-slate-700"
-              >
-                Promotion End Date
-              </label>
+              <div>
+                <label
+                  htmlFor="promo-end-date"
+                  className="mb-2 block text-sm font-semibold text-slate-700"
+                >
+                  Promotion End Date
+                </label>
 
-              <input
-                id="promo-end-date"
-                type="date"
-                value={promoEndDate}
-                onChange={(event) =>
-                  setPromoEndDate(event.target.value)
-                }
-                className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-              />
+                <input
+                  id="promo-end-date"
+                  type="date"
+                  value={promoEndDate}
+                  onChange={(event) =>
+                    setPromoEndDate(event.target.value)
+                  }
+                  className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                />
+              </div>
             </div>
 
             {promoEndDate && (
-              <label className="flex items-start gap-3">
+              <label className="mt-4 flex items-start gap-3">
                 <input
                   type="checkbox"
                   checked={promoDeferredInterest}
@@ -558,7 +560,6 @@ useEffect(() => {
               </div>
             )}
           </div>
-        </div>
 
         <div className="flex gap-3">
           <Button
@@ -569,7 +570,7 @@ useEffect(() => {
           >
           Cancel
           </Button>
-          
+
           <Button
           type="submit"
           className="flex-1"
@@ -579,6 +580,6 @@ useEffect(() => {
           </div>
           </form>
         </div>
-        </div>
-        );
-        }
+      </div>
+    );
+  }
