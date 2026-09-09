@@ -396,30 +396,35 @@ useEffect(() => {
             </div>
           </div>
 
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
               <label
-                htmlFor="credit-limit"
+                htmlFor="debt-amount"
                 className="mb-2 block text-sm font-semibold text-slate-700"
               >
                 Credit Limit (optional)
               </label>
-                <div className="relative">
+
+              <div className="relative">
                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
                   $
                 </span>
 
-          <input
-            type="number"
-            placeholder="Credit Limit (optional)"
-            value={creditLimit}
-            onChange={(e) =>
-              setCreditLimit(e.target.value)
-            }
-            className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition 
-                focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-          />
-          </div>
-        </div>
+                <input
+                  id="credit-limit"
+                  type="number"
+                  step="0.01"
+                  value={creditLimit}
+                  onChange={(event) =>
+                    setCreditLimit(event.target.value)
+                  }
+                  placeholder="0.00"
+                  required
+                  className="w-full rounded-xl border border-slate-200 py-3 pl-8 pr-4 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                />
+              </div>
+            </div>
+
 
           <textarea
             placeholder="Notes"
