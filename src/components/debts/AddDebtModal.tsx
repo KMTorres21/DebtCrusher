@@ -308,6 +308,29 @@ useEffect(() => {
     });
   }
 
+  const oldDeferredInterest =
+  prefill?.promoDeferredInterest;
+
+  const newDeferredInterest =
+    promoEndDate
+      ? promoDeferredInterest
+      : undefined;
+
+  if (
+    prefill?.id &&
+    oldDeferredInterest !==
+      newDeferredInterest
+  ) {
+    history.push({
+      id: crypto.randomUUID(),
+      date: now,
+      action:
+        newDeferredInterest
+          ? "Deferred Interest Enabled"
+          : "Deferred Interest Disabled",
+    });
+  }
+
     return history;
   })(),
 
