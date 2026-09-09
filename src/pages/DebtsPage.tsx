@@ -73,32 +73,32 @@ export default function DebtsPage() {
 
       const newBill: Bill = {
         id: crypto.randomUUID(),
-
         name: debt.name,
-
         amount: debt.minimumPayment,
-
         statementDate: debt.statementDate,
-
         statementBalance: debt.statementBalance,
-
         dueDate: debt.dueDate,
-
         category: "Credit Card",
-
         recurring: true,
-
         frequency: "monthly",
-
         autoPay: false,
-
         paid: false,
-
         notes: debt.notes,
-
-        createdAt: now,
-
-        updatedAt: now,
+          activityHistory: [
+          {
+          id: crypto.randomUUID(),
+          date: now,
+          action: "Converted from Debt",
+          details: debt.name,
+          },
+          {
+          id: crypto.randomUUID(),
+          date: now,
+          action: "Created",
+          },
+          ],
+          createdAt: now,
+          updatedAt: now,
       };
 
       addBill(newBill);

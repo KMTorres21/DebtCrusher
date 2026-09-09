@@ -6,6 +6,7 @@ import {
 import { BillCategory } from "../../types/Bill";
 import Button from "../common/Button";
 import { X } from "lucide-react"
+import ActivityHistory from "../common/ActivityHistory";
 
 interface AddBillModalProps {
   open: boolean;
@@ -53,6 +54,7 @@ export default function AddBillModal({
     setSemiMonthlyDay2] =
     useState("15");
   const [notes, setNotes] = useState("");
+  const [showHistory, setShowHistory] = useState(false);
 
   useEffect(() => {
   if (bill) {
@@ -472,6 +474,31 @@ export default function AddBillModal({
               className="w-full resize-none rounded-xl border border-slate-200 px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
             />
           </div>
+
+          <div className="self-start rounded-2xl border border-slate-200 bg-white">
+          <button
+            type="button"
+            onClick={() =>
+              setShowHistory((current) => !current)
+            }
+            className="flex w-full items-center justify-between p-4 font-semibold"
+            aria-expanded={showHistory}
+          >
+            <span>Activity History</span>
+
+            <span aria-hidden="true">
+              {showHistory ? "▲" : "▼"}
+            </span>
+          </button>
+
+          {showHistory && (
+            <div className="border-t p-4">
+          <ActivityHistory
+          items={bill?.activityHistory}
+          />
+            </div>
+          )}
+        </div>
 
           {/* Actions */}
           <div className="flex gap-3 pt-2">
