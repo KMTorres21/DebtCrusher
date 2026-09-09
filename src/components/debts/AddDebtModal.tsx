@@ -193,6 +193,26 @@ useEffect(() => {
       });
     }
 
+    const oldAPR =
+      prefill?.interestRate;
+
+    const newAPR =
+      Number(interestRate);
+
+    if (
+      prefill?.id &&
+      oldAPR !== undefined &&
+      oldAPR !== newAPR
+    ) {
+      history.push({
+        id: crypto.randomUUID(),
+        date: now,
+        action: "APR Updated",
+        details:
+          `${oldAPR.toFixed(2)}% → ${newAPR.toFixed(2)}%`,
+      });
+    }
+
     return history;
   })(),
 
