@@ -398,9 +398,7 @@ useEffect(() => {
                 %
               </span>
                 </div>
-              </div>
 
-          <div>
             <div>
               <label
                 htmlFor="credit-limit"
@@ -424,6 +422,7 @@ useEffect(() => {
                 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
           />
           </div>
+        </div>
 
           <textarea
             placeholder="Notes"
@@ -437,24 +436,22 @@ useEffect(() => {
           />
 
           <div className="mt-4 rounded-2xl bg-blue-50 p-4">
-                  <h3 className="font-semibold text-slate-800">
-                    Promotional Financing
-                  </h3>
+              <h3 className="font-semibold text-slate-800">
+                Promotional Financing
+              </h3>
 
-                  <p className="mt-1 text-sm text-slate-500">
-                    Complete this section when the debt has a temporary
-                    promotional interest rate.
-                  </p>
+              <p className="mt-1 text-sm text-slate-500">
+                Complete this section when the debt has a temporary
+                promotional interest rate.
+              </p>
 
-                  <div className="mt-4 space-y-4">
-                    <div>
-                      <label
-                        htmlFor="promo-interest-rate"
-                        className="mb-2 block text-sm font-semibold text-slate-700"
-                      >
-                        Promotional APR
-                      </label>
-
+              <div className="mt-4 space-y-4">
+                  <label
+                    htmlFor="promo-interest-rate"
+                    className="mb-2 block text-sm font-semibold text-slate-700"
+                  >
+                    Promotional APR
+                  </label>
                       <div className="relative">
                         <input
                           id="promo-interest-rate"
@@ -493,7 +490,6 @@ useEffect(() => {
                         className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                       />
                     </div>
-                  </div>
 
                 {promoEndDate && (
                   <label className="mt-4 flex items-start gap-3">
@@ -519,8 +515,6 @@ useEffect(() => {
                   </label>
                 )}
               </div>
-              </div>
-
 
           <div className="rounded-2xl border border-slate-200">
             <button
@@ -545,6 +539,7 @@ useEffect(() => {
               </div>
             )}
           </div>
+          </div>
 
           <div className="flex gap-3">
             <Button
@@ -562,8 +557,8 @@ useEffect(() => {
             >
               {prefill?.id ? "Save Changes" : "Save Debt"}
             </Button>
-          </div>
+          </form>
         </div>
-      </form>
-    </div>
-  ),
+        </div>
+        );
+        }
