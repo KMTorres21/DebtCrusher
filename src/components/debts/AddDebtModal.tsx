@@ -259,6 +259,34 @@ useEffect(() => {
     });
   }
 
+  const oldPromoAPR =
+  prefill?.promoInterestRate;
+
+  const newPromoAPR =
+    promoInterestRate !== ""
+      ? Number(promoInterestRate)
+      : undefined;
+
+  if (
+    prefill?.id &&
+    oldPromoAPR === undefined &&
+    newPromoAPR !== undefined
+  ) {
+    history.push({
+      id: crypto.randomUUID(),
+      date: now,
+      action: "Promotional Financing Added",
+      details: [
+        `APR: ${newPromoAPR.toFixed(2)}%`,
+        promoEndDate
+          ? `Ends: ${promoEndDate}`
+          : undefined,
+      ]
+        .filter(Boolean)
+        .join("\n"),
+    });
+  }
+
     return history;
   })(),
 
