@@ -290,7 +290,8 @@ useEffect(() => {
 
           {/* Statement Balance + Statement Date */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              
+
+            <div>
               <label
                 htmlFor="balance"
                 className="mb-2 block text-sm font-semibold text-slate-700"
@@ -318,7 +319,6 @@ useEffect(() => {
                 />
               </div>
             </div>
-
             <div>
               <label
                 htmlFor="statement-date"
@@ -338,9 +338,12 @@ useEffect(() => {
                 className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
               />
             </div>
+          </div>       
 
           {/* Original Balance + APR */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+
+            <div>
               <label
                 htmlFor="original-balance"
                 className="mb-2 block text-sm font-semibold text-slate-700"
@@ -367,6 +370,7 @@ useEffect(() => {
                    className="w-full rounded-xl border border-slate-200 py-3 pl-8 pr-4 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                 /> 
                 </div>
+
 
             <div>
               <label
@@ -419,6 +423,7 @@ useEffect(() => {
                 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
           />
           </div>
+        </div>
 
           <textarea
             placeholder="Notes"
@@ -430,8 +435,6 @@ useEffect(() => {
             className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition 
                 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
           />
-          </div>
-        </div>
 
           <div className="mt-4 rounded-2xl bg-blue-50 p-4">
               <h3 className="font-semibold text-slate-800">
@@ -537,6 +540,7 @@ useEffect(() => {
               </div>
             )}
           </div>
+          </div>
 
           <div className="flex gap-3">
             <Button
@@ -557,6 +561,6 @@ useEffect(() => {
             </Button>
           </form>
         </div>
-       </div>
-    );
-    }
+        </div>
+        );
+        }
