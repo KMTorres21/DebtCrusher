@@ -191,6 +191,7 @@ useEffect(() => {
             <X />
           </button>
         </div>
+        </div>
 
         <form
           onSubmit={handleSubmit}
@@ -370,9 +371,7 @@ useEffect(() => {
                 /> 
                 </div>
             </div>
-                
 
-            <div>
               <label
                 htmlFor="interest-rate"
                 className="mb-2 block text-sm font-semibold text-slate-700"
@@ -563,8 +562,8 @@ useEffect(() => {
               {prefill?.id ? "Save Changes" : "Save Debt"}
             </Button>
           </div>
+          </div>
         </form>
       </div>
-    </div>
   );
 }
