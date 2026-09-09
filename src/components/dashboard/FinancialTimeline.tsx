@@ -228,7 +228,8 @@ export default function FinancialTimeline({
                 today.getTime()
                 ) /
                 (1000 * 60 * 60 * 24)
-            );
+        );
+      
 
     return (
         <div key={item.name}>
