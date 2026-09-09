@@ -45,12 +45,16 @@ export default function FinancialTimeline({
       id: string,
       type: "bill" | "debt"
     ) {
+      console.log("Marking reviewed"), {
+        id,
+        type,
+      };
       const now = new Date().toISOString();
 
       if (type === "bill") {
-        const bill = bills.find(
-          (b) => b.id === id
-        );
+        console.log("Found bill")
+        const bill = bills.find((b) => b.id === id);
+        console.log("Bill lookup result", bill);
 
         if (!bill) return;
 
@@ -118,15 +122,15 @@ export default function FinancialTimeline({
         bill.statementDate <= today.toISOString().slice(0, 10) &&
         bill.dueDate >= today.toISOString().slice(0, 10)
         ) {
-        if (!bill.statementReviewed) {
-          reviewsNeeded.push({
-            id: bill.id,
-            type: "bill",
-            name: bill.name,
-            statementDate: bill.statementDate,
-            dueDate: bill.dueDate,
-          });
-        }
+        if (!bill.statementReviewedAt) {
+        reviewsNeeded.push({
+          id: bill.id,
+          type: "bill",
+          name: bill.name,
+          statementDate: bill.statementDate,
+          dueDate: bill.dueDate,
+        });
+      }
     };
   });
 
@@ -142,7 +146,7 @@ export default function FinancialTimeline({
         debt.dueDate >= today.toISOString().slice(0, 10)
       });
 
-        if (!debt.statementReviewed) {
+        if (!debt.statementReviewedAt) {
         reviewsNeeded.push({
           id: debt.id,
           type: "debt",
@@ -232,16 +236,26 @@ export default function FinancialTimeline({
         <div className="text-sm font-medium text-amber-700">
           <button
             type="button"
-            onClick={() =>
-              markStatementReviewed(
-                item.id,
-                item.type
-              )
+            onClick={() => {
+            console.log(
+            "Review Clicked",
+            {
+            id: item.id,
+            type: item.type,
+            name: item.name,
             }
+            );
+            
+            markStatementReviewed(
+            item.id,
+            item.type
+            );
+            }}
+
         className="mt-2 rounded-lg bg-green-600 px-3 py-1 text-xs font-semibold text-white hover:bg-green-700"
->
-  ✅ Mark Reviewed
-</button>
+            >
+              ✅ Mark Reviewed
+            </button>
             {daysUntilDue === 0
             ? "Due Today"
             : daysUntilDue === 1
