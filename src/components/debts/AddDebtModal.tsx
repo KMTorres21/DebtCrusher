@@ -401,14 +401,18 @@ useEffect(() => {
               </div>
 
           <div>
-            <label
-              htmlFor="Credit Limit"
-              className="mb-2 block text-sm font-semibold text-slate-700"
-            >
-              Credit Limit (optional)
-            </label>
+            <div>
+              <label
+                htmlFor="credit-limit"
+                className="mb-2 block text-sm font-semibold text-slate-700"
+              >
+                Credit Limit (optional)
+              </label>
+                <div className="relative">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                  $
+                </span>
 
-            
           <input
             type="number"
             placeholder="Credit Limit (optional)"
