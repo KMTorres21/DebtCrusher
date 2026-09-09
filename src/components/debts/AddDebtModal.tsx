@@ -338,62 +338,67 @@ useEffect(() => {
             </div>
           </div>       
 
-          {/* Original Balance + APR */}
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div>
-              <label
-                htmlFor="debt-amount"
-                className="mb-2 block text-sm font-semibold text-slate-700"
-              >
-                Original Balance
-              </label>
+            {/* Original Balance + APR */}
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              {/* Original Balance */}
+              <div>
+                <label
+                  htmlFor="debt-amount"
+                  className="mb-2 block text-sm font-semibold text-slate-700"
+                >
+                  Original Balance
+                </label>
 
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-                  $
-                </span>
+                <div className="relative">
+                  <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                    $
+                  </span>
 
-                <input
-                  id="debt-amount"
-                  type="number"
-                  step="0.01"
-                  value={originalBalance}
-                  onChange={(event) =>
-                    setOriginalBalance(event.target.value)
-                  }
-                  placeholder="0.00"
-                  required
-                  className="w-full rounded-xl border border-slate-200 py-3 pl-8 pr-4 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                />
+                  <input
+                    id="debt-amount"
+                    type="number"
+                    step="0.01"
+                    value={originalBalance}
+                    onChange={(event) =>
+                      setOriginalBalance(event.target.value)
+                    }
+                    placeholder="0.00"
+                    required
+                    className="w-full rounded-xl border border-slate-200 py-3 pl-8 pr-4 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                  />
+                </div>
               </div>
+
+              {/* APR / Interest Rate */}
+              <div>
+                <label
+                  htmlFor="interest-rate"
+                  className="mb-2 block text-sm font-semibold text-slate-700"
+                >
+                  APR / Interest Rate
+                </label>
+
+                <div className="relative">
+                  <input
+                    id="interest-rate"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={interestRate}
+                    onChange={(event) =>
+                      setInterestRate(event.target.value)
+                    }
+                    placeholder="0.00"
+                    required
+                    className="w-full rounded-xl border border-slate-200 py-3 pl-4 pr-10 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                  />
+
+                  <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-slate-400">
+                    %
+                  </span>
+                </div>
               </div>
-
-              <label
-                htmlFor="interest-rate"
-                className="mb-2 block text-sm font-semibold text-slate-700"
-              >
-                APR / Interest Rate
-              </label>
-
-          <div className="relative">
-              <input
-                id="interest-rate"
-                type="number"
-                min="0"
-                step="0.01"
-                value={interestRate}
-                onChange={(event) =>
-                  setInterestRate(event.target.value)
-                }
-                placeholder="0.00"
-                required
-                className="w-full rounded-xl border border-slate-200 py-3 pl-4 pr-10 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-              />
-              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
-                %
-              </span>
             </div>
-          </div>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
