@@ -99,23 +99,23 @@ export default function FinancialTimeline({
     }
 
     bills.forEach((bill) => {
-    events.push({
-      date: bill.dueDate,
-      title: `${bill.name} Due`,
-      icon: "💳",
-      reviewNeeded:
-        !!bill.statementDate &&
-        !bill.statementReviewedAt &&
-        bill.statementDate <= today.toISOString().slice(0, 10) &&
-        bill.dueDate >= today.toISOString().slice(0, 10),
-    });
+      events.push({
+        date: bill.dueDate,
+        title: `${bill.name} Due`,
+        icon: "💳",
+        reviewNeeded:
+          !!bill.statementDate &&
+          !bill.statementReviewedAt &&
+          bill.statementDate <= today.toISOString().slice(0, 10) &&
+          bill.dueDate >= today.toISOString().slice(0, 10),
+      });
 
-    if (
-      bill.statementDate &&
-      bill.statementDate <= today.toISOString().slice(0, 10) &&
-      bill.dueDate >= today.toISOString().slice(0, 10)
-    ) {
-      if (!bill.statementReviewedAt) {
+      if (
+        bill.statementDate &&
+        bill.statementDate <= today.toISOString().slice(0, 10) &&
+        bill.dueDate >= today.toISOString().slice(0, 10) &&
+        !bill.statementReviewedAt
+      ) {
         reviewsNeeded.push({
           id: bill.id,
           type: "bill",
@@ -124,54 +124,36 @@ export default function FinancialTimeline({
           dueDate: bill.dueDate,
         });
       }
-    }
-  });
+    });
 
-  if (
-      bill.statementDate &&
-      bill.statementDate <= today.toISOString().slice(0, 10) &&
-      bill.dueDate >= today.toISOString().slice(0, 10)
+
+      debts.forEach((debt) => {
+      events.push({
+        date: debt.dueDate,
+        title: `${debt.name} Due`,
+        icon: "💳",
+        reviewNeeded:
+          !!debt.statementDate &&
+          !debt.statementReviewedAt &&
+          debt.statementDate <= today.toISOString().slice(0, 10) &&
+          debt.dueDate >= today.toISOString().slice(0, 10),
+      });
+
+      if (
+        debt.statementDate &&
+        debt.statementDate <= today.toISOString().slice(0, 10) &&
+        debt.dueDate >= today.toISOString().slice(0, 10) &&
+        !debt.statementReviewedAt
       ) {
-      if (!bill.statementReviewedAt) {
-      reviewsNeeded.push({
-        id: bill.id,
-        type: "bill",
-        name: bill.name,
-        statementDate: bill.statementDate,
-        dueDate: bill.dueDate,
-      });
-    }
-  };
-});
-
-  debts.forEach((debt) => {
-  events.push({
-    date: debt.dueDate,
-    title: `${debt.name} Due`,
-    icon: "💳",
-    reviewNeeded:
-      !!debt.statementDate &&
-      !debt.statementReviewedAt &&
-      debt.statementDate <= today.toISOString().slice(0, 10) &&
-      debt.dueDate >= today.toISOString().slice(0, 10),
-  });
-
-  if (
-    debt.statementDate &&
-    debt.statementDate <= today.toISOString().slice(0, 10) &&
-    debt.dueDate >= today.toISOString().slice(0, 10)
-  ) {
-    if (!debt.statementReviewedAt) {
-      reviewsNeeded.push({
-        id: debt.id,
-        type: "debt",
-        name: debt.name,
-        statementDate: debt.statementDate,
-        dueDate: debt.dueDate,
-      });
-    }
-  }
-});
+        reviewsNeeded.push({
+          id: debt.id,
+          type: "debt",
+          name: debt.name,
+          statementDate: debt.statementDate,
+          dueDate: debt.dueDate,
+        });
+      }
+    });
 
   income.forEach((item) => {
     for
