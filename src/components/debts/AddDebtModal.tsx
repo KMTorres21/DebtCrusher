@@ -237,7 +237,6 @@ useEffect(() => {
 
           {/* Amount + Due Date */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-
             <div>
               <label
                 htmlFor="debt-amount"
@@ -285,7 +284,6 @@ useEffect(() => {
                 className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
               />
             </div>
-
           </div>
 
           {/* Statement Balance + Statement Date */}
