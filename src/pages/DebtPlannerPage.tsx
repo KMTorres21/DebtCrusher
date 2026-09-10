@@ -310,10 +310,11 @@ export default function DebtPlannerPage() {
           </Card>
         )}
 
-      <RecommendedAllocationCard
-        allocations={extraPaymentAllocations}
-        extraAmount={extraAmount}
-      />
+    <RecommendedAllocationCard
+      allocations={extraPaymentAllocations}
+      extraAmount={extraAmount}
+      debts={debts}
+    />
 
       {/* Summary */}
       <div className="grid grid-cols-2 gap-4">

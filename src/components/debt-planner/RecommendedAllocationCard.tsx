@@ -1,15 +1,18 @@
 import Card from "../common/Card";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { ExtraPaymentAllocation } from "../../utils/extraPaymentAllocation";
+import type { Debt } from "../../types/Debt";
 
 interface RecommendedAllocationCardProps {
   allocations: ExtraPaymentAllocation[];
   extraAmount: number;
+  debts: Debt[];
 }
 
 export default function RecommendedAllocationCard({
   allocations,
   extraAmount,
+  debts,
 }: RecommendedAllocationCardProps) {
   if (extraAmount <= 0) {
     return (
@@ -46,6 +49,20 @@ export default function RecommendedAllocationCard({
   const paidOffDebtNames =
     paidOffDebts.map(
       (allocation) => allocation.name
+    );
+
+  const deferredInterestAvoided =
+  debts
+    .filter(
+      (debt) =>
+        debt.promoDeferredInterest &&
+        paidOffDebts.some(
+          (allocation) =>
+            allocation.debtId === debt.id
+        )
+    )
+    .map(
+      (debt) => debt.name
     );
 
   return (
