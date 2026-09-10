@@ -135,33 +135,50 @@ export default function RecommendedAllocationCard({
         );
       }
 
-      if (totalDebtReduced > 0) {
-        recommendationReasons.push(
-          `Reduces total debt by ${formatCurrency(
-            totalDebtReduced
-          )}`
-        );
-      }
+      let recommendationScore = 0;
 
-      if (highestAPREliminated) {
-        recommendationReasons.push(
-          `Eliminates the highest APR debt (${highestAPREliminated.interestRate.toFixed(
-            2
-          )}%)`
-        );
-      }
+      recommendationScore +=
+        debtsEliminated
+    
 
-      if (
-        deferredInterestAvoided.length > 0
-      ) {
-        recommendationReasons.push(
-          `Removes ${deferredInterestAvoided.length} deferred-interest risk${
-            deferredInterestAvoided.length === 1
-              ? ""
-              : "s"
-          }`
-        );
-      }
+        if (totalDebtReduced > 0) {
+          recommendationReasons.push(
+            `Reduces total debt by ${formatCurrency(
+              totalDebtReduced
+            )}`
+          );
+        }
+
+        if (highestAPREliminated) {
+          recommendationReasons.push(
+            `Eliminates the highest APR debt (${highestAPREliminated.interestRate.toFixed(
+              2
+            )}%)`
+          );
+        }
+
+        if (
+          deferredInterestAvoided.length > 0
+        ) {
+          recommendationReasons.push(
+            `Removes ${deferredInterestAvoided.length} deferred-interest risk${
+              deferredInterestAvoided.length === 1
+                ? ""
+                : "s"
+            }`
+          );
+        }
+
+      const recommendationStrength =
+        recommendationScore >= 100
+          ? "Exceptional"
+          : recommendationScore >= 75
+          ? "Excellent"
+          : recommendationScore >= 50
+          ? "Strong"
+          : recommendationScore >= 25
+          ? "Moderate"
+          : "Limited";
       
       const totalDebtBefore =
         debts.reduce(
@@ -340,6 +357,16 @@ export default function RecommendedAllocationCard({
       % fewer debt accounts to manage
     </p>
     </div>
+
+  <div className="mb-4 rounded-lg border border-indigo-300 bg-white p-3">
+    <p className="text-xs uppercase tracking-wide text-indigo-600">
+      Recommendation Strength
+    </p>
+
+    <p className="mt-1 text-lg font-bold text-indigo-900">
+      🏅 {recommendationStrength}
+    </p>
+  </div>
 
     <ul className="mt-3 space-y-2">
       {recommendationReasons.map(
