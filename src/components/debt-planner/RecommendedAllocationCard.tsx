@@ -115,6 +115,31 @@ export default function RecommendedAllocationCard({
             )
           : null;
 
+      const totalDebtReduced =
+      allocations.reduce(
+        (sum, allocation) =>
+          sum +
+          (allocation.balance -
+            allocation.remainingBalance),
+        0
+      );
+
+      const totalAllocatedDebt =
+      allocations.reduce(
+        (sum, allocation) =>
+          sum + allocation.balance,
+        0
+      );
+
+      const debtReductionPercentage =
+        totalAllocatedDebt > 0
+          ? (
+              (totalDebtReduced /
+                totalAllocatedDebt) *
+              100
+            ).toFixed(1)
+          : "0.0";
+
   return (
     <Card>
       <h2 className="text-lg font-bold">
@@ -237,6 +262,23 @@ export default function RecommendedAllocationCard({
       <p className="text-xl font-bold text-green-600">
         {debtsEliminated}
       </p>
+
+  <div>
+    <p className="text-sm font-semibold text-green-700">
+      📉 Total Debt Reduced
+    </p>
+
+    <p className="mt-1 font-semibold text-slate-900">
+      {formatCurrency(
+        totalDebtReduced
+      )}
+    </p>
+
+    <p className="text-sm text-slate-600">
+      {debtReductionPercentage}% of
+      allocated debt
+    </p>
+  </div>
 
           {biggestWin && (
       <div>
