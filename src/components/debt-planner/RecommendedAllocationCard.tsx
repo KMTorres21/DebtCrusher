@@ -123,22 +123,34 @@ export default function RecommendedAllocationCard({
             allocation.remainingBalance),
         0
       );
+      
+      const totalDebtBefore =
+        debts.reduce(
+          (sum, debt) =>
+            sum +
+            (
+              debt.statementBalance ??
+              debt.balance ??
+              0
+            ),
+          0
+        );
 
-      const totalAllocatedDebt =
-      allocations.reduce(
-        (sum, allocation) =>
-          sum + allocation.balance,
-        0
+      const totalDebtAfter = Math.max(
+        0,
+        totalDebtBefore - totalDebtReduced
       );
 
-      const debtReductionPercentage =
-        totalAllocatedDebt > 0
-          ? (
-              (totalDebtReduced /
-                totalAllocatedDebt) *
-              100
-            ).toFixed(1)
-          : "0.0";
+      const totalDebtReductionPercentage =
+        totalDebtBefore > 0
+          ? Math.min(
+              100,
+              (
+                totalDebtReduced /
+                totalDebtBefore
+              ) * 100
+            )
+          : 0;
 
   return (
     <Card>
@@ -264,21 +276,57 @@ export default function RecommendedAllocationCard({
       </p>
 
   <div>
-    <p className="text-sm font-semibold text-green-700">
-      📉 Total Debt Reduced
-    </p>
+  <p className="text-sm font-semibold text-green-700">
+    📉 Total Debt Impact
+  </p>
 
-    <p className="mt-1 font-semibold text-slate-900">
-      {formatCurrency(
-        totalDebtReduced
-      )}
-    </p>
+  <div className="mt-3 grid grid-cols-2 gap-3">
+    <div className="rounded-xl border border-slate-200 bg-white p-3">
+      <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+        Before
+      </p>
 
-    <p className="text-sm text-slate-600">
-      {debtReductionPercentage}% of
-      allocated debt
+      <p className="mt-1 font-bold text-slate-900">
+        {formatCurrency(totalDebtBefore)}
+      </p>
+    </div>
+
+    <div className="rounded-xl border border-green-200 bg-green-50 p-3">
+      <p className="text-xs font-medium uppercase tracking-wide text-green-700">
+        After
+      </p>
+
+      <p className="mt-1 font-bold text-green-700">
+        {formatCurrency(totalDebtAfter)}
+      </p>
+    </div>
+  </div>
+
+  <div className="mt-3">
+    <div className="flex items-center justify-between text-sm">
+      <span className="text-slate-600">
+        Proposed reduction
+      </span>
+
+      <span className="font-semibold text-green-700">
+        {formatCurrency(totalDebtReduced)}
+      </span>
+    </div>
+
+    <div className="mt-2 h-3 w-full overflow-hidden rounded-full bg-slate-200">
+      <div
+        className="h-full rounded-full bg-green-600 transition-all duration-500"
+        style={{
+          width: `${totalDebtReductionPercentage}%`,
+        }}
+      />
+    </div>
+
+    <p className="mt-2 text-sm text-slate-600">
+      {totalDebtReductionPercentage.toFixed(1)}% of total debt removed
     </p>
   </div>
+</div>
 
           {biggestWin && (
       <div>
