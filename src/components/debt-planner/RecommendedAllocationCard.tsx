@@ -123,6 +123,45 @@ export default function RecommendedAllocationCard({
             allocation.remainingBalance),
         0
       );
+
+      const recommendationReasons: string[] = [];
+      if (debtsEliminated > 0) {
+        recommendationReasons.push(
+          `Eliminates ${debtsEliminated} debt${
+            debtsEliminated === 1
+              ? ""
+              : "s"
+          }`
+        );
+      }
+
+      if (totalDebtReduced > 0) {
+        recommendationReasons.push(
+          `Reduces total debt by ${formatCurrency(
+            totalDebtReduced
+          )}`
+        );
+      }
+
+      if (highestAPREliminated) {
+        recommendationReasons.push(
+          `Eliminates the highest APR debt (${highestAPREliminated.interestRate.toFixed(
+            2
+          )}%)`
+        );
+      }
+
+      if (
+        deferredInterestAvoided.length > 0
+      ) {
+        recommendationReasons.push(
+          `Removes ${deferredInterestAvoided.length} deferred-interest risk${
+            deferredInterestAvoided.length === 1
+              ? ""
+              : "s"
+          }`
+        );
+      }
       
       const totalDebtBefore =
         debts.reduce(
@@ -264,6 +303,25 @@ export default function RecommendedAllocationCard({
   <h3 className="font-bold text-slate-900">
     🎯 Strategy Impact
   </h3>
+
+  <div className="mt-4 rounded-xl border border-indigo-200 bg-indigo-50 p-4">
+  <p className="font-semibold text-indigo-900">
+    🎯 Why This Recommendation?
+  </p>
+
+    <ul className="mt-3 space-y-2">
+      {recommendationReasons.map(
+        (reason) => (
+          <li
+            key={reason}
+            className="text-sm text-indigo-800"
+          >
+            ✅ {reason}
+          </li>
+        )
+      )}
+    </ul>
+  </div>
 
   <div className="mt-4 space-y-3">
     <div>
