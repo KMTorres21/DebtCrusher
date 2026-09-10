@@ -51,6 +51,16 @@ export default function RecommendedAllocationCard({
       (allocation) => allocation.name
     );
 
+  const biggestWin =
+  paidOffDebts.length > 0
+    ? paidOffDebts.reduce(
+        (largest, current) =>
+          current.balance > largest.balance
+            ? current
+            : largest
+      )
+    : null;
+
   const deferredInterestAvoided =
   debts
     .filter(
@@ -187,6 +197,24 @@ export default function RecommendedAllocationCard({
       <p className="text-xl font-bold text-green-600">
         {debtsEliminated}
       </p>
+
+          {biggestWin && (
+      <div>
+        <p className="text-sm font-semibold text-blue-700">
+          🏆 Biggest Win
+        </p>
+
+        <p className="mt-1 font-semibold text-slate-900">
+          {biggestWin.name}
+        </p>
+
+        <p className="text-sm text-slate-600">
+          {formatCurrency(
+            biggestWin.balance
+          )} eliminated
+        </p>
+      </div>
+    )}
     </div>
 
     {paidOffDebtNames.length > 0 && (
