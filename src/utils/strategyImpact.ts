@@ -1,3 +1,7 @@
+
+import type { Debt } from "../types/Debt";
+import type { ExtraPaymentAllocation } from "./extraPaymentAllocation";
+
 export interface StrategyImpact {
   debtsEliminated: number;
   paidOffDebtNames: string[];
