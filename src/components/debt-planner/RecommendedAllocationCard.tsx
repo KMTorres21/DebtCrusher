@@ -75,6 +75,46 @@ export default function RecommendedAllocationCard({
       (debt) => debt.name
     );
 
+      const highestAPREliminated =
+      debts
+        .filter(
+          (debt) =>
+            paidOffDebts.some(
+              (allocation) =>
+                allocation.debtId === debt.id
+            )
+        )
+        .reduce<Debt | null>(
+          (highest, debt) => {
+            if (!highest) {
+              return debt;
+            }
+
+            return debt.interestRate >
+              highest.interestRate
+              ? debt
+              : highest;
+          },
+          null
+        );
+
+        const remainingDebts =
+        allocations.filter(
+          (allocation) =>
+            allocation.remainingBalance > 0
+        );
+
+      const largestRemainingThreat =
+        remainingDebts.length > 0
+          ? remainingDebts.reduce(
+              (largest, current) =>
+                current.remainingBalance >
+                largest.remainingBalance
+                  ? current
+                  : largest
+            )
+          : null;
+
   return (
     <Card>
       <h2 className="text-lg font-bold">
@@ -215,6 +255,44 @@ export default function RecommendedAllocationCard({
         </p>
       </div>
     )}
+
+        {highestAPREliminated && (
+      <div>
+        <p className="text-sm font-semibold text-red-700">
+          🔥 Highest APR Eliminated
+        </p>
+
+        <p className="mt-1 font-semibold text-slate-900">
+          {highestAPREliminated.name}
+        </p>
+
+        <p className="text-sm text-slate-600">
+          {highestAPREliminated.interestRate.toFixed(
+            2
+          )}
+          %
+        </p>
+      </div>
+    )}
+
+        {largestRemainingThreat && (
+        <div>
+          <p className="text-sm font-semibold text-orange-700">
+            🚨 Largest Remaining Threat
+          </p>
+
+          <p className="mt-1 font-semibold text-slate-900">
+            {largestRemainingThreat.name}
+          </p>
+
+          <p className="text-sm text-slate-600">
+            Remaining Balance:{" "}
+            {formatCurrency(
+              largestRemainingThreat.remainingBalance
+            )}
+          </p>
+        </div>
+      )}
     </div>
 
     {paidOffDebtNames.length > 0 && (
