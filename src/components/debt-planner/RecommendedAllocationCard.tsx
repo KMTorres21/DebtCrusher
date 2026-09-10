@@ -75,6 +75,17 @@ export default function RecommendedAllocationCard({
       (debt) => debt.name
     );
 
+    const remainingPromoRisks =
+  debts.filter(
+    (debt) =>
+      debt.promoDeferredInterest &&
+      allocations.some(
+        (allocation) =>
+          allocation.debtId === debt.id &&
+          allocation.remainingBalance > 0
+      )
+  );
+
       const highestAPREliminated =
       debts
         .filter(
@@ -522,23 +533,45 @@ export default function RecommendedAllocationCard({
     )}
 
           {deferredInterestAvoided.length > 0 && (
-        <div>
-          <p className="text-sm font-semibold text-amber-700">
-            ⚠ Deferred Interest Risk Avoided
-          </p>
+            <div>
+              <p className="text-sm font-semibold text-amber-700">
+                ⚠ Deferred Interest Risk Avoided
+              </p>
 
-          <ul className="mt-2 space-y-1">
-            {deferredInterestAvoided.map((name: string) => (
-              <li
-                key={name}
-                className="text-sm text-amber-700"
-              >
-                ✅ {name}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+              <ul className="mt-2 space-y-1">
+                {deferredInterestAvoided.map((name: string) => (
+                  <li
+                    key={name}
+                    className="text-sm text-amber-700"
+                  >
+                    ✅ {name}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+        {remainingPromoRisks.length > 0 && (
+          <div>
+            <p className="text-sm font-semibold text-orange-700">
+              ⚠ Remaining Promotional Risks
+            </p>
+
+            <ul className="mt-2 space-y-1">
+              {remainingPromoRisks.map(
+                (debt) => (
+                  <li
+                    key={debt.id}
+                    className="text-sm text-orange-700"
+                  >
+                    • {debt.name}
+                  </li>
+                )
+              )}
+            </ul>
+          </div>
+        )}
+
   </div>
 </div>
 
