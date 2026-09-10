@@ -28,12 +28,20 @@ export default function BillsPage() {
      = useDisplaySettings();
 
   const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] =
+    useState<
+      | "all"
+      | "paid"
+      | "unpaid"
+      | "dueSoon"
+      | "overdue"
+    >("all");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingBill, setEditingBill] =
     useState<Bill | null>(null);
   const [sortBy, setSortBy] = useState<
   "name" | "dueDate" | "statementDate"
->(() => {
+    >(() => {
   const saved = localStorage.getItem(
     "debtSortBy"
   );
@@ -47,13 +55,63 @@ export default function BillsPage() {
   }
 
   return "dueDate";
-});
+    });
+  const today =
+  new Date().toISOString().slice(0, 10);
+
   const filteredBills = bills
-  .filter((bill) =>
-    bill.name
-      .toLowerCase()
-      .includes(search.toLowerCase())
-  )
+    .filter((bill) =>
+      bill.name
+        .toLowerCase()
+        .includes(search.toLowerCase())
+    )
+    .filter((bill) => {
+      switch (statusFilter) {
+        case "paid":
+          return bill.paid;
+
+        case "unpaid":
+          return !bill.paid;
+
+        case "overdue":
+          return (
+            !bill.paid &&
+            bill.dueDate < today
+          );
+
+        case "dueSoon": {
+          if (bill.paid) {
+            return false;
+          }
+
+          const dueDate =
+            new Date(
+              `${bill.dueDate}T12:00:00`
+            );
+
+          const todayDate =
+            new Date();
+
+          const daysUntilDue =
+            Math.ceil(
+              (
+                dueDate.getTime() -
+                todayDate.getTime()
+              ) /
+                (1000 * 60 * 60 * 24)
+            );
+
+          return (
+            daysUntilDue >= 0 &&
+            daysUntilDue <= 7
+          );
+        }
+
+        default:
+          return true;
+      }
+    })
+  
   .sort((a, b) => {
     if (sortBy === "name") {
       return a.name.localeCompare(
@@ -155,7 +213,52 @@ export default function BillsPage() {
           placeholder="Search bills..."
         />
 
-        <div className="flex items-center justify-end gap-2">
+        <div className="flex items-center justify-end gap-4">
+  <div className="flex items-center gap-2">
+    <label
+      htmlFor="bill-status-filter"
+      className="text-sm font-semibold text-slate-600"
+    >
+      Status
+    </label>
+
+    <select
+      id="bill-status-filter"
+      value={statusFilter}
+      onChange={(event) =>
+        setStatusFilter(
+          event.target.value as
+            | "all"
+            | "paid"
+            | "unpaid"
+            | "dueSoon"
+            | "overdue"
+        )
+      }
+      className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
+    >
+      <option value="all">
+        All
+      </option>
+
+      <option value="paid">
+        Paid
+      </option>
+
+      <option value="unpaid">
+        Unpaid
+      </option>
+
+      <option value="dueSoon">
+        Due Soon
+      </option>
+
+      <option value="overdue">
+        Overdue
+      </option>
+    </select>
+  </div>
+
           <label
             htmlFor="bill-sort"
             className="text-sm font-semibold text-slate-600"
