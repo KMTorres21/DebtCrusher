@@ -191,6 +191,18 @@ export default function RecommendedAllocationCard({
             )
           : 0;
 
+      const totalDebtAccounts =
+        debts.length;
+
+      const complexityReductionPercentage =
+        totalDebtAccounts > 0
+          ? (
+              (debtsEliminated /
+                totalDebtAccounts) *
+              100
+            )
+          : 0;
+
   return (
     <Card>
       <h2 className="text-lg font-bold">
@@ -305,9 +317,29 @@ export default function RecommendedAllocationCard({
   </h3>
 
   <div className="mt-4 rounded-xl border border-indigo-200 bg-indigo-50 p-4">
-  <p className="font-semibold text-indigo-900">
-    🎯 Why This Recommendation?
-  </p>
+    <p className="font-semibold text-indigo-900">
+      🎯 Why This Recommendation?
+    </p>
+
+    <div>
+    <p className="text-sm font-semibold text-purple-700">
+      🧹 Complexity Reduced
+    </p>
+
+    <p className="mt-1 font-semibold text-slate-900">
+      {debtsEliminated} payment obligation
+      {debtsEliminated === 1
+        ? ""
+        : "s"} removed
+    </p>
+
+    <p className="text-sm text-slate-600">
+      {complexityReductionPercentage.toFixed(
+        1
+      )}
+      % fewer debt accounts to manage
+    </p>
+    </div>
 
     <ul className="mt-3 space-y-2">
       {recommendationReasons.map(
