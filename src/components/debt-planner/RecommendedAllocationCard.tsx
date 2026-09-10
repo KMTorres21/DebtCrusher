@@ -207,6 +207,25 @@ export default function RecommendedAllocationCard({
         </ul>
       </div>
     )}
+
+          {deferredInterestAvoided.length > 0 && (
+        <div>
+          <p className="text-sm font-semibold text-amber-700">
+            ⚠ Deferred Interest Risk Avoided
+          </p>
+
+          <ul className="mt-2 space-y-1">
+            {deferredInterestAvoided.map((name: string) => (
+              <li
+                key={name}
+                className="text-sm text-amber-700"
+              >
+                ✅ {name}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
   </div>
 </div>
 
