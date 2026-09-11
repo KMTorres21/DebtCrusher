@@ -84,15 +84,27 @@ export default function RecommendedAllocationCard({
             allocations.some(
               (allocation) =>
                 allocation.debtId === debt.id &&
-                allocation.remainingBalance > 0
+                allocation.remainingBalance > 0    
             )
         )
+
     .sort((a, b) => {
       const aDays =
         getDaysUntilPromoEnds(
           a.promoEndDate
         ) ?? Number.MAX_SAFE_INTEGER;
-
+        
+console.log(
+  "Remaining Promo Risks:",
+  remainingPromoRisks
+);
+console.log(
+  "Promo Debts:",
+  debts.filter(
+    (debt) =>
+      debt.promoDeferredInterest
+  )
+);
       const bDays =
         getDaysUntilPromoEnds(
           b.promoEndDate
