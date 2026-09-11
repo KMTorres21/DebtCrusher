@@ -19,6 +19,7 @@ import {
   calculateExtraPaymentAllocation,
 } from "../utils/extraPaymentAllocation";
 import RecommendedAllocationCard from "../components/debt-planner/RecommendedAllocationCard";
+import StrategyComparisonCard from "../components/debt-planner/StrategyComparisonCard";
 
 export default function DebtPlannerPage() {
   const { debts } = useDebts();
@@ -315,6 +316,12 @@ export default function DebtPlannerPage() {
       extraAmount={extraAmount}
       debts={debts}
     />
+
+    <StrategyComparisonCard
+      debts={debts}
+      extraAmount={extraAmount}
+      selectedStrategy={strategy}
+      />
 
       {/* Summary */}
       <div className="grid grid-cols-2 gap-4">
