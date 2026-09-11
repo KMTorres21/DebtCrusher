@@ -241,7 +241,11 @@ export default function DebtPlannerPage() {
         type="number"
         min="0"
         step="25"
-        value={extraAmount}
+        value={
+        extraAmount === 0
+          ? ""
+          : extraAmount
+      }
         onChange={(event) => {
           const value = event.target.value;
 
@@ -281,7 +285,7 @@ export default function DebtPlannerPage() {
                   focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                   />
           </div>
-          
+
           <div className="mt-3 flex items-center justify-between text-sm">
             <span className="text-slate-500">
               Available after obligations
