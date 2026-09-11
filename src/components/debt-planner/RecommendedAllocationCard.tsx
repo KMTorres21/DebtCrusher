@@ -76,24 +76,23 @@ export default function RecommendedAllocationCard({
     );
 
 
-    const remainingPromoRisks =
-      debts
-        .filter(
-          (debt) =>
-            debt.promoDeferredInterest &&
-            allocations.some(
-              (allocation) =>
-                allocation.debtId === debt.id &&
-                allocation.remainingBalance > 0    
-            )
-        )
+const remainingPromoRisks =
+  debts.filter(
+    (debt) =>
+      debt.promoEndDate &&
+      allocations.some(
+        (allocation) =>
+          allocation.debtId === debt.id &&
+          allocation.remainingBalance > 0
+      )
+  )
 
     .sort((a, b) => {
       const aDays =
         getDaysUntilPromoEnds(
           a.promoEndDate
         ) ?? Number.MAX_SAFE_INTEGER;
-        
+
 console.log(
   "Remaining Promo Risks:",
   remainingPromoRisks
@@ -641,10 +640,17 @@ console.log(
             </p>
 
               {daysRemaining !== null && (
-                <p className="text-sm text-orange-700">
-                  {daysRemaining} days
-                  remaining
-                </p>
+                <p
+                className={
+                  daysRemaining <= 30
+                    ? "text-sm font-bold text-red-700"
+                    : daysRemaining <= 60
+                    ? "text-sm font-semibold text-orange-700"
+                    : "text-sm text-slate-600"
+                }
+              >
+                {daysRemaining} days remaining
+              </p>
               )}
 
               <p className="text-sm text-orange-700">
