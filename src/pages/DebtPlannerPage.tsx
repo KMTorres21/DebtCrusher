@@ -326,6 +326,7 @@ export default function DebtPlannerPage() {
       allocations={extraPaymentAllocations}
       extraAmount={extraAmount}
       debts={debts}
+      payoffComparison={payoffComparison}
     />
 
     <StrategyComparisonCard
