@@ -361,33 +361,83 @@ export default function StrategyComparisonCard({
 
       <div className="mt-4 rounded-xl border border-blue-200 bg-blue-50 p-4">
         <p className="font-semibold text-blue-900">
-          Comparison Summary
+            🏆 Why This Strategy Won
         </p>
 
-        {hasTie ? (
-          <p className="mt-2 text-sm text-blue-800">
-            Avalanche and Snowball create
-            the same immediate impact with
-            the current extra payment.
-            Choose Avalanche to prioritize
-            interest rates or Snowball to
-            prioritize faster account wins.
-          </p>
-        ) : (
-          <p className="mt-2 text-sm text-blue-800">
-            {
-              getStrategyLabel(
+        {!hasTie && (
+            <div className="mt-3 space-y-2 text-sm text-blue-800">
+            <p>
+                ✅ Produced the strongest overall
+                impact score (
+                {winningStrategies[0].score.toFixed(
+                1
+                )}
+                )
+            </p>
+
+            <p>
+                ✅ Eliminated{" "}
+                {
                 winningStrategies[0]
-                  .strategy
-              )
-            }{" "}
-            produces the strongest immediate
-            impact based on debts eliminated,
-            total debt reduction, APR exposure,
-            and deferred-interest risk.
-          </p>
+                    .debtsEliminated
+                }{" "}
+                debt
+                {winningStrategies[0]
+                .debtsEliminated === 1
+                ? ""
+                : "s"}
+            </p>
+
+            <p>
+                ✅ Reduced total debt by{" "}
+                {formatCurrency(
+                winningStrategies[0]
+                    .totalDebtReduced
+                )}
+            </p>
+
+            {winningStrategies[0]
+                .highestAPREliminated && (
+                <p>
+                ✅ Eliminated the highest APR
+                debt (
+                {winningStrategies[0].highestAPREliminated.interestRate.toFixed(
+                    2
+                )}
+                %)
+                </p>
+            )}
+
+            {winningStrategies[0]
+                .deferredInterestRisksAvoided >
+                0 && (
+                <p>
+                ✅ Eliminated{" "}
+                {
+                    winningStrategies[0]
+                    .deferredInterestRisksAvoided
+                }{" "}
+                deferred-interest risk
+                {winningStrategies[0]
+                    .deferredInterestRisksAvoided ===
+                1
+                    ? ""
+                    : "s"}
+                </p>
+            )}
+            </div>
         )}
-      </div>
+
+        {hasTie && (
+            <p className="mt-2 text-sm text-blue-800">
+            Multiple strategies produced
+            equally strong outcomes. Review
+            the strengths of each strategy
+            and choose the approach that
+            best matches your goals.
+            </p>
+        )}
+        </div>
     </Card>
   );
 }
