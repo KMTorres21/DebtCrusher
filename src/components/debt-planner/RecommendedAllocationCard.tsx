@@ -251,11 +251,6 @@ console.log(
           0
         );
 
-      const totalDebtAfter = Math.max(
-        0,
-        totalDebtBefore - totalDebtReduced
-      );
-
       const totalDebtReductionPercentage =
         totalDebtBefore > 0
           ? Math.min(
@@ -266,6 +261,90 @@ console.log(
               ) * 100
             )
           : 0;
+
+      const weightedAPRBefore =
+        debts.reduce(
+          (sum, debt) =>
+            sum +
+            (
+              (debt.statementBalance ??
+                debt.balance ??
+                0) *
+              debt.interestRate
+            ),
+          0
+        );
+
+      const averageAPRBefore =
+        totalDebtBefore > 0
+          ? weightedAPRBefore /
+            totalDebtBefore
+          : 0;
+
+      const totalDebtAfter =
+        debts.reduce(
+          (sum, debt) => {
+            const allocation =
+              allocations.find(
+                (allocation) =>
+                  allocation.debtId === debt.id
+              );
+
+            if (!allocation) {
+              return (
+                sum +
+                (
+                  debt.statementBalance ??
+                  debt.balance ??
+                  0
+                )
+              );
+            }
+
+            return (
+              sum +
+              allocation.remainingBalance
+            );
+          },
+          0
+        );
+
+      const weightedAPRAfter =
+        debts.reduce(
+          (sum, debt) => {
+            const allocation =
+              allocations.find(
+                (allocation) =>
+                  allocation.debtId === debt.id
+              );
+
+            const remainingBalance =
+              allocation
+                ? allocation.remainingBalance
+                : (
+                    debt.statementBalance ??
+                    debt.balance ??
+                    0
+                  );
+
+            return (
+              sum +
+              remainingBalance *
+                debt.interestRate
+            );
+          },
+          0
+        );
+
+const averageAPRAfter =
+  totalDebtAfter > 0
+    ? weightedAPRAfter /
+      totalDebtAfter
+    : 0;
+
+const averageAPRImprovement =
+  averageAPRBefore -
+  averageAPRAfter;      
 
       const totalDebtAccounts =
         debts.length;
@@ -455,6 +534,48 @@ console.log(
   <p className="text-sm font-semibold text-green-700">
     📉 Total Debt Impact
   </p>
+
+  <div>
+  <p className="text-sm font-semibold text-blue-700">
+    ⚖️ Average APR Improvement
+  </p>
+
+  <div className="mt-3 grid grid-cols-2 gap-3">
+    <div className="rounded-xl border border-slate-200 bg-white p-3">
+      <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+        Before
+      </p>
+
+      <p className="mt-1 font-bold text-slate-900">
+        {averageAPRBefore.toFixed(
+          2
+        )}
+        %
+      </p>
+    </div>
+
+    <div className="rounded-xl border border-blue-200 bg-blue-50 p-3">
+      <p className="text-xs font-medium uppercase tracking-wide text-blue-700">
+        After
+      </p>
+
+      <p className="mt-1 font-bold text-blue-700">
+        {averageAPRAfter.toFixed(
+          2
+        )}
+        %
+      </p>
+    </div>
+  </div>
+
+  <p className="mt-2 text-sm text-slate-600">
+    Portfolio APR improved by{" "}
+    {averageAPRImprovement.toFixed(
+      2
+    )}
+    %
+  </p>
+</div>
 
   <div className="mt-3 grid grid-cols-2 gap-3">
     <div className="rounded-xl border border-slate-200 bg-white p-3">
