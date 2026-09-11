@@ -568,6 +568,46 @@ const averageAPRImprovement =
         {debtsEliminated}
       </p>
 
+    <div>
+      <p className="text-sm font-semibold text-green-700">
+        ⚡ Debt-Free Sooner
+      </p>
+
+      <p className="mt-1 font-semibold text-slate-900">
+        {payoffComparison.monthsSaved} months sooner
+      </p>
+    </div>
+
+  <div>
+    <p className="text-sm font-semibold text-green-700">
+      💰 Interest Avoided
+    </p>
+
+    <p className="mt-1 font-semibold text-slate-900">
+      {formatCurrency(
+        payoffComparison.interestAvoided
+      )}
+    </p>
+  </div>
+
+  <div>
+    <p className="text-sm font-semibold text-green-700">
+      📅 Debt-Free Date
+    </p>
+
+    <p className="text-sm text-slate-600">
+      Current Plan:
+      {" "}
+      {payoffComparison.baselinePayoffDate}
+    </p>
+
+    <p className="text-sm text-green-700">
+      Recommended:
+      {" "}
+      {payoffComparison.recommendedPayoffDate}
+    </p>
+  </div>
+
       <div>
       <p className="text-sm font-semibold text-green-700">
         ⚡ Debt-Free Sooner
