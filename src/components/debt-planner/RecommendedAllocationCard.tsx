@@ -609,8 +609,24 @@ export default function RecommendedAllocationCard({
               className="rounded-lg border border-orange-200 bg-orange-50 p-3"
             >
               <p className="font-semibold text-orange-900">
-                {debt.name}
-              </p>
+              {debt.name}
+            </p>
+
+            <p className="text-xs text-slate-500">
+              Promo End Date:
+              {" "}
+              {debt.promoEndDate ?? "MISSING"}
+            </p>
+
+            <p className="text-xs text-slate-500">
+              Days Remaining:
+              {" "}
+              {String(
+                getDaysUntilPromoEnds(
+                  debt.promoEndDate
+                )
+              )}
+            </p>
 
               {daysRemaining !== null && (
                 <p className="text-sm text-orange-700">
