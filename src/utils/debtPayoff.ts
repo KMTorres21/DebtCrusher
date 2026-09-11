@@ -22,11 +22,33 @@ export interface PayoffPlan {
   debts: PayoffDebtResult[];
 }
 
+export interface PayoffComparison {
+  strategy: PayoffStrategy;
+  baselinePlan: PayoffPlan;
+  recommendedPlan: PayoffPlan;
+  baselineTotalInterest: number;
+  recommendedTotalInterest: number;
+  interestAvoided: number;
+  baselineTotalMonths: number;
+  recommendedTotalMonths: number;
+  monthsSaved: number;
+  baselinePayoffDate: string;
+  recommendedPayoffDate: string;
+}
+
 function monthlyInterest(
   balance: number,
   annualRate: number
 ): number {
   return balance * (annualRate / 100 / 12);
+}
+
+function roundCurrency(
+  value: number
+): number {
+  return Math.round(
+    (value + Number.EPSILON) * 100
+  ) / 100;
 }
 
 export function calculateDebtPayoff(
@@ -241,5 +263,73 @@ export function calculateDebtPayoff(
       .toISOString()
       .split("T")[0],
     debts: results,
+  };
+}
+
+export function compareDebtPayoff(
+  debts: Debt[],
+  strategy: PayoffStrategy,
+  extraMonthlyPayment: number
+): PayoffComparison {
+  const normalizedExtraPayment =
+    Math.max(
+      0,
+      extraMonthlyPayment
+    );
+
+  const baselinePlan =
+    calculateDebtPayoff(
+      debts,
+      strategy,
+      0
+    );
+
+  const recommendedPlan =
+    calculateDebtPayoff(
+      debts,
+      strategy,
+      normalizedExtraPayment
+    );
+
+  const interestAvoided =
+    roundCurrency(
+      Math.max(
+        0,
+        baselinePlan.totalInterest -
+          recommendedPlan.totalInterest
+      )
+    );
+
+  const monthsSaved =
+    Math.max(
+      0,
+      baselinePlan.totalMonths -
+        recommendedPlan.totalMonths
+    );
+
+  return {
+    strategy,
+    baselinePlan,
+    recommendedPlan,
+    baselineTotalInterest:
+      roundCurrency(
+        baselinePlan.totalInterest
+      ),
+
+    recommendedTotalInterest:
+      roundCurrency(
+        recommendedPlan.totalInterest
+      ),
+
+    interestAvoided,
+    baselineTotalMonths:
+      baselinePlan.totalMonths,
+    recommendedTotalMonths:
+      recommendedPlan.totalMonths,
+    monthsSaved,
+    baselinePayoffDate:
+      baselinePlan.payoffDate,
+    recommendedPayoffDate:
+      recommendedPlan.payoffDate,
   };
 }
