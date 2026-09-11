@@ -28,7 +28,16 @@ export default function DebtPlannerPage() {
   const { income } = useIncome();
 
   const [strategy, setStrategy] =
-    useState<PayoffStrategy>("avalanche");
+    useState<PayoffStrategy>(() => {
+      const saved =
+        localStorage.getItem(
+          "payoffStrategy"
+        );
+
+      return saved === "snowball"
+        ? "snowball"
+        : "avalanche";
+    });
 
   const [extraAmount, setExtraAmount] =
   useState(() => {
@@ -176,9 +185,14 @@ export default function DebtPlannerPage() {
         <div className="mt-4 grid grid-cols-2 gap-3">
           <button
             type="button"
-            onClick={() =>
-              setStrategy("avalanche")
-            }
+            onClick={() => {
+              setStrategy("avalanche");
+
+              localStorage.setItem(
+                "payoffStrategy",
+                "avalanche"
+              );
+            }}
             className={`rounded-xl border-2 p-4 text-left transition ${
               strategy === "avalanche"
                 ? "border-blue-600 bg-blue-50"
@@ -196,9 +210,14 @@ export default function DebtPlannerPage() {
 
           <button
             type="button"
-            onClick={() =>
-              setStrategy("snowball")
-            }
+            onClick={() => {
+              setStrategy("snowball");
+
+              localStorage.setItem(
+                "payoffStrategy",
+                "snowball"
+              );
+            }}
             className={`rounded-xl border-2 p-4 text-left transition ${
               strategy === "snowball"
                 ? "border-blue-600 bg-blue-50"
