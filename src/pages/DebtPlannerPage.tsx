@@ -4,9 +4,10 @@ import {
     } from "react";
 import { useDebts } from "../hooks/useDebts";
 import {
-    calculateDebtPayoff,
-    PayoffStrategy,
-    } from "../utils/debtPayoff";
+  calculateDebtPayoff,
+  compareDebtPayoff,
+  type PayoffStrategy,
+} from "../utils/debtPayoff";
 import { formatCurrency } from "../utils/formatCurrency";
 import { useBills } from "../hooks/useBills";
 import { useIncome } from "../hooks/useIncome";
@@ -72,14 +73,14 @@ export default function DebtPlannerPage() {
     Math.round(availableAfterObligations * 100) / 100);
     
   const plan = useMemo(
-    () =>
-      calculateDebtPayoff(
-        debts,
-        strategy,
-        extraAmount
-      ),
-    [debts, strategy, extraAmount]
-  );
+  () =>
+    calculateDebtPayoff(
+      debts,
+      strategy,
+      extraAmount
+    ),
+  [debts, strategy, extraAmount]
+);
 
   const minimumPayments = debts.reduce(
     (sum, debt) =>
@@ -99,6 +100,16 @@ export default function DebtPlannerPage() {
       ),
     [debts, extraAmount]
   );
+
+  const payoffComparison = useMemo(
+  () =>
+    compareDebtPayoff(
+      debts,
+      strategy,
+      extraAmount
+    ),
+  [debts, strategy, extraAmount]
+);
 
   const snowballPlan = useMemo(
     () =>
