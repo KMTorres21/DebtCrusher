@@ -334,6 +334,88 @@ export default function DebtPlannerPage() {
       selectedStrategy={strategy}
       />
 
+    <Card>
+  <h2 className="text-lg font-bold">
+    🔬 Payoff Engine Validation
+  </h2>
+
+  <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+    <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+      <p className="font-semibold text-slate-700">
+        Minimum Payments Only
+      </p>
+
+      <p className="mt-2 text-sm">
+        Debt-Free Date:{" "}
+        {payoffComparison.baselinePayoffDate}
+      </p>
+
+      <p className="text-sm">
+        Months:
+        {" "}
+        {payoffComparison.baselineTotalMonths}
+      </p>
+
+      <p className="text-sm">
+        Interest:
+        {" "}
+        {formatCurrency(
+          payoffComparison.baselineTotalInterest
+        )}
+      </p>
+    </div>
+
+    <div className="rounded-xl border border-green-200 bg-green-50 p-4">
+      <p className="font-semibold text-green-700">
+        Recommended Plan
+      </p>
+
+      <p className="mt-2 text-sm">
+        Debt-Free Date:{" "}
+        {
+          payoffComparison.recommendedPayoffDate
+        }
+      </p>
+
+      <p className="text-sm">
+        Months:
+        {" "}
+        {
+          payoffComparison.recommendedTotalMonths
+        }
+      </p>
+
+      <p className="text-sm">
+        Interest:
+        {" "}
+        {formatCurrency(
+          payoffComparison.recommendedTotalInterest
+        )}
+      </p>
+    </div>
+  </div>
+
+  <div className="mt-4 rounded-xl border border-blue-200 bg-blue-50 p-4">
+    <p className="font-semibold text-blue-900">
+      Projected Impact
+    </p>
+
+    <p className="mt-2 text-sm text-blue-800">
+      ⚡ Months Saved:
+      {" "}
+      {payoffComparison.monthsSaved}
+    </p>
+
+    <p className="text-sm text-blue-800">
+      💰 Interest Avoided:
+      {" "}
+      {formatCurrency(
+        payoffComparison.interestAvoided
+      )}
+    </p>
+  </div>
+</Card>
+
       {/* Summary */}
       <div className="grid grid-cols-2 gap-4">
         <StatCard
