@@ -75,16 +75,53 @@ export default function RecommendedAllocationCard({
       (debt) => debt.name
     );
 
+
     const remainingPromoRisks =
-  debts.filter(
-    (debt) =>
-      debt.promoDeferredInterest &&
-      allocations.some(
-        (allocation) =>
-          allocation.debtId === debt.id &&
-          allocation.remainingBalance > 0
-      )
-  );
+      debts
+        .filter(
+          (debt) =>
+            debt.promoDeferredInterest &&
+            allocations.some(
+              (allocation) =>
+                allocation.debtId === debt.id &&
+                allocation.remainingBalance > 0
+            )
+        )
+    .sort((a, b) => {
+      const aDays =
+        getDaysUntilPromoEnds(
+          a.promoEndDate
+        ) ?? Number.MAX_SAFE_INTEGER;
+
+      const bDays =
+        getDaysUntilPromoEnds(
+          b.promoEndDate
+        ) ?? Number.MAX_SAFE_INTEGER;
+
+      return aDays - bDays;
+    });
+
+
+    function getDaysUntilPromoEnds(
+      promoEndDate?: string
+    ): number | null {
+      if (!promoEndDate) {
+        return null;
+      }
+
+      const today = new Date();
+      today.setHours(12, 0, 0, 0);
+
+      const endDate = new Date(
+        `${promoEndDate}T12:00:00`
+      );
+
+      return Math.ceil(
+        (endDate.getTime() -
+          today.getTime()) /
+          (1000 * 60 * 60 * 24)
+      );
+    }
 
       const highestAPREliminated =
       debts
@@ -551,29 +588,74 @@ export default function RecommendedAllocationCard({
             </div>
           )}
 
-        {remainingPromoRisks.length > 0 && (
-          <div>
-            <p className="text-sm font-semibold text-orange-700">
-              ⚠ Remaining Promotional Risks
-            </p>
 
-            <ul className="mt-2 space-y-1">
-              {remainingPromoRisks.map(
-                (debt) => (
-                  <li
-                    key={debt.id}
-                    className="text-sm text-orange-700"
-                  >
-                    • {debt.name}
-                  </li>
-                )
+{remainingPromoRisks.length > 0 && (
+  <div>
+    <p className="text-sm font-semibold text-orange-700">
+      ⚠ Remaining Promotional Risks
+    </p>
+
+    <div className="mt-2 space-y-2">
+      {remainingPromoRisks.map(
+        (debt) => {
+          const daysRemaining =
+            getDaysUntilPromoEnds(
+              debt.promoEndDate
+            );
+
+          return (
+            <div
+              key={debt.id}
+              className="rounded-lg border border-orange-200 bg-orange-50 p-3"
+            >
+              <p className="font-semibold text-orange-900">
+                {debt.name}
+              </p>
+
+              {daysRemaining !== null && (
+                <p className="text-sm text-orange-700">
+                  {daysRemaining} days
+                  remaining
+                </p>
               )}
-            </ul>
+
+              <p className="text-sm text-orange-700">
+                Remaining Balance:{" "}
+                {formatCurrency(
+                  debt.statementBalance ??
+                    debt.balance
+                      )}
+                    </p>
+                  </div>
+                );
+              }
+            )}
           </div>
-        )}
+        </div>
+      )}
 
   </div>
 </div>
+
+
+{remainingPromoRisks.length > 0 && (
+  <div>
+    <p className="text-sm font-semibold text-red-700">
+      ⏰ Next Promotional Deadline
+    </p>
+
+    <p className="mt-1 font-semibold text-slate-900">
+      {remainingPromoRisks[0].name}
+    </p>
+
+    <p className="text-sm text-slate-600">
+      {getDaysUntilPromoEnds(
+        remainingPromoRisks[0]
+          .promoEndDate
+      )} days remaining
+    </p>
+  </div>
+)}
 
 {unusedExtra > 0 && (
   <div className="mt-4 rounded-xl border border-green-200 bg-green-50 p-4">
