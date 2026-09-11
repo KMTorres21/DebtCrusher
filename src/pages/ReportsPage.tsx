@@ -17,7 +17,12 @@ export default function ReportsPage() {
   const navigate = useNavigate();
   const { bills } = useBills();
   const { debts } = useDebts();
-  const extraPayment = 250;
+  const extraPayment =
+    Number(
+      localStorage.getItem(
+        "extraMonthlyPayment"
+      ) ?? "0"
+    );
 
 const debtPlan = calculateDebtPayoff(
   debts,
