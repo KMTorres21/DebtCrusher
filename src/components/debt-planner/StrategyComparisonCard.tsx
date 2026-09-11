@@ -188,27 +188,59 @@ export default function StrategyComparisonCard({
       "snowball"
     );
 
-  const results = [
-    avalanche,
-    snowball,
-  ];
+        const results = [
+        avalanche,
+        snowball,
+        ];
 
-  const highestScore = Math.max(
-    ...results.map(
-      (result) => result.score
-    )
-  );
+        const highestScore = Math.max(
+        ...results.map(
+            (result) => result.score
+        )
+        );
 
-  const winningStrategies =
-    results.filter(
-      (result) =>
-        result.score === highestScore
-    );
+        const winningStrategies =
+        results.filter(
+            (result) =>
+            result.score === highestScore
+        );
 
-  const hasTie =
-    winningStrategies.length > 1;
+        const hasTie =
+        winningStrategies.length > 1;
 
-  return (
+        const strongestStrategy =
+        results.reduce(
+            (best, current) =>
+            current.score > best.score
+                ? current
+                : best
+        );
+
+        const weakestStrategy =
+        results.reduce(
+            (worst, current) =>
+            current.score < worst.score
+                ? current
+                : worst
+        );
+
+        const scoreDifference =
+        strongestStrategy.score -
+        weakestStrategy.score;
+
+        const debtReductionDifference =
+        strongestStrategy.totalDebtReduced -
+        weakestStrategy.totalDebtReduced;
+
+        const debtEliminationDifference =
+        strongestStrategy.debtsEliminated -
+        weakestStrategy.debtsEliminated;
+
+        const deferredInterestRiskDifference =
+        strongestStrategy.deferredInterestRisksAvoided -
+        weakestStrategy.deferredInterestRisksAvoided;
+
+        return (
     <Card>
       <h2 className="text-lg font-bold">
         🏔 Strategy Comparison
@@ -363,6 +395,53 @@ export default function StrategyComparisonCard({
         <p className="font-semibold text-blue-900">
             🏆 Why This Strategy Won
         </p>
+
+        {!hasTie && (
+        <div className="mt-3 rounded-lg border border-blue-300 bg-white p-3">
+            <p className="text-xs uppercase tracking-wide text-blue-600">
+            Direct Comparison
+            </p>
+
+            <p className="mt-1 font-semibold text-blue-900">
+            {getStrategyLabel(
+                strongestStrategy.strategy
+            )}
+            {" "}
+            outperformed{" "}
+            {getStrategyLabel(
+                weakestStrategy.strategy
+            )}
+            </p>
+
+            <div className="mt-2 space-y-1 text-sm text-blue-800">
+            <p>
+                ✅ Impact score higher by{" "}
+                {scoreDifference.toFixed(1)}
+            </p>
+
+            <p>
+                ✅ Additional debt reduction:
+                {" "}
+                {formatCurrency(
+                debtReductionDifference
+                )}
+            </p>
+
+            <p>
+                ✅ Additional debts eliminated:
+                {" "}
+                {debtEliminationDifference}
+            </p>
+
+            <p>
+                ✅ Additional deferred-interest
+                risks removed:
+                {" "}
+                {deferredInterestRiskDifference}
+            </p>
+            </div>
+        </div>
+        )}
 
         {!hasTie && (
             <div className="mt-3 space-y-2 text-sm text-blue-800">
