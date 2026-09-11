@@ -174,6 +174,40 @@ console.log(
             )
           : null;
 
+      const nextBestMove =
+        remainingDebts.length > 0
+          ? remainingDebts.reduce(
+              (highest, current) => {
+                const currentDebt =
+                  debts.find(
+                    (debt) =>
+                      debt.id ===
+                      current.debtId
+                  );
+
+                const highestDebt =
+                  debts.find(
+                    (debt) =>
+                      debt.id ===
+                      highest.debtId
+                  );
+
+                if (!currentDebt) {
+                  return highest;
+                }
+
+                if (!highestDebt) {
+                  return current;
+                }
+
+                return currentDebt.interestRate >
+                  highestDebt.interestRate
+                  ? current
+                  : highest;
+              }
+            )
+          : null;
+
       const totalDebtReduced =
       allocations.reduce(
         (sum, allocation) =>
@@ -682,6 +716,18 @@ const averageAPRImprovement =
       )}
     </div>
 
+        {nextBestMove && (
+      <div>
+        <p className="text-sm font-semibold text-green-700">
+          🚀 Next Best Move
+        </p>
+
+        <p className="mt-1 font-semibold text-slate-900">
+          {nextBestMove.name}
+        </p>
+      </div>
+    )}
+      
     {paidOffDebtNames.length > 0 && (
       <div>
         <p className="text-sm font-semibold text-slate-700">
