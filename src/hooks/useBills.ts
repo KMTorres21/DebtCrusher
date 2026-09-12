@@ -17,18 +17,25 @@ export function useBills() {
     );
   }
 
-  function updateBill(updatedBill: Bill) {
+  function updateBill(
+    billId: string,
+    updates: Partial<Bill>
+  ) {
     setBills((prev) =>
       prev
         .map((bill) =>
-          bill.id === updatedBill.id
+          bill.id === billId
             ? {
-                ...updatedBill,
-                updatedAt: new Date().toISOString(),
+                ...bill,
+                ...updates,
               }
             : bill
         )
-        .sort((a, b) => a.dueDate.localeCompare(b.dueDate))
+        .sort((a, b) =>
+          a.dueDate.localeCompare(
+            b.dueDate
+          )
+        )
     );
   }
 

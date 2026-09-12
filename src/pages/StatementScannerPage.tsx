@@ -75,6 +75,7 @@ export default function StatementScannerPage() {
   const {
     bills: existingBills,
     addBill,
+    updateBill,
     } = useBills();
   const {
     debts: existingDebts,
@@ -500,10 +501,29 @@ const handleAddDebt = (bill: ExtractedBill) => {
 );
 
     selectedBills.forEach((bill) => {
-      const { confidence, selected, ...newBill } = bill;
+    const { confidence, selected, ...newBill } = bill;
 
+    if (
+      bill.matchedRecordType ===
+        "bill" &&
+      bill.matchedRecordId
+    ) {
+      updateBill(
+        bill.matchedRecordId,
+        {
+          amount: bill.amount,
+          dueDate: bill.dueDate,
+          statementDate:
+            bill.statementDate,
+          statementBalance:
+            bill.statementBalance,
+          notes: bill.notes,
+        }
+      );
+    } else {
       addBill(newBill);
-    });
+    }
+  });
 
     setBills((current) =>
       current.filter((bill) => !bill.selected)
