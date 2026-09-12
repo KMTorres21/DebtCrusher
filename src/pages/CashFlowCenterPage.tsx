@@ -103,18 +103,22 @@ const unassignedIncome =
                 account.id
             ).length;
 
+            const accountIncome =
+            incomes.filter(
+                (income) =>
+                income.fundingAccountId ===
+                account.id
+            );
+
+            const currentDate =
+            new Date();
+
             const incomeTotal =
-              income
-                .filter(
-                  (income) =>
-                    income.fundingAccountId ===
-                    account.id
-                )
-                .reduce(
-                  (sum, income) =>
-                    sum + income.amount,
-                  0
-                );
+            calculateMonthlyIncome(
+                accountIncome,
+                currentDate.getFullYear(),
+                currentDate.getMonth()
+            );
 
             const billTotal =
               bills

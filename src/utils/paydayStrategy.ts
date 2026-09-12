@@ -148,7 +148,7 @@ function getUniquePaydayDates(
 }
 
 /*
- * lculate how much income occurs on
+ * Calculate how much income occurs on
  * a specific calendar date.
  */
 function getCombinedPaycheckAmount(

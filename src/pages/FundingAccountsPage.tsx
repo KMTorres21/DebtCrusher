@@ -20,15 +20,18 @@ export default function FundingAccountsPage() {
     );
   }, []);
 
-  function handleAddAccount() {
-    const name =
-      window.prompt(
-        "Funding Account Name"
-      );
+  const [newAccountName, setNewAccountName] =
+  useState("");
 
-    if (!name) {
+  function handleAddAccount() {
+    if (
+      !newAccountName.trim()
+    ) {
       return;
     }
+
+    const name =
+      newAccountName.trim();
 
     const now =
       new Date().toISOString();
@@ -46,8 +49,17 @@ export default function FundingAccountsPage() {
       account,
     ];
 
+console.log(
+"Creating Funding Account:",
+account
+);
     setAccounts(updated);
+console.log(
+"All Funding Accounts:",
+updated
+);
     saveFundingAccounts(updated);
+    setNewAccountName("");
   }
 
   function handleDeleteAccount(
@@ -69,6 +81,17 @@ export default function FundingAccountsPage() {
         title="Funding Accounts"
         subtitle="Manage accounts used to fund bills, debts, and income deposits"
       />
+
+      <input
+      value={newAccountName}
+      onChange={(event) =>
+        setNewAccountName(
+          event.target.value
+        )
+      }
+  placeholder="Funding Account Name"
+  className="mb-3 w-full rounded-xl border border-slate-300 px-3 py-2"
+/>
 
       <button
         onClick={handleAddAccount}
