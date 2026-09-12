@@ -3,6 +3,7 @@ import { getIncomeOccurrences } from "../../utils/calendarOccurrences";
 import { Income } from "../../types/Income";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate } from "../../utils/formatDate";
+import { getFundingAccounts } from "../../utils/fundingAccountsStorage";
 
 interface IncomeCardProps {
   income: Income;
@@ -30,6 +31,15 @@ function getNextPayDate(income: Income) {
         targetDate.getMonth()
       );
 
+    const fundingAccount =
+        income.fundingAccountId
+          ? getFundingAccounts().find(
+              (account) =>
+                account.id ===
+                income.fundingAccountId
+            )
+          : undefined;
+
     dates.push(...occurrences);
   }
 
@@ -45,6 +55,16 @@ export default function IncomeCard({
   onEdit,
   onDelete,
 }: IncomeCardProps) {
+
+  const fundingAccount =
+    income.fundingAccountId
+      ? getFundingAccounts().find(
+          (account) =>
+            account.id ===
+            income.fundingAccountId
+        )
+      : undefined;
+
   return (
     <div className="rounded-2xl bg-white p-5 shadow-md">
 
@@ -72,6 +92,16 @@ export default function IncomeCard({
           <div className="mt-3 inline-flex rounded-full bg-green-100 px-3 py-1 text-sm font-semibold capitalize text-green-700">
             {income.frequency}
           </div>
+
+          <div className="mt-3 inline-flex rounded-full bg-green-100 px-3 py-1 text-sm font-semibold capitalize text-green-700">
+            {income.frequency}
+          </div>
+
+          {fundingAccount && (
+            <p className="mt-3 text-sm text-slate-500">
+              Deposit To: {fundingAccount.name}
+            </p>
+          )}
 
           {income.notes && (
             <p className="mt-4 text-sm text-slate-500">
