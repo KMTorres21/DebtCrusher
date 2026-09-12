@@ -6,6 +6,7 @@ import {
   CalendarDays,
   ScanLine,
   BarChart3,
+  Landmark,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
@@ -41,9 +42,9 @@ const navItems = [
     icon: CalendarDays,
   },
   {
-    label: "Reports",
-    path: "/reports",
-    icon: BarChart3,
+    label: "Cash Flow",
+    path: "/cash-flow-center",
+    icon: Landmark,
   },
 ];
 

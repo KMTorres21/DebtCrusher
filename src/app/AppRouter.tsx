@@ -10,6 +10,7 @@ import SettingsPage from "../pages/SettingsPage";
 import CalendarPage from "../pages/CalendarPage";
 import StatementScannerPage from "../pages/StatementScannerPage";
 import DebtPlannerPage from "../pages/DebtPlannerPage";
+import CashFlowCenterPage from "../pages/CashFlowCenterPage";
 
 export default function AppRouter() {
   return (
@@ -25,6 +26,7 @@ export default function AppRouter() {
           <Route path="/timeline" element={<PaydayStrategyPage />} />
           <Route path="/calendar" element={<CalendarPage />} />
           <Route path="/reports" element={<ReportsPage />} />
+          <Route path="/cash-flow-center" element={<CashFlowCenterPage />} />
           <Route path="/statement-scanner" element={<StatementScannerPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
