@@ -11,6 +11,7 @@ import CalendarPage from "../pages/CalendarPage";
 import StatementScannerPage from "../pages/StatementScannerPage";
 import DebtPlannerPage from "../pages/DebtPlannerPage";
 import CashFlowCenterPage from "../pages/CashFlowCenterPage";
+import FundingAccountsPage from "../pages/FundingAccountsPage";
 
 export default function AppRouter() {
   return (
@@ -28,6 +29,7 @@ export default function AppRouter() {
           <Route path="/reports" element={<ReportsPage />} />
           <Route path="/cash-flow-center" element={<CashFlowCenterPage />} />
           <Route path="/statement-scanner" element={<StatementScannerPage />} />
+          <Route path="/funding-accounts" element={<FundingAccountsPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>

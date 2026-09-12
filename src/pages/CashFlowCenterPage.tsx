@@ -4,6 +4,7 @@ import Card from "../components/common/Card";
 import { useBills } from "../hooks/useBills";
 import { useDebts } from "../hooks/useDebts";
 import { useIncome } from "../hooks/useIncome";
+import {Link} from "react-router-dom";
 
 import {
   getFundingAccounts,
@@ -43,6 +44,12 @@ const unassignedIncome =
         title="Cash Flow Center"
         subtitle="Monthly cash flow by funding account"
       />
+      <Link
+        to="/funding-accounts"
+        className="mb-4 inline-flex rounded-xl bg-blue-600 px-4 py-2 font-semibold text-white"
+        >
+        🏦 Manage Funding Accounts
+        </Link>
 
       {(
         unassignedBills > 0 ||
