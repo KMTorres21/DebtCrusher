@@ -183,8 +183,8 @@ const handleScan = async () => {
             normalizedScannedName
         );
 
-      const possibleDebtMatch =
-        existingDebts.find(
+      const possibleDebtMatches =
+        existingDebts.filter(
           (debt) =>
             namesPossiblyMatch(
               scannedName,
@@ -192,8 +192,8 @@ const handleScan = async () => {
             )
         );
 
-      const possibleBillMatch =
-        existingBills.find(
+      const possibleBillMatches =
+        existingBills.filter(
           (existingBill) =>
             namesPossiblyMatch(
               scannedName,
@@ -206,8 +206,8 @@ const handleScan = async () => {
         exactBillMatch;
 
       const possibleMatch =
-        possibleDebtMatch ??
-        possibleBillMatch;
+        possibleDebtMatches[0] ??
+        possibleBillMatches[0];
 
       const matchedRecord =
         exactMatch ??
@@ -268,6 +268,22 @@ const handleScan = async () => {
         selected: true,
         matchStatus,
         matchedRecordType,
+        possibleMatches: [
+          ...possibleDebtMatches.map(
+            (debt) => ({
+              id: debt.id,
+              name: debt.name,
+              type: "debt" as const,
+            })
+          ),
+          ...possibleBillMatches.map(
+            (bill) => ({
+              id: bill.id,
+              name: bill.name,
+              type: "bill" as const,
+            })
+          ),
+        ],
         matchedRecordId:
           matchedRecord?.id,
         matchedRecordName:
