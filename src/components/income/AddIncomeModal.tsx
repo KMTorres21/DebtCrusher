@@ -4,6 +4,12 @@ import {
   useState,
 } from "react";
 import { X } from "lucide-react";
+import {
+  getFundingAccounts,
+} from "../../utils/fundingAccountsStorage";
+import type {
+  FundingAccount,
+} from "../../types/FundingAccount";
 
 import { Income } from "../../types/Income";
 import Button from "../common/Button";
@@ -36,11 +42,17 @@ export default function AddIncomeModal({
   const [nextPayDate, setNextPayDate] =
     useState("");
   const [notes, setNotes] = useState("");
-
-  useEffect(() => {
-    if (!open) {
-      return;
-    }
+  const [fundingAccounts] =
+  useState<FundingAccount[]>(
+    () => getFundingAccounts()
+  );
+const [
+  fundingAccountId, setFundingAccountId,
+  ] = useState("");
+    useEffect(() => {
+      if (!open) {
+        return;
+      }
 
     if (income) {
       setSource(income.source);
@@ -84,6 +96,7 @@ export default function AddIncomeModal({
       source: source.trim(),
       amount: Number(amount),
       frequency,
+      fundingAccountId: fundingAccountId || undefined,
       nextPayDate,
       notes: notes.trim() || undefined,
       createdAt: income?.createdAt ?? now,
@@ -140,6 +153,37 @@ export default function AddIncomeModal({
             required
             className="w-full rounded-xl border border-slate-200 px-4 py-3"
           />
+
+          <div>
+          <label className="mb-1 block text-sm font-semibold text-slate-700">
+            Deposit To
+          </label>
+
+          <select
+            value={fundingAccountId}
+            onChange={(event) =>
+              setFundingAccountId(
+                event.target.value
+              )
+            }
+            className="w-full rounded-xl border border-slate-200 px-3 py-2"
+          >
+            <option value="">
+              Unassigned
+            </option>
+
+            {fundingAccounts.map(
+              (account) => (
+                <option
+                  key={account.id}
+                  value={account.id}
+                >
+                  {account.name}
+                </option>
+              )
+            )}
+          </select>
+        </div>
 
           <input
             type="number"

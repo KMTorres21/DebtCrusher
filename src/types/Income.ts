@@ -2,6 +2,7 @@ export interface Income {
   id: string;
   source: string;
   amount: number;
+  fundingAccountId?: string;
 
   frequency:
     | "weekly"
