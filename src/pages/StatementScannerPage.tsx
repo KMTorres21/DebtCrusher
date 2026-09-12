@@ -840,14 +840,113 @@ const handleAddDebt = (bill: ExtractedBill) => {
           )}
         </div>
 
-        {bill.matchedRecordName && (
-          <div className="mt-3 rounded-xl bg-amber-50 p-3 text-sm text-amber-800">
-            Possible existing record:{" "}
-            <span className="font-semibold">
-              {bill.matchedRecordName}
-            </span>
-          </div>
-        )}
+            {bill.possibleMatches &&
+              bill.possibleMatches.length > 0 && (
+                <div className="mt-3 rounded-xl bg-amber-50 p-3">
+                  <p className="text-sm font-semibold text-amber-800">
+                    Possible Matches
+                  </p>
+
+                  <div className="mt-2 space-y-2">
+                    {bill.possibleMatches.map(
+                      (match) => (
+                        <label
+                          key={`${match.type}-${match.id}`}
+                          className="flex items-center gap-2 text-sm text-amber-700"
+                        >
+                          <input
+                            type="radio"
+                            name={`match-${bill.id}`}
+                            checked={
+                              selectedMatches[bill.id]
+                                ?.id === match.id
+                            }
+                            onChange={() => {
+                              setSelectedMatches(
+                                (current) => ({
+                                  ...current,
+                                  [bill.id]: {
+                                    id: match.id,
+                                    type: match.type,
+                                    name: match.name,
+                                  },
+                                })
+                              );
+
+                              setBills(
+                                (currentBills) =>
+                                  currentBills.map(
+                                    (currentBill) =>
+                                      currentBill.id ===
+                                      bill.id
+                                        ? {
+                                            ...currentBill,
+                                            matchedRecordId:
+                                              match.id,
+                                            matchedRecordType:
+                                              match.type,
+                                            matchedRecordName:
+                                              match.name,
+                                          }
+                                        : currentBill
+                                  )
+                              );
+                            }}
+                          />
+
+                          {match.name}
+                          {" "}
+                          ({match.type})
+                        </label>
+                      )
+                    )}
+
+                    <label className="flex items-center gap-2 text-sm text-amber-700">
+                      <input
+                        type="radio"
+                        name={`match-${bill.id}`}
+                        checked={
+                          !selectedMatches[bill.id]
+                        }
+                        onChange={() => {
+                          setSelectedMatches(
+                            (current) => {
+                              const updated = {
+                                ...current,
+                              };
+
+                              delete updated[bill.id];
+
+                              return updated;
+                            }
+                          );
+
+                          setBills(
+                            (currentBills) =>
+                              currentBills.map(
+                                (currentBill) =>
+                                  currentBill.id ===
+                                  bill.id
+                                    ? {
+                                        ...currentBill,
+                                        matchedRecordId:
+                                          undefined,
+                                        matchedRecordType:
+                                          undefined,
+                                        matchedRecordName:
+                                          undefined,
+                                      }
+                                    : currentBill
+                              )
+                          );
+                        }}
+                      />
+
+                      None Of These
+                    </label>
+                  </div>
+                </div>
+            )}
 
         {/* Edit */}
         <button
