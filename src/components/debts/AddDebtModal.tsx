@@ -111,6 +111,9 @@ useEffect(() => {
         : ""
     );
     setNotes(prefill.notes ?? "");
+    setFundingAccountId(
+      prefill.fundingAccountId ?? ""
+    );
   }
 }, [open, prefill]);
 
@@ -130,6 +133,7 @@ useEffect(() => {
     setDueDate("");
     setCreditLimit("");
     setNotes("");
+    setFundingAccountId("");
   }
 
   function handleClose() {
