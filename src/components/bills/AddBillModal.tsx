@@ -7,6 +7,12 @@ import { BillCategory } from "../../types/Bill";
 import Button from "../common/Button";
 import { X } from "lucide-react"
 import ActivityHistory from "../common/ActivityHistory";
+import {
+  getFundingAccounts,
+} from "../../utils/fundingAccountsStorage";
+import type {
+  FundingAccount,
+} from "../../types/FundingAccount";
 
 interface AddBillModalProps {
   open: boolean;
@@ -55,6 +61,15 @@ export default function AddBillModal({
     useState("15");
   const [notes, setNotes] = useState("");
   const [showHistory, setShowHistory] = useState(false);
+  const [fundingAccounts] =
+  useState<FundingAccount[]>(
+    () => getFundingAccounts()
+  );
+
+const [
+  fundingAccountId,
+  setFundingAccountId,
+] = useState("");
 
   useEffect(() => {
   if (bill) {
@@ -129,6 +144,7 @@ export default function AddBillModal({
       : undefined,
     amount: numericAmount,
     dueDate,
+    fundingAccountId: fundingAccountId || undefined,
     category,
     recurring,
     frequency,
@@ -420,6 +436,37 @@ if (
               />
             </div>
 
+          </div>
+
+          <div>
+            <label className="mb-1 block text-sm font-semibold text-slate-700">
+              Paid From
+            </label>
+
+            <select
+              value={fundingAccountId}
+              onChange={(event) =>
+                setFundingAccountId(
+                  event.target.value
+                )
+              }
+              className="w-full rounded-xl border border-slate-200 px-3 py-2"
+            >
+              <option value="">
+                Unassigned
+              </option>
+
+              {fundingAccounts.map(
+                (account) => (
+                  <option
+                    key={account.id}
+                    value={account.id}
+                  >
+                    {account.name}
+                  </option>
+                )
+              )}
+            </select>
           </div>
 
 {/* Statement Information */}

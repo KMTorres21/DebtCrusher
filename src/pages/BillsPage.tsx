@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Plus } from "lucide-react";
-
+import {
+  getFundingAccounts,
+} from "../utils/fundingAccountsStorage";
 import { Bill } from "../types/Bill";
 import { useBills } from "../hooks/useBills";
 import { useDisplaySettings } from "../hooks/useDisplaySettings";
@@ -26,7 +28,7 @@ export default function BillsPage() {
   const {
     settings: displaySettings}
      = useDisplaySettings();
-
+  const fundingAccounts = getFundingAccounts();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] =
     useState<
@@ -181,6 +183,7 @@ export default function BillsPage() {
         interestRate: 0,
 
         notes: bill.notes,
+
         activityHistory: [
       ...(bill.activityHistory ?? []),
 
@@ -189,6 +192,7 @@ export default function BillsPage() {
         date: now,
         action: "Converted to Debt",
         },
+
       ],
 
         createdAt: now,

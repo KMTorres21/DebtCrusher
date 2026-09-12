@@ -32,7 +32,7 @@ export interface Bill {
   activityHistory?: ActivityEntry[];
   statementBalance?: number;
   amount: number;
-  fundingaccountId?: string;
+  fundingAccountId?: string;
   dueDate: string;
   category: BillCategory;
   paid: boolean;

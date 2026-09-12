@@ -3,6 +3,9 @@ import { Bill } from "../../types/Bill";
 import Card from "../common/Card";
 import Badge from "../common/Badge";
 import Button from "../common/Button";
+import {
+  getFundingAccounts,
+} from "../../utils/fundingAccountsStorage";
 
 interface BillCardProps {
   bill: Bill;
@@ -22,6 +25,14 @@ export default function BillCard({
   onConvertToDebt,
 }: BillCardProps) {
   const status = bill.paid ? "paid" : "due";
+  const fundingAccount =
+    bill.fundingAccountId
+      ? getFundingAccounts().find(
+          (account) =>
+            account.id ===
+            bill.fundingAccountId
+        )
+      : undefined;
 
   return (
     <Card className="space-y-4">
@@ -51,6 +62,13 @@ export default function BillCard({
               Statement Date: {bill.statementDate}
             </p>
           )}
+
+          {fundingAccount && (
+          <p className="text-sm text-slate-500">
+            Paid From: {fundingAccount.name}
+          </p>
+        )}
+          
         </div>
       </div>
 
