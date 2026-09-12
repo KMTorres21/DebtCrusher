@@ -3,7 +3,12 @@ import {
   useEffect,
   useState,
 } from "react";
-
+import {
+  getFundingAccounts,
+} from "../../utils/fundingAccountsStorage";
+import type {
+  FundingAccount,
+} from "../../types/FundingAccount";
 import { X } from "lucide-react";
 import ActivityHistory from "../common/ActivityHistory";
 import { Debt, DebtType } from "../../types/Debt";
@@ -48,6 +53,14 @@ export default function AddDebtModal({
   const [creditLimit, setCreditLimit] = useState("");
   const [notes, setNotes] = useState("");
   const [showHistory, setShowHistory] = useState(false);
+  const [fundingAccounts] =
+    useState<FundingAccount[]>(
+      () => getFundingAccounts()
+  );
+const [
+  fundingAccountId,
+  setFundingAccountId,
+] = useState("");
 
 useEffect(() => {
   if (!open) return;
@@ -131,31 +144,23 @@ useEffect(() => {
 
     const debt: Debt = {
   id: prefill?.id ?? crypto.randomUUID(),
-
   name: name.trim(),
+  fundingAccountId: fundingAccountId || undefined,
   type,
-
   balance: Number(statementBalance),
   originalBalance: Number(originalBalance),
-
   statementDate:
     statementDate || undefined,
-
   statementBalance:
     statementBalance
       ? Number(statementBalance)
       : undefined,
-
   interestRate: Number(interestRate),
-  
   minimumPayment: Number(minimumPayment),
-  
   dueDate,
-
   creditLimit: creditLimit
     ? Number(creditLimit)
     : undefined,
-
   promoInterestRate:
       promoInterestRate !== ""
         ? Number(promoInterestRate)
@@ -382,6 +387,37 @@ updatedAt: now,
                 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
             />
           </div>
+
+          <div>
+          <label className="mb-1 block text-sm font-semibold text-slate-700">
+            Paid From
+          </label>
+
+          <select
+            value={fundingAccountId}
+            onChange={(event) =>
+              setFundingAccountId(
+                event.target.value
+              )
+            }
+            className="w-full rounded-xl border border-slate-200 px-3 py-2"
+          >
+            <option value="">
+              Unassigned
+            </option>
+
+            {fundingAccounts.map(
+              (account) => (
+                <option
+                  key={account.id}
+                  value={account.id}
+                >
+                  {account.name}
+                </option>
+              )
+            )}
+          </select>
+        </div>
 
           <select
             value={type}
