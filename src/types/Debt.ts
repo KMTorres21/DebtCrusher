@@ -13,6 +13,7 @@ export type DebtType =
 export interface Debt {
   id: string;
   name: string;
+  fundingAccountId?: string;
   type: DebtType;
   balance: number;
   originalBalance: number;
