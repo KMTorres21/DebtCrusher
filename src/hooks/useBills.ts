@@ -25,19 +25,55 @@ export function useBills() {
             ? {
                 ...bill,
                 paid: !bill.paid,
-                updatedAt: new Date().toISOString(),
+                updatedAt:
+                  new Date().toISOString(),
                 activityHistory: [
                   ...(bill.activityHistory ?? []),
                   {
                     id: crypto.randomUUID(),
-                    date: new Date().toISOString(),
-                    action: bill.paid ? "Marked Unpaid" : "Marked Paid",
+                    date:
+                      new Date().toISOString(),
+                    action: bill.paid
+                      ? "Marked Unpaid"
+                      : "Marked Paid",
                   },
                 ],
               }
             : bill
         )
-        .sort((a, b) => a.dueDate.localeCompare(b.dueDate))
+        .sort((a, b) =>
+          a.dueDate.localeCompare(b.dueDate)
+        )
+    );
+  }
+
+  function updateBill(
+    updatedBill: Bill
+  ) {
+    setBills((prev) =>
+      prev
+        .map((bill) =>
+          bill.id === updatedBill.id
+            ? {
+                ...updatedBill,
+                updatedAt:
+                  new Date().toISOString(),
+              }
+            : bill
+        )
+        .sort((a, b) =>
+          a.dueDate.localeCompare(
+            b.dueDate
+          )
+        )
+    );
+  }
+
+  function deleteBill(id: string) {
+    setBills((prev) =>
+      prev.filter(
+        (bill) => bill.id !== id
+      )
     );
   }
 
