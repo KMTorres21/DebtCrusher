@@ -17,36 +17,6 @@ export function useBills() {
     );
   }
 
-  function updateBill(
-    billId: string,
-    updates: Partial<Bill>
-  ) {
-    setBills((prev) =>
-      prev
-        .map((bill) =>
-          bill.id === billId
-            ? {
-                ...bill,
-                ...updates,
-              }
-            : bill
-        )
-        .sort((a, b) =>
-          a.dueDate.localeCompare(
-            b.dueDate
-          )
-        )
-    );
-  }
-
-  function deleteBill(id: string) {
-    setBills((prev) =>
-      prev
-        .filter((bill) => bill.id !== id)
-        .sort((a, b) => a.dueDate.localeCompare(b.dueDate))
-    );
-  }
-
   function togglePaid(id: string) {
     setBills((prev) =>
       prev

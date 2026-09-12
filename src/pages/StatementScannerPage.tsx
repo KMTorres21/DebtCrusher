@@ -508,18 +508,29 @@ const handleAddDebt = (bill: ExtractedBill) => {
         "bill" &&
       bill.matchedRecordId
     ) {
-      updateBill(
-        bill.matchedRecordId,
-        {
-          amount: bill.amount,
-          dueDate: bill.dueDate,
-          statementDate:
-            bill.statementDate,
-          statementBalance:
-            bill.statementBalance,
-          notes: bill.notes,
-        }
-      );
+      const existingBill =
+  existingBills.find(
+    (existing) =>
+      existing.id ===
+      bill.matchedRecordId
+  );
+
+    if (existingBill) {
+      updateBill({
+        ...existingBill,
+
+        amount: bill.amount,
+        dueDate: bill.dueDate,
+
+        statementDate:
+          bill.statementDate,
+
+        statementBalance:
+          bill.statementBalance,
+
+        notes: bill.notes,
+      });
+    }
     } else {
       addBill(newBill);
     }
