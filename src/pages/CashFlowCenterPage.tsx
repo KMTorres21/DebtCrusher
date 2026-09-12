@@ -5,6 +5,7 @@ import { useBills } from "../hooks/useBills";
 import { useDebts } from "../hooks/useDebts";
 import { useIncome } from "../hooks/useIncome";
 import {Link} from "react-router-dom";
+import { calculateMonthlyIncome } from "../utils/calculateMonthlyIncome";
 
 import {
   getFundingAccounts,
@@ -104,7 +105,7 @@ const unassignedIncome =
             ).length;
 
             const accountIncome =
-            incomes.filter(
+            income.filter(
                 (income) =>
                 income.fundingAccountId ===
                 account.id
