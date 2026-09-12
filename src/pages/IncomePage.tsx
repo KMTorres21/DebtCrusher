@@ -103,10 +103,9 @@ export default function IncomePage() {
       <button
         type="button" onClick={() => navigate("/timeline")}
       className="w-full rounded-2xl bg-slate-900 px-5 py-4 text-left font-semibold text-white shadow transition hover:bg-slate-800"
-
->
-  Payday Strategy
-</button>
+      >
+        Payday Strategy
+      </button>
 
       <div className="grid grid-cols-2 gap-4">
         <StatCard
@@ -155,24 +154,24 @@ export default function IncomePage() {
       </Button>
 
       <AddIncomeModal
-  open={isAddModalOpen}
-  income={editingIncome}
-  onClose={() => {
-    setEditingIncome(null);
-    setIsAddModalOpen(false);
-  }}
-  onSave={(income) => {
-    if (editingIncome) {
-      updateIncome(income);
-    } else {
-      addIncome(income);
+      open={isAddModalOpen}
+      income={editingIncome}
+      onClose={() => {
+        setEditingIncome(null);
+        setIsAddModalOpen(false);
+      }}
+      onSave={(income) => {
+        if (editingIncome) {
+          updateIncome(income);
+        } else {
+          addIncome(income);
+        }
+
+        setEditingIncome(null);
+        setIsAddModalOpen(false);
+      }}
+    />
+
+        </PageContainer>
+      );
     }
-
-    setEditingIncome(null);
-    setIsAddModalOpen(false);
-  }}
-/>
-
-    </PageContainer>
-  );
-}

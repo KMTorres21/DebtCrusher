@@ -93,10 +93,6 @@ export default function IncomeCard({
             {income.frequency}
           </div>
 
-          <div className="mt-3 inline-flex rounded-full bg-green-100 px-3 py-1 text-sm font-semibold capitalize text-green-700">
-            {income.frequency}
-          </div>
-
           {fundingAccount && (
             <p className="mt-3 text-sm text-slate-500">
               Deposit To: {fundingAccount.name}

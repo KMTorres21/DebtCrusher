@@ -60,12 +60,14 @@ const [
       setFrequency(income.frequency);
       setNextPayDate(income.nextPayDate);
       setNotes(income.notes ?? "");
+      setFundingAccountId(income.fundingAccountId ?? "");
     } else {
       setSource("");
       setAmount("");
       setFrequency("biweekly");
       setNextPayDate("");
       setNotes("");
+      setFundingAccountId("");
     }
   }, [open, income]);
 
@@ -77,6 +79,7 @@ const [
     setFrequency("biweekly");
     setNextPayDate("");
     setNotes("");
+    setFundingAccountId("");
   }
 
   function handleClose() {
@@ -143,16 +146,26 @@ const [
           onSubmit={handleSubmit}
           className="space-y-5 p-6"
         >
-          <input
-            type="text"
-            placeholder="Employer or Income Source"
-            value={source}
-            onChange={(e) =>
-              setSource(e.target.value)
-            }
-            required
-            className="w-full rounded-xl border border-slate-200 px-4 py-3"
-          />
+          {/* Income Source */}
+          <div>
+            <label
+              htmlFor="income-source"
+              className="mb-2 block text-sm font-semibold text-slate-700"
+            >
+              Income Source
+            </label>
+
+            <input
+              id="income-source"
+              type="text"
+              value={source}
+              onChange={(event) => setSource(event.target.value)}
+              placeholder="Electric, Mortgage, Verizon..."
+              required
+              className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none transition 
+                focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+            />
+          </div>
 
           <div>
           <label className="mb-1 block text-sm font-semibold text-slate-700">
@@ -185,17 +198,26 @@ const [
           </select>
         </div>
 
-          <input
-            type="number"
-            step="0.01"
-            placeholder="Amount"
-            value={amount}
-            onChange={(e) =>
-              setAmount(e.target.value)
-            }
-            required
-            className="w-full rounded-xl border border-slate-200 px-4 py-3"
-          />
+          {/* Amount */}
+        <div>
+          <label
+            htmlFor="income-amount"
+            className="mb-2 block text-sm font-semibold text-slate-700"
+          >
+            Amount
+          </label>
+            <input
+              id="income-amount"
+              type="number"
+              step="0.01"
+              value={amount}
+              onChange={(e) =>
+                setAmount(e.target.value)
+              }
+              required
+              className="w-full rounded-xl border border-slate-200 px-4 py-3"
+            />
+          </div>
 
           <select
             value={frequency}
@@ -217,25 +239,26 @@ const [
             ))}
           </select>
 
-          <input
-            type="date"
-            value={nextPayDate}
-            onChange={(e) =>
-              setNextPayDate(e.target.value)
-            }
-            required
-            className="w-full rounded-xl border border-slate-200 px-4 py-3"
-          />
+        {/* Pay Date */}
+          <div>
+              <label
+                htmlFor="next-pay-date"
+                className="mb-2 block text-sm font-semibold text-slate-700"
+              >
+                Pay Date
+              </label>
 
-          <textarea
-            rows={3}
-            placeholder="Notes (optional)"
-            value={notes}
-            onChange={(e) =>
-              setNotes(e.target.value)
-            }
-            className="w-full rounded-xl border border-slate-200 px-4 py-3"
-          />
+              <input
+                id="next-pay-date"
+                type="date"
+                value={nextPayDate}
+                onChange={(event) =>
+                  setNextPayDate(event.target.value)
+                }
+                required
+                className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+              />
+            </div>          
 
           <div className="flex gap-3">
             <Button
