@@ -25,7 +25,11 @@ interface ExtractedBill extends Bill {
   statementBalance?: number;
   currentBalance?: number;
   creditLimit?: number;
-
+  possibleMatches?: {
+  id: string;
+  name: string;
+  type: MatchRecordType;
+    }[];
   matchStatus: MatchStatus;
   matchedRecordType?: MatchRecordType;
   matchedRecordId?: string;
@@ -681,6 +685,29 @@ const handleAddDebt = (bill: ExtractedBill) => {
           </span>
         )}
 
+        {bill.matchStatus === "possible" &&
+          bill.possibleMatches &&
+          bill.possibleMatches.length > 0 && (
+            <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50 p-3">
+              <p className="text-sm font-semibold text-amber-800">
+                Possible Matches
+              </p>
+
+              <ul className="mt-2 space-y-1">
+                {bill.possibleMatches.map(
+                  (match) => (
+                    <li
+                      key={`${match.type}-${match.id}`}
+                      className="text-sm text-amber-700"
+                    >
+                      • {match.name} ({match.type})
+                    </li>
+                  )
+                )}
+              </ul>
+            </div>
+        )}
+
         {bill.matchStatus === "possible" && (
           <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700">
             Possible Match
@@ -743,17 +770,17 @@ const handleAddDebt = (bill: ExtractedBill) => {
           </button>
         )}
         {bill.matchStatus === "existing" &&
-  bill.matchedRecordType === "debt" && (
-    <button
-      type="button"
-      onClick={() =>
-        handleUpdateExistingDebt(bill)
-      }
-      className="mt-2 w-full rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-700"
-    >
-      Update Existing Debt
-    </button>
-)}
+        bill.matchedRecordType === "debt" && (
+              <button
+                type="button"
+                onClick={() =>
+                  handleUpdateExistingDebt(bill)
+                }
+                className="mt-2 w-full rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-700"
+              >
+                Update Existing Debt
+              </button>
+          )}
       </div>
     </div>
   </div>
