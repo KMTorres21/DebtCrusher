@@ -91,6 +91,9 @@ const [
       String(bill.semiMonthlyDay2 ?? 15)
     );
     setNotes(bill.notes ?? "");
+    setFundingAccountId(
+      bill.fundingAccountId ?? ""
+       );
   } else {
     setFrequency("monthly");
     resetForm();
@@ -113,6 +116,7 @@ const [
     setSemiMonthlyDay1("1");
     setSemiMonthlyDay2("15");
     setNotes("");
+    setFundingAccountId("");
   }
 
   function handleClose() {
