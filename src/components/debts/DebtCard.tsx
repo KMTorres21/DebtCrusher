@@ -1,5 +1,8 @@
 import { Debt } from "../../types/Debt";
 import { formatCurrency } from "../../utils/formatCurrency";
+import {
+  getFundingAccounts,
+} from "../../utils/fundingAccountsStorage";
 
 interface DebtCardProps {
   debt: Debt;
@@ -16,7 +19,14 @@ export default function DebtCard({
 }: DebtCardProps) {
   const currentBalance =
     debt.statementBalance ?? debt.balance ?? 0;
-
+  const fundingAccount =
+    debt.fundingAccountId
+    ? getFundingAccounts().find(
+        (account) =>
+          account.id ===
+          debt.fundingAccountId
+      )
+    : undefined;
   const payoffProgress =
     debt.originalBalance > 0
       ? Math.round(
@@ -168,6 +178,13 @@ export default function DebtCard({
             {debt.dueDate}
           </p>
         </div>
+
+        {fundingAccount && (
+          <p className="text-sm text-slate-500">
+            Paid From: {fundingAccount.name}
+          </p>
+        )}
+
       </div>
 
       <div className="mt-6 space-y-2">
