@@ -85,6 +85,19 @@ export default function StatementScannerPage() {
   const [isScanning, setIsScanning] = useState(false);
   const [hasScanned, setHasScanned] = useState(false);
   const [bills, setBills] = useState<ExtractedBill[]>([]);
+  const [
+      selectedMatches,
+      setSelectedMatches,
+    ] = useState<
+      Record<
+        string,
+        {
+          id: string;
+          type: MatchRecordType;
+          name: string;
+        }
+      >
+    >({});
   const [editingBill, setEditingBill] = useState<ExtractedBill | null>(null);
   const [debtPrefill, setDebtPrefill] = useState<Partial<Debt> | null>(null);
   const [convertingBillId, setConvertingBillId] = useState<string | null>(null);
@@ -693,20 +706,106 @@ const handleAddDebt = (bill: ExtractedBill) => {
                 Possible Matches
               </p>
 
-              <ul className="mt-2 space-y-1">
+              <div className="mt-2 space-y-2">
                 {bill.possibleMatches.map(
                   (match) => (
-                    <li
+                    <label
                       key={`${match.type}-${match.id}`}
-                      className="text-sm text-amber-700"
+                      className="flex items-center gap-2 text-sm text-amber-700"
                     >
-                      • {match.name} ({match.type})
-                    </li>
+                      <input
+                        type="radio"
+                        name={`match-${bill.id}`}
+                        checked={
+                          selectedMatches[bill.id]
+                            ?.id === match.id
+                        }
+                        onChange={() => {
+                          setSelectedMatches(
+                            (current) => ({
+                              ...current,
+                              [bill.id]: {
+                                id: match.id,
+                                type: match.type,
+                                name: match.name,
+                              },
+                            })
+                          );
+
+                          setBills(
+                            (currentBills) =>
+                              currentBills.map(
+                                (currentBill) =>
+                                  currentBill.id ===
+                                  bill.id
+                                    ? {
+                                        ...currentBill,
+                                        matchedRecordId:
+                                          match.id,
+                                        matchedRecordType:
+                                          match.type,
+                                        matchedRecordName:
+                                          match.name,
+                                      }
+                                    : currentBill
+                              )
+                          );
+                        }}
+                      />
+
+                      {match.name}
+                      {" "}
+                      ({match.type})
+                    </label>
                   )
                 )}
-              </ul>
+
+                <label className="flex items-center gap-2 text-sm text-amber-700">
+                  <input
+                    type="radio"
+                    name={`match-${bill.id}`}
+                    checked={
+                      !selectedMatches[bill.id]
+                    }
+                    onChange={() => {
+                      setSelectedMatches(
+                        (current) => {
+                          const updated = {
+                            ...current,
+                          };
+
+                          delete updated[bill.id];
+
+                          return updated;
+                        }
+                      );
+
+                      setBills(
+                        (currentBills) =>
+                          currentBills.map(
+                            (currentBill) =>
+                              currentBill.id ===
+                              bill.id
+                                ? {
+                                    ...currentBill,
+                                    matchedRecordId:
+                                      undefined,
+                                    matchedRecordType:
+                                      undefined,
+                                    matchedRecordName:
+                                      undefined,
+                                  }
+                                : currentBill
+                          )
+                      );
+                    }}
+                  />
+
+                  None Of These
+                </label>
+              </div>
             </div>
-        )}
+          )}
 
         {bill.matchStatus === "possible" && (
           <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700">
