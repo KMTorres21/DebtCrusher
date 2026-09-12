@@ -121,6 +121,20 @@ const unassignedIncome =
                 currentDate.getMonth()
             );
 
+            const accountBills =
+            bills.filter(
+                (bill) =>
+                bill.fundingAccountId ===
+                account.id
+            );
+
+            const accountDebts =
+            debts.filter(
+                (debt) =>
+                debt.fundingAccountId ===
+                account.id
+            );
+
             const billTotal =
               bills
                 .filter(
@@ -220,6 +234,66 @@ const unassignedIncome =
                       )
                     }
                   </p>
+
+                  <div className="mt-4 border-t border-slate-200 pt-4">
+                    <p className="font-semibold text-slate-900">
+                        Account Breakdown
+                    </p>
+
+                    {accountIncome.length > 0 && (
+                        <div className="mt-3">
+                        <p className="text-sm font-semibold text-green-700">
+                            Income Sources
+                        </p>
+
+                        <ul className="mt-1 text-sm text-slate-600">
+                            {accountIncome.map(
+                            (income) => (
+                                <li key={income.id}>
+                                • {income.source}
+                                </li>
+                            )
+                            )}
+                        </ul>
+                        </div>
+                    )}
+
+                    {accountBills.length > 0 && (
+                        <div className="mt-3">
+                        <p className="text-sm font-semibold text-blue-700">
+                            Bills
+                        </p>
+
+                        <ul className="mt-1 text-sm text-slate-600">
+                            {accountBills.map(
+                            (bill) => (
+                                <li key={bill.id}>
+                                • {bill.name}
+                                </li>
+                            )
+                            )}
+                        </ul>
+                        </div>
+                    )}
+
+                    {accountDebts.length > 0 && (
+                        <div className="mt-3">
+                        <p className="text-sm font-semibold text-red-700">
+                            Debts
+                        </p>
+
+                        <ul className="mt-1 text-sm text-slate-600">
+                            {accountDebts.map(
+                            (debt) => (
+                                <li key={debt.id}>
+                                • {debt.name}
+                                </li>
+                            )
+                            )}
+                        </ul>
+                        </div>
+                    )}
+                    </div>
                 </div>
               </Card>
             );
