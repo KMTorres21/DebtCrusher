@@ -29,6 +29,7 @@ interface ExtractedBill extends Bill {
   id: string;
   name: string;
   type: MatchRecordType;
+  confidence: number;
     }[];
   matchStatus: MatchStatus;
   matchedRecordType?: MatchRecordType;
@@ -978,44 +979,54 @@ const handleAddDebt = (bill: ExtractedBill) => {
                   </p>
 
             {bill.matchedRecordId &&
-              bill.matchedRecordType === "bill" && (() => {
-                const existingBill =
-                  existingBills.find(
-                    (existing) =>
-                      existing.id ===
+              bill.matchedRecordType === "debt" &&
+              (() => {
+                const existingDebt =
+                  existingDebts.find(
+                    (debt) =>
+                      debt.id ===
                       bill.matchedRecordId
                   );
 
-                if (!existingBill) {
+                if (!existingDebt) {
                   return null;
                 }
 
                 return (
                   <div className="mt-3 rounded-xl border border-slate-200 bg-white p-3">
                     <p className="text-sm font-semibold text-slate-900">
-                      Current Record
+                      Current Debt
                     </p>
 
                     <div className="mt-2 text-sm text-slate-600">
                       <p>
-                        Statement Date:{" "}
-                        {existingBill.statementDate ??
-                          "Not set"}
+                        Current Balance:{" "}
+                        {formatCurrency(
+                          existingDebt.balance
+                        )}
                       </p>
 
                       <p>
-                        Statement Balance:{" "}
-                        {existingBill.statementBalance !==
-                        undefined
-                          ? formatCurrency(
-                              existingBill.statementBalance
-                            )
-                          : "Not set"}
+                        APR:{" "}
+                        {existingDebt.interestRate.toFixed(
+                          2
+                        )}
+                        %
                       </p>
+
+                      {existingDebt.creditLimit !==
+                        undefined && (
+                        <p>
+                          Credit Limit:{" "}
+                          {formatCurrency(
+                            existingDebt.creditLimit
+                          )}
+                        </p>
+                      )}
 
                       <p>
                         Due Date:{" "}
-                        {existingBill.dueDate}
+                        {existingDebt.dueDate}
                       </p>
                     </div>
 
@@ -1026,26 +1037,78 @@ const handleAddDebt = (bill: ExtractedBill) => {
                     </p>
 
                     <div className="mt-2 text-sm text-slate-600">
-                      <p>
-                        Statement Date:{" "}
-                        {bill.statementDate ??
-                          "Not set"}
-                      </p>
+                      {bill.currentBalance !==
+                        undefined && (
+                        <p>
+                          Current Balance:{" "}
+                          {formatCurrency(
+                            bill.currentBalance
+                          )}
+                        </p>
+                      )}
 
-                      <p>
-                        Statement Balance:{" "}
-                        {bill.statementBalance !==
-                        undefined
-                          ? formatCurrency(
-                              bill.statementBalance
-                            )
-                          : "Not set"}
-                      </p>
+                      {bill.apr !== undefined && (
+                        <p>
+                          APR:{" "}
+                          {bill.apr.toFixed(2)}%
+                        </p>
+                      )}
+
+                      {bill.creditLimit !==
+                        undefined && (
+                        <p>
+                          Credit Limit:{" "}
+                          {formatCurrency(
+                            bill.creditLimit
+                          )}
+                        </p>
+                      )}
 
                       <p>
                         Due Date:{" "}
                         {bill.dueDate}
                       </p>
+                    </div>
+
+                    <div className="mt-4 rounded-lg bg-blue-50 p-3">
+                      <p className="text-sm font-semibold text-blue-900">
+                        Changes Detected
+                      </p>
+
+                      <div className="mt-2 space-y-1 text-sm text-blue-800">
+                        {bill.currentBalance !==
+                          undefined &&
+                          bill.currentBalance !==
+                            existingDebt.balance && (
+                          <p>
+                            ✅ Current Balance Updated
+                          </p>
+                        )}
+
+                        {bill.apr !== undefined &&
+                          bill.apr !==
+                            existingDebt.interestRate && (
+                          <p>
+                            ✅ APR Updated
+                          </p>
+                        )}
+
+                        {bill.creditLimit !==
+                          undefined &&
+                          bill.creditLimit !==
+                            existingDebt.creditLimit && (
+                          <p>
+                            ✅ Credit Limit Updated
+                          </p>
+                        )}
+
+                        {bill.dueDate !==
+                          existingDebt.dueDate && (
+                          <p>
+                            ✅ Due Date Updated
+                          </p>
+                        )}
+                      </div>
                     </div>
                   </div>
                 );
