@@ -977,6 +977,80 @@ const handleAddDebt = (bill: ExtractedBill) => {
                     Possible Matches
                   </p>
 
+            {bill.matchedRecordId &&
+              bill.matchedRecordType === "bill" && (() => {
+                const existingBill =
+                  existingBills.find(
+                    (existing) =>
+                      existing.id ===
+                      bill.matchedRecordId
+                  );
+
+                if (!existingBill) {
+                  return null;
+                }
+
+                return (
+                  <div className="mt-3 rounded-xl border border-slate-200 bg-white p-3">
+                    <p className="text-sm font-semibold text-slate-900">
+                      Current Record
+                    </p>
+
+                    <div className="mt-2 text-sm text-slate-600">
+                      <p>
+                        Statement Date:{" "}
+                        {existingBill.statementDate ??
+                          "Not set"}
+                      </p>
+
+                      <p>
+                        Statement Balance:{" "}
+                        {existingBill.statementBalance !==
+                        undefined
+                          ? formatCurrency(
+                              existingBill.statementBalance
+                            )
+                          : "Not set"}
+                      </p>
+
+                      <p>
+                        Due Date:{" "}
+                        {existingBill.dueDate}
+                      </p>
+                    </div>
+
+                    <div className="my-3 border-t border-slate-200" />
+
+                    <p className="text-sm font-semibold text-green-700">
+                      Scanned Statement
+                    </p>
+
+                    <div className="mt-2 text-sm text-slate-600">
+                      <p>
+                        Statement Date:{" "}
+                        {bill.statementDate ??
+                          "Not set"}
+                      </p>
+
+                      <p>
+                        Statement Balance:{" "}
+                        {bill.statementBalance !==
+                        undefined
+                          ? formatCurrency(
+                              bill.statementBalance
+                            )
+                          : "Not set"}
+                      </p>
+
+                      <p>
+                        Due Date:{" "}
+                        {bill.dueDate}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })()}
+
                   <div className="mt-2 space-y-2">
                     {bill.possibleMatches.map(
                       (match) => (
