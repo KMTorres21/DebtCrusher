@@ -516,19 +516,118 @@ const handleAddDebt = (bill: ExtractedBill) => {
   );
 
     if (existingBill) {
+      const now =
+        new Date().toISOString();
+
+      const previousStatementBalance =
+        existingBill.statementBalance;
+
+      const updatedStatementBalance =
+        bill.statementBalance ??
+        existingBill.statementBalance;
+
+      const historyDetails: string[] = [];
+
+      if (
+        bill.statementDate &&
+        bill.statementDate !==
+          existingBill.statementDate
+      ) {
+        historyDetails.push(
+          `Statement Date: ${
+            existingBill.statementDate ??
+            "Not set"
+          } → ${bill.statementDate}`
+        );
+      }
+
+      if (
+        updatedStatementBalance !==
+          undefined &&
+        updatedStatementBalance !==
+          previousStatementBalance
+      ) {
+        historyDetails.push(
+          `Statement Balance: ${
+            previousStatementBalance !==
+            undefined
+              ? formatCurrency(
+                  previousStatementBalance
+                )
+              : "Not set"
+          } → ${formatCurrency(
+            updatedStatementBalance
+          )}`
+        );
+      }
+
+      if (
+        bill.dueDate &&
+        bill.dueDate !==
+          existingBill.dueDate
+      ) {
+        historyDetails.push(
+          `Due Date: ${
+            existingBill.dueDate ??
+            "Not set"
+          } → ${bill.dueDate}`
+        );
+      }
+
+      if (
+        bill.amount > 0 &&
+        bill.amount !== existingBill.amount
+      ) {
+        historyDetails.push(
+          `Amount: ${formatCurrency(
+            existingBill.amount
+          )} → ${formatCurrency(
+            bill.amount
+          )}`
+        );
+      }
+
       updateBill({
         ...existingBill,
 
-        amount: bill.amount,
-        dueDate: bill.dueDate,
+        amount:
+          bill.amount > 0
+            ? bill.amount
+            : existingBill.amount,
+
+        dueDate:
+          bill.dueDate ||
+          existingBill.dueDate,
 
         statementDate:
-          bill.statementDate,
+          bill.statementDate ??
+          existingBill.statementDate,
 
         statementBalance:
-          bill.statementBalance,
+          updatedStatementBalance,
 
-        notes: bill.notes,
+        notes:
+          bill.notes ??
+          existingBill.notes,
+
+        activityHistory: [
+          ...(existingBill.activityHistory ??
+            []),
+          {
+            id: crypto.randomUUID(),
+            date: now,
+            action: "Statement Imported",
+            details:
+              historyDetails.length > 0
+                ? historyDetails.join("\n")
+                : "Statement scan matched to this existing bill.",
+          },
+        ],
+
+        createdAt:
+          existingBill.createdAt,
+
+        updatedAt: now,
       });
     }
     } else {
