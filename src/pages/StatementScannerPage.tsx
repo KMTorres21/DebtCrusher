@@ -26,11 +26,11 @@ interface ExtractedBill extends Bill {
   currentBalance?: number;
   creditLimit?: number;
   possibleMatches?: {
-  id: string;
-  name: string;
-  type: MatchRecordType;
-  confidence: number;
-    }[];
+    id: string;
+    name: string;
+    type: MatchRecordType;
+    confidence: number;
+    }[];  
   matchStatus: MatchStatus;
   matchedRecordType?: MatchRecordType;
   matchedRecordId?: string;
@@ -290,16 +290,40 @@ const handleScan = async () => {
         possibleMatches: [
           ...possibleDebtMatches.map(
             (debt) => ({
-              id: debt.id,
-              name: debt.name,
-              type: "debt" as const,
+  id: debt.id,
+  name: debt.name,
+  type: "debt" as const,
+  confidence:
+    debt.name.toLowerCase() ===
+    scannedName.toLowerCase()
+      ? 100
+      : debt.name
+          .toLowerCase()
+          .includes(
+            scannedName.toLowerCase()
+          )
+        ? 80
+        : 60,
             })
           ),
           ...possibleBillMatches.map(
             (bill) => ({
-              id: bill.id,
-              name: bill.name,
-              type: "bill" as const,
+ 
+  id: bill.id,
+  name: bill.name,
+  type: "bill" as const,
+  confidence:
+    bill.name.toLowerCase() ===
+    scannedName.toLowerCase()
+      ? 100
+      : bill.name
+          .toLowerCase()
+          .includes(
+            scannedName.toLowerCase()
+          )
+        ? 80
+        : 60,
+
             })
           ),
         ],
@@ -832,14 +856,20 @@ const handleAddDebt = (bill: ExtractedBill) => {
         {bill.matchStatus === "possible" &&
           bill.possibleMatches &&
           bill.possibleMatches.length > 0 && (
+
             <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50 p-3">
               <p className="text-sm font-semibold text-amber-800">
                 Possible Matches
               </p>
 
               <div className="mt-2 space-y-2">
-                {bill.possibleMatches.map(
-                  (match) => (
+                {[...bill.possibleMatches]
+                  .sort(
+                    (a, b) =>
+                      b.confidence -
+                      a.confidence
+                  )
+                  .map((match) => (
                     <label
                       key={`${match.type}-${match.id}`}
                       className="flex items-center gap-2 text-sm text-amber-700"
