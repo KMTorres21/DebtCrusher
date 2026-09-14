@@ -1,4 +1,8 @@
-import { useMemo } from "react";
+import {
+  useMemo,
+  useState,
+} from "react";
+
 import { usePaydayStrategySettings } from "../hooks/usePaydayStrategySettings";
 import PageContainer from "../components/common/PageContainer";
 import PageHeader from "../components/common/PageHeader";
@@ -189,7 +193,14 @@ export default function PaydayStrategyPage() {
   const { bills } = useBills();
   const { income } = useIncome();
   const { debts } = useDebts();
-  const { settings } = usePaydayStrategySettings();
+  const { settings } =
+    usePaydayStrategySettings();
+
+  const [
+    showPastPaydays,
+    setShowPastPaydays,
+  ] = useState(false);
+
   const paydayPlans = useMemo(
     () =>
       buildAllPaydayPlans(
@@ -198,21 +209,68 @@ export default function PaydayStrategyPage() {
         debts,
         settings.protectedPaycheckAmount
       ),
-    [income, bills, debts]
+    [
+      income,
+      bills,
+      debts,
+      settings.protectedPaycheckAmount,
+    ]
   );
 
-  const summary = useMemo(() => {
-    const today = new Date();
+  const today = new Date();
 
-    today.setHours(
-      0,
+  today.setHours(
+    12,
+    0,
+    0,
+    0
+  );
+
+  const pastPaydayPlans =
+    paydayPlans
+      .filter(
+        (plan) =>
+          parseDate(plan.payday) <
+          today
+      )
+      .sort(
+        (a, b) =>
+          parseDate(b.payday).getTime() -
+          parseDate(a.payday).getTime()
+      );
+
+  const upcomingPaydayPlans =
+    paydayPlans
+      .filter(
+        (plan) =>
+          parseDate(plan.payday) >=
+          today
+      )
+      .sort(
+        (a, b) =>
+          parseDate(a.payday).getTime() -
+          parseDate(b.payday).getTime()
+      );
+
+  const nextPaydayPlan =
+    upcomingPaydayPlans[0];
+
+  const laterPaydayPlans =
+    upcomingPaydayPlans.slice(1);
+
+  const summary = useMemo(() => {
+    const summaryToday =
+      new Date();
+
+    summaryToday.setHours(
+      12,
       0,
       0,
       0
     );
 
     const cutoff =
-      new Date(today);
+      new Date(summaryToday);
 
     cutoff.setDate(
       cutoff.getDate() + 30
@@ -227,7 +285,7 @@ export default function PaydayStrategyPage() {
             );
 
           return (
-            payday >= today &&
+            payday >= summaryToday &&
             payday <= cutoff
           );
         }
@@ -240,25 +298,22 @@ export default function PaydayStrategyPage() {
         0
       );
 
-    /*
-     * Count each bill occurrence
-     * only once.
-     */
     const upcomingBills =
-      new Map<
-        string,
-        number
-      >();
+      new Map<string, number>();
 
-    for (const plan of paydayPlans) {
-      for (const item of plan.bills) {
+    for (
+      const plan of paydayPlans
+    ) {
+      for (
+        const item of plan.bills
+      ) {
         const dueDate =
           parseDate(
             item.dueDate
           );
 
         if (
-          dueDate >= today &&
+          dueDate >= summaryToday &&
           dueDate <= cutoff
         ) {
           const key =
@@ -345,8 +400,7 @@ export default function PaydayStrategyPage() {
         </p>
       </Card>
 
-      {paydayPlans.length ===
-      0 ? (
+      {paydayPlans.length === 0 ? (
         <Card>
           <div className="py-6 text-center">
             <div className="text-5xl">
@@ -366,14 +420,105 @@ export default function PaydayStrategyPage() {
         </Card>
       ) : (
         <div className="space-y-5">
-          {paydayPlans.map(
-            (plan, index) => (
-              <PaydayCard
-                key={`${plan.income.id}-${plan.payday}-${index}`}
-                plan={plan}
-              />
-            )
+          {pastPaydayPlans.length >
+            0 && (
+            <div className="rounded-2xl border border-slate-200 bg-white p-4">
+              <button
+                type="button"
+                onClick={() =>
+                  setShowPastPaydays(
+                    (current) =>
+                      !current
+                  )
+                }
+                className="flex w-full items-center justify-between font-semibold text-slate-700"
+                aria-expanded={
+                  showPastPaydays
+                }
+              >
+                <span>
+                  Past Paydays (
+                  {
+                    pastPaydayPlans.length
+                  }
+                  )
+                </span>
+
+                <span aria-hidden="true">
+                  {showPastPaydays
+                    ? "▼"
+                    : "▶"}
+                </span>
+              </button>
+            </div>
           )}
+
+          {showPastPaydays && (
+            <div className="space-y-5">
+              {pastPaydayPlans.map(
+                (plan) => (
+                  <PaydayCard
+                    key={`${plan.income.id}-${plan.payday}`}
+                    plan={plan}
+                  />
+                )
+              )}
+            </div>
+          )}
+
+          {nextPaydayPlan && (
+            <section>
+              <div className="mb-3 rounded-xl border border-green-200 bg-green-50 p-3">
+                <p className="text-sm font-bold text-green-800">
+                  ⭐ Next Payday
+                </p>
+
+                <p className="mt-1 text-sm text-green-700">
+                  {formatDisplayDate(
+                    nextPaydayPlan.payday
+                  )}
+                </p>
+              </div>
+
+              <PaydayCard
+                key={`${nextPaydayPlan.income.id}-${nextPaydayPlan.payday}`}
+                plan={nextPaydayPlan}
+              />
+            </section>
+          )}
+
+          {laterPaydayPlans.length >
+            0 && (
+            <section>
+              <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-slate-500">
+                Upcoming Paydays
+              </h2>
+
+              <div className="space-y-5">
+                {laterPaydayPlans.map(
+                  (plan) => (
+                    <PaydayCard
+                      key={`${plan.income.id}-${plan.payday}`}
+                      plan={plan}
+                    />
+                  )
+                )}
+              </div>
+            </section>
+          )}
+
+          {!nextPaydayPlan &&
+            pastPaydayPlans.length >
+              0 && (
+              <Card>
+                <p className="text-sm text-slate-600">
+                  There are no upcoming
+                  paydays. Expand Past
+                  Paydays to review the
+                  available history.
+                </p>
+              </Card>
+            )}
         </div>
       )}
     </PageContainer>

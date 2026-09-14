@@ -2,6 +2,9 @@ import { Bill } from "../types/Bill";
 import { Income } from "../types/Income";
 import { getBillOccurrences } from "./calendarOccurrences";
 import { Debt } from "../types/Debt";
+import { useMemo, useState } from "react";
+
+const [showPastPaydays, setShowPastPaydays] = useState(false);
 
 export interface PaydayBill {
   bill: Bill;
@@ -18,6 +21,10 @@ export interface PaydayPlan {
   totalBills: number;
   remaining: number;
 }
+
+const today = new Date();
+
+
 
 const LARGE_BILL_THRESHOLD = 2 / 3;
 
