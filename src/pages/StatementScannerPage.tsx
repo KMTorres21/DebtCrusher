@@ -737,68 +737,55 @@ const handleAddDebt = (bill: ExtractedBill) => {
     notes: bill.notes ?? undefined,
   });
 };
-  const handleSaveEditBill = (updatedBill: Bill) => {
-    setBills((current) =>
-      current.map((bill) =>
-        bill.id === updatedBill.id
-          ? { ...bill,
-              ...updatedBill,
-              confidence: bill.confidence,
-              selected: bill.selected,
-            }
-          : bill
-      )
-    );
-    setEditingBill(null);
-  };
+      const handleSaveEditBill = (updatedBill: Bill) => {
+        setBills((current) =>
+          current.map((bill) =>
+            bill.id === updatedBill.id
+              ? { ...bill,
+                  ...updatedBill,
+                  confidence: bill.confidence,
+                  selected: bill.selected,
+                }
+              : bill
+          )
+        );
+        setEditingBill(null);
+      };
 
-  const handleCancelEditBill = () => {
-    setEditingBill(null);
-  };
+      const handleCancelEditBill = () => {
+        setEditingBill(null);
+      };
 
     const addSelectedBills = () => {
-      const selectedBills =
+      const selectedBills = bills.filter(
+        (bill) =>
+          bill.selected &&
+          bill.name.trim() &&
+          bill.amount > 0 &&
+          bill.dueDate &&
+          !(
+            bill.matchStatus === "existing" &&
+            bill.matchedRecordId
+          )
+      );
+
+      const skippedMatches =
         bills.filter(
           (bill) =>
             bill.selected &&
-            bill.name.trim() &&
-            bill.amount > 0 &&
-            bill.dueDate &&
-            !(
-              bill.matchStatus ===
-                "existing" &&
-              Boolean(
-                bill.matchedRecordId
-              )
-            )
+            bill.matchStatus === "existing" &&
+            bill.matchedRecordId
         );
 
-      const skippedExistingMatches =
-        bills.filter(
-          (bill) =>
-            bill.selected &&
-            bill.matchStatus ===
-              "existing" &&
-            Boolean(
-              bill.matchedRecordId
-            )
-        );
-
-      if (
-        skippedExistingMatches.length > 0
-      ) {
-        console.warn(
-          "Existing matches were not added as new bills:",
-          skippedExistingMatches.map(
+      if (skippedMatches.length > 0) {
+        console.log(
+          "Skipped matched records:",
+          skippedMatches.map(
             (bill) => ({
-              scannerId:
-                bill.id,
-              scannedName:
-                bill.name,
+              scannedId: bill.id,
+              name: bill.name,
               matchedRecordId:
                 bill.matchedRecordId,
-              matchedRecordName:
-                bill.matchedRecordName,
               matchedRecordType:
                 bill.matchedRecordType,
             })
