@@ -512,9 +512,30 @@ const handleUpdateExistingDebt = (
 
     updatedAt:
       new Date().toISOString(),
+    
   };
 
+  
+
   updateDebt(updatedDebt);
+  console.log(
+  "Updating Debt",
+  {
+    originalDueDate:
+      existingDebt.dueDate,
+    scannedDueDate:
+      bill.dueDate,
+    updatedDueDate:
+      updatedDebt.dueDate,
+
+    originalStatementDate:
+      existingDebt.statementDate,
+    scannedStatementDate:
+      bill.statementDate,
+    updatedStatementDate:
+      updatedDebt.statementDate,
+  }
+);
 
   setBills((current) => {
     const remaining = current.filter(
