@@ -52,6 +52,7 @@ function PaydayCard({
   const isPositive =
     plan.remaining >= 0;
 
+
   return (
     <Card>
       <div className="flex items-start justify-between gap-4">
@@ -244,6 +245,11 @@ export default function PaydayStrategyPage() {
           parseDate(a.payday).getTime()
       );
 
+  console.log(
+    "Past:",
+    pastPaydayPlans.length
+  );
+
   const upcomingPaydayPlans =
     paydayPlans
       .filter(
@@ -256,6 +262,10 @@ export default function PaydayStrategyPage() {
           parseDate(a.payday).getTime() -
           parseDate(b.payday).getTime()
       );
+  console.log(
+    "Upcoming:",
+    upcomingPaydayPlans.length
+  );
 
   const nextPaydayPlan =
     upcomingPaydayPlans[0];
