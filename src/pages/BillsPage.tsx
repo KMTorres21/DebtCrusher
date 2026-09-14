@@ -26,7 +26,7 @@ export default function BillsPage() {
   } = useBills();
   const { addDebt } = useDebts();
   const {
-    settings: displaySettings}
+    displaySettings,}
      = useDisplaySettings();
   const fundingAccounts = getFundingAccounts();
   const [search, setSearch] = useState("");
