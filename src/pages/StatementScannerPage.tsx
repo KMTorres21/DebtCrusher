@@ -6,6 +6,7 @@ import { useBills } from "../hooks/useBills";
 import { formatCurrency } from "../utils/formatCurrency";
 import AddBillModal from "../components/bills/AddBillModal";
 import AddDebtModal from "../components/debts/AddDebtModal";
+import { ActivityEntry } from "../types/ActivityEntry";
 
 type MatchStatus =
   | "new"
@@ -515,7 +516,45 @@ const handleUpdateExistingDebt = (
     
   };
 
-  
+const changes: string[] = [];
+
+if (existingDebt.balance !== latestBalance) {
+  changes.push(
+    `Balance: ${existingDebt.balance} → ${latestBalance}`
+  );
+}
+
+if (
+  existingDebt.dueDate !==
+  updatedDebt.dueDate
+) {
+  changes.push(
+    `Due Date: ${existingDebt.dueDate} → ${updatedDebt.dueDate}`
+  );
+}
+
+if (
+  existingDebt.statementDate !==
+  updatedDebt.statementDate
+) {
+  changes.push(
+    `Statement Date: ${
+      existingDebt.statementDate ?? "N/A"
+    } → ${
+      updatedDebt.statementDate ?? "N/A"
+    }`
+  );
+}
+
+const activityEntry: ActivityEntry = {
+  id: crypto.randomUUID(),
+  date: new Date().toISOString(),
+  action: "Statement Imported",
+  details: changes.join(" | "),
+};
+
+    if (changes.length > 0) {
+      updatedDebt.activityHistory 
 
   updateDebt(updatedDebt);
   console.log(
@@ -611,6 +650,53 @@ const handleUpdateExistingBill = (
       bill.notes ??
       existingBill.notes,
   };
+
+    const changes: string[] = [];
+
+    if (
+      existingBill.amount !==
+      updatedBill.amount
+    ) {
+      changes.push(
+        `Amount: ${existingBill.amount} → ${updatedBill.amount}`
+      );
+    }
+
+    if (
+      existingBill.dueDate !==
+      updatedBill.dueDate
+    ) {
+      changes.push(
+        `Due Date: ${existingBill.dueDate} → ${updatedBill.dueDate}`
+      );
+    }
+
+    if (
+      existingBill.statementDate !==
+      updatedBill.statementDate
+    ) {
+      changes.push(
+        `Statement Date: ${
+          existingBill.statementDate ?? "N/A"
+        } → ${
+          updatedBill.statementDate ?? "N/A"
+        }`
+      );
+    }
+
+    const activityEntry: ActivityEntry = {
+      id: crypto.randomUUID(),
+      date: new Date().toISOString(),
+      action: "Statement Imported",
+      details: changes.join(" | "),
+    };
+
+      if (changes.length > 0) {
+        updatedBill.activityHistory = [
+          ...(existingBill.activityHistory ?? []),
+          activityEntry,
+        ];
+      }
 
     updateBill(updatedBill);
 
@@ -1685,4 +1771,4 @@ const handleAddDebt = (bill: ExtractedBill) => {
     />
   </>
   );
-}
+}}
