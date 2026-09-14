@@ -44,13 +44,104 @@ function parseDate(
   );
 }
 
+function normalizeObligationName(
+  name: string
+): string {
+  return name
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "");
+}
+
+function createObligationOccurrenceKey(
+  name: string,
+  amount: number,
+  dueDate: string
+): string {
+  const normalizedName =
+    normalizeObligationName(name);
+
+  const normalizedAmount =
+    Math.round(amount * 100);
+
+  return [
+    normalizedName,
+    normalizedAmount,
+    dueDate,
+  ].join("|");
+}
+
 function PaydayCard({
   plan,
 }: {
   plan: PaydayPlan;
 }) {
+  const uniqueBillItems =
+    Array.from(
+      plan.bills.reduce(
+        (itemsByOccurrence, item) => {
+          const key =
+            createObligationOccurrenceKey(
+              item.bill.name,
+              item.bill.amount,
+              item.dueDate
+            );
+
+          const existingItem =
+            itemsByOccurrence.get(key);
+
+          if (!existingItem) {
+            itemsByOccurrence.set(
+              key,
+              item
+            );
+
+            return itemsByOccurrence;
+          }
+
+          const existingIsScan =
+            existingItem.bill.id.startsWith(
+              "scan-"
+            );
+
+          const currentIsScan =
+            item.bill.id.startsWith(
+              "scan-"
+            );
+
+          if (
+            existingIsScan &&
+            !currentIsScan
+          ) {
+            itemsByOccurrence.set(
+              key,
+              item
+            );
+          }
+
+          return itemsByOccurrence;
+        },
+        new Map<
+          string,
+          PaydayPlan["bills"][number]
+        >()
+      ).values()
+    );
+
+  const uniqueTotalBills =
+    uniqueBillItems.reduce(
+      (total, item) =>
+        total +
+        item.allocatedAmount,
+      0
+    );
+
+  const adjustedRemaining =
+    plan.amount -
+    uniqueTotalBills;
+
   const isPositive =
-    plan.remaining >= 0;
+    adjustedRemaining >= 0;
 
 
   return (
@@ -86,7 +177,7 @@ function PaydayCard({
           Bills to Fund
         </h3>
 
-        {plan.bills.length === 0 ? (
+        {uniqueBillItems.length === 0 ? (
           <div className="mt-3 rounded-xl bg-slate-50 p-4">
             <p className="text-sm font-semibold text-slate-700">
               No bills need funding from this paycheck.
@@ -94,7 +185,7 @@ function PaydayCard({
           </div>
         ) : (
           <div className="mt-3 space-y-2">
-            {plan.bills.map(
+            {uniqueBillItems.map(
               (item, index) => {
                 const isFullyFunded =
                   Math.abs(
@@ -104,7 +195,11 @@ function PaydayCard({
 
                 return (
                   <div
-                    key={`${item.bill.id}-${item.dueDate}-${index}`}
+                    key={`${createObligationOccurrenceKey(
+                      item.bill.name,
+                      item.bill.amount,
+                      item.dueDate
+                    )}-${index}`}
                     className="flex items-center justify-between rounded-xl bg-slate-50 p-4"
                   >
                     <div className="min-w-0">
@@ -160,7 +255,7 @@ function PaydayCard({
         <StatCard
           title="Allocated"
           value={formatCurrency(
-            plan.totalBills
+            uniqueTotalBills
           )}
           valueClassName="text-red-600"
         />
@@ -168,7 +263,7 @@ function PaydayCard({
         <StatCard
           title="Remaining"
           value={formatCurrency(
-            plan.remaining
+            adjustedRemaining
           )}
           valueClassName={
             isPositive
@@ -299,6 +394,7 @@ export default function PaydayStrategyPage() {
               plan.payday
             );
 
+
           return (
             payday >= summaryToday &&
             payday <= cutoff
@@ -331,19 +427,19 @@ export default function PaydayStrategyPage() {
           dueDate >= summaryToday &&
           dueDate <= cutoff
         ) {
-          const key =
-            `${item.bill.id}-${item.dueDate}`;
+        const key =
+          createObligationOccurrenceKey(
+            item.bill.name,
+            item.bill.amount,
+            item.dueDate
+          );
 
-          if (
-            !upcomingBills.has(
-              key
-            )
-          ) {
-            upcomingBills.set(
-              key,
-              item.bill.amount
-            );
-          }
+        if (!upcomingBills.has(key)) {
+          upcomingBills.set(
+            key,
+            item.bill.amount
+          );
+        }
         }
       }
     }
@@ -356,7 +452,40 @@ export default function PaydayStrategyPage() {
           sum + amount,
         0
       );
+console.log(
+  "Upcoming Plans:",
+  upcomingPlans.map(
+    (plan) => ({
+      payday: plan.payday,
+      amount: plan.amount,
+    })
+  )
+);
 
+console.log(
+  "Income Total:",
+  totalUpcomingIncome
+);
+
+console.log(
+  "Bills Total:",
+  totalUpcomingBills
+);
+
+console.log(
+  "Upcoming Bill Entries"
+);
+
+console.log(
+  "Upcoming Bills Detail"
+);
+
+for (const [key, amount] of upcomingBills.entries()) {
+  console.log(
+    key,
+    amount
+  );
+}
     return {
       totalUpcomingIncome,
       totalUpcomingBills,
