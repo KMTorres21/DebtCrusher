@@ -216,7 +216,12 @@ export default function PaydayStrategyPage() {
       settings.protectedPaycheckAmount,
     ]
   );
-
+  console.log(
+    "All Payday Plans:",
+    paydayPlans.map(
+      (plan) => plan.payday
+    )
+  );
   const today = new Date();
 
   today.setHours(
