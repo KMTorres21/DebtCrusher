@@ -312,12 +312,7 @@ export default function PaydayStrategyPage() {
       settings.protectedPaycheckAmount,
     ]
   );
-  console.log(
-    "All Payday Plans:",
-    paydayPlans.map(
-      (plan) => plan.payday
-    )
-  );
+
   const today = new Date();
 
   today.setHours(
@@ -340,11 +335,6 @@ export default function PaydayStrategyPage() {
           parseDate(a.payday).getTime()
       );
 
-  console.log(
-    "Past:",
-    pastPaydayPlans.length
-  );
-
   const upcomingPaydayPlans =
     paydayPlans
       .filter(
@@ -357,10 +347,6 @@ export default function PaydayStrategyPage() {
           parseDate(a.payday).getTime() -
           parseDate(b.payday).getTime()
       );
-  console.log(
-    "Upcoming:",
-    upcomingPaydayPlans.length
-  );
 
   const nextPaydayPlan =
     upcomingPaydayPlans[0];
@@ -470,26 +456,6 @@ const summary = useMemo(() => {
         sum + amount,
       0
     );
-
-  console.log(
-    "Monthly Payday Summary:",
-    {
-      monthStart:
-        monthStart
-          .toISOString()
-          .slice(0, 10),
-      nextMonthStart:
-        nextMonthStart
-          .toISOString()
-          .slice(0, 10),
-      income:
-        totalUpcomingIncome,
-      obligations:
-        totalUpcomingBills,
-      obligationCount:
-        monthlyObligations.size,
-    }
-  );
 
   return {
     totalUpcomingIncome,
