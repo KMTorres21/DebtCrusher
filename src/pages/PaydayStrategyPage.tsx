@@ -368,65 +368,79 @@ export default function PaydayStrategyPage() {
   const laterPaydayPlans =
     upcomingPaydayPlans.slice(1);
 
-  const summary = useMemo(() => {
-    const summaryToday =
-      new Date();
+const summary = useMemo(() => {
+  const summaryToday =
+    new Date();
 
-    summaryToday.setHours(
+  summaryToday.setHours(
+    12,
+    0,
+    0,
+    0
+  );
+
+  const monthStart =
+    new Date(
+      summaryToday.getFullYear(),
+      summaryToday.getMonth(),
+      1,
       12,
       0,
       0,
       0
     );
 
-    const cutoff =
-      new Date(summaryToday);
-
-    cutoff.setDate(
-      cutoff.getDate() + 30
+  const nextMonthStart =
+    new Date(
+      summaryToday.getFullYear(),
+      summaryToday.getMonth() + 1,
+      1,
+      12,
+      0,
+      0,
+      0
     );
 
-    const upcomingPlans =
-      paydayPlans.filter(
-        (plan) => {
-          const payday =
-            parseDate(
-              plan.payday
-            );
-
-
-          return (
-            payday >= summaryToday &&
-            payday <= cutoff
-          );
-        }
-      );
-
-    const totalUpcomingIncome =
-      upcomingPlans.reduce(
-        (sum, plan) =>
-          sum + plan.amount,
-        0
-      );
-
-    const upcomingBills =
-      new Map<string, number>();
-
-    for (
-      const plan of paydayPlans
-    ) {
-      for (
-        const item of plan.bills
-      ) {
-        const dueDate =
+  const monthlyPlans =
+    paydayPlans.filter(
+      (plan) => {
+        const payday =
           parseDate(
-            item.dueDate
+            plan.payday
           );
 
-        if (
-          dueDate >= summaryToday &&
-          dueDate <= cutoff
-        ) {
+        return (
+          payday >= monthStart &&
+          payday < nextMonthStart
+        );
+      }
+    );
+
+  const totalUpcomingIncome =
+    monthlyPlans.reduce(
+      (sum, plan) =>
+        sum + plan.amount,
+      0
+    );
+
+  const monthlyObligations =
+    new Map<string, number>();
+
+  for (
+    const plan of paydayPlans
+  ) {
+    for (
+      const item of plan.bills
+    ) {
+      const dueDate =
+        parseDate(
+          item.dueDate
+        );
+
+      if (
+        dueDate >= monthStart &&
+        dueDate < nextMonthStart
+      ) {
         const key =
           createObligationOccurrenceKey(
             item.bill.name,
@@ -434,66 +448,57 @@ export default function PaydayStrategyPage() {
             item.dueDate
           );
 
-        if (!upcomingBills.has(key)) {
-          upcomingBills.set(
+        if (
+          !monthlyObligations.has(
+            key
+          )
+        ) {
+          monthlyObligations.set(
             key,
             item.bill.amount
           );
         }
-        }
       }
     }
+  }
 
-    const totalUpcomingBills =
-      Array.from(
-        upcomingBills.values()
-      ).reduce(
-        (sum, amount) =>
-          sum + amount,
-        0
-      );
-console.log(
-  "Upcoming Plans:",
-  upcomingPlans.map(
-    (plan) => ({
-      payday: plan.payday,
-      amount: plan.amount,
-    })
-  )
-);
+  const totalUpcomingBills =
+    Array.from(
+      monthlyObligations.values()
+    ).reduce(
+      (sum, amount) =>
+        sum + amount,
+      0
+    );
 
-console.log(
-  "Income Total:",
-  totalUpcomingIncome
-);
-
-console.log(
-  "Bills Total:",
-  totalUpcomingBills
-);
-
-console.log(
-  "Upcoming Bill Entries"
-);
-
-console.log(
-  "Upcoming Bills Detail"
-);
-
-for (const [key, amount] of upcomingBills.entries()) {
   console.log(
-    key,
-    amount
-  );
-}
-    return {
-      totalUpcomingIncome,
-      totalUpcomingBills,
-      projectedRemaining:
-        totalUpcomingIncome -
+    "Monthly Payday Summary:",
+    {
+      monthStart:
+        monthStart
+          .toISOString()
+          .slice(0, 10),
+      nextMonthStart:
+        nextMonthStart
+          .toISOString()
+          .slice(0, 10),
+      income:
+        totalUpcomingIncome,
+      obligations:
         totalUpcomingBills,
-    };
-  }, [paydayPlans]);
+      obligationCount:
+        monthlyObligations.size,
+    }
+  );
+
+  return {
+    totalUpcomingIncome,
+    totalUpcomingBills,
+    projectedRemaining:
+      totalUpcomingIncome -
+      totalUpcomingBills,
+  };
+}, [paydayPlans]);
 
   return (
     <PageContainer>
@@ -504,7 +509,7 @@ for (const [key, amount] of upcomingBills.entries()) {
 
       <div className="grid grid-cols-2 gap-4">
         <StatCard
-          title="Upcoming Income"
+          title="Income This Month"
           value={formatCurrency(
             summary.totalUpcomingIncome
           )}
@@ -512,7 +517,7 @@ for (const [key, amount] of upcomingBills.entries()) {
         />
 
         <StatCard
-          title="Upcoming Bills"
+          title="Obligations This Month"
           value={formatCurrency(
             summary.totalUpcomingBills
           )}
@@ -540,7 +545,8 @@ for (const [key, amount] of upcomingBills.entries()) {
 
         <p className="mt-2 text-sm text-slate-500">
           Projected income remaining after
-          bills due in the next 30 days.
+          bills and debt payments due this
+          month.
         </p>
       </Card>
 
