@@ -101,6 +101,12 @@ export default function DebtCard({
               {utilization}% utilized
             </p>
 
+              {showDebtStatementDate && debt.statementDate && (
+                <p className="text-xs text-slate-500">
+                  Statement Date: {" "} {debt.statementDate}
+                </p>
+              )}            
+
             <div className="text-right">
               <p className="text-xs text-slate-500">
                 Statement Balance
@@ -109,12 +115,6 @@ export default function DebtCard({
               <p className="text-xs font-semibold text-slate-900">
                 {formatCurrency(currentBalance)}
               </p>
-
-              {showDebtStatementDate && debt.statementDate && (
-                <p className="text-xs text-slate-500">
-                  Statement Date: {" "} {debt.statementDate}
-                </p>
-              )}
 
             </div>
           </div>
