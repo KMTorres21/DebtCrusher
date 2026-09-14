@@ -443,12 +443,16 @@ const handleScan = async () => {
 
 const handleEditBill = (bill:
   ExtractedBill) => {
+    
+    // New bill update logic
     setEditingBill(bill);
   };
 
 const handleUpdateExistingDebt = (
   bill: ExtractedBill
 ) => {
+
+  // Existing debt update logic
   if (
     bill.matchedRecordType !== "debt" ||
     !bill.matchedRecordId
@@ -587,20 +591,18 @@ const handleUpdateExistingBill = (
       existingBill.notes,
   };
 
-  updateBill(updatedBill);
+    updateBill(updatedBill);
 
-  setBills((currentBills) =>
-    currentBills.map(
-      (currentBill) =>
-        currentBill.id === bill.id
-          ? {
-              ...currentBill,
-              selected: false,
-            }
-          : currentBill
-    )
-  );
-};
+    setBills((current) => {
+      const remaining =
+        current.filter(
+          (item) =>
+            item.id !== bill.id
+        );
+
+      return remaining;
+    });
+  };
 
     return remaining;
   });
@@ -867,6 +869,8 @@ const handleAddDebt = (bill: ExtractedBill) => {
   ).length;
 
   return (
+  
+    // Page JSX
     <>
 {isScanning && (
   <div className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm">
