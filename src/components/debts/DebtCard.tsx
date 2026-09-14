@@ -99,15 +99,16 @@ export default function DebtCard({
           <div className="mt-2 flex items-start justify-between gap-4">
             <p className="text-xs font-semibold text-green-700">
               {utilization}% utilized
-            </p>
+            </p>           
 
+            <div className="text-right"
+            >
               {showDebtStatementDate && debt.statementDate && (
                 <p className="text-xs text-slate-500">
                   Statement Date: {" "} {debt.statementDate}
                 </p>
-              )}            
+              )} 
 
-            <div className="text-right">
               <p className="text-xs text-slate-500">
                 Statement Balance
               </p>
