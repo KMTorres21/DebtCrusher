@@ -37,38 +37,127 @@ interface ExtractedBill extends Bill {
   matchedRecordName?: string;
 }
 
-function normalizeName(
+function normalizeScannerName(
   value: string
 ): string {
   return value
+    .trim()
     .toLowerCase()
-    .replace(/[^a-z0-9]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]/g, "");
 }
 
-function namesPossiblyMatch(
-  first: string,
-  second: string
+function namesLikelyMatch(
+  existingName: string,
+  scannedName: string
 ): boolean {
-  const a = normalizeName(first);
-  const b = normalizeName(second);
+  const normalizedExisting =
+    normalizeScannerName(
+      existingName
+    );
 
-  if (!a || !b) {
-    return false;
-  }
+  const normalizedScanned =
+    normalizeScannerName(
+      scannedName
+    );
 
-  if (a === b) {
-    return true;
-  }
-
-  if (a.length < 4 || b.length < 4) {
+  if (
+    !normalizedExisting ||
+    !normalizedScanned
+  ) {
     return false;
   }
 
   return (
-    a.includes(b) ||
-    b.includes(a)
+    normalizedExisting ===
+      normalizedScanned ||
+    normalizedExisting.includes(
+      normalizedScanned
+    ) ||
+    normalizedScanned.includes(
+      normalizedExisting
+    )
+  );
+}
+
+function calculateNameConfidence(
+  existingName: string,
+  scannedName: string
+): number {
+  const normalizedExisting =
+    normalizeScannerName(
+      existingName
+    );
+
+  const normalizedScanned =
+    normalizeScannerName(
+      scannedName
+    );
+
+  if (
+    !normalizedExisting ||
+    !normalizedScanned
+  ) {
+    return 0;
+  }
+
+  if (
+    normalizedExisting ===
+    normalizedScanned
+  ) {
+    return 100;
+  }
+
+  if (
+    normalizedExisting.includes(
+      normalizedScanned
+    ) ||
+    normalizedScanned.includes(
+      normalizedExisting
+    )
+  ) {
+    return 80;
+  }
+
+  return 0;
+}
+
+function normalizeName(
+  value: string
+): string {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]/g, "");
+}
+
+function namesPossiblyMatch(
+  firstName: string,
+  secondName: string
+): boolean {
+  const normalizedFirstName =
+    normalizeName(firstName);
+
+  const normalizedSecondName =
+    normalizeName(secondName);
+
+  if (
+    !normalizedFirstName ||
+    !normalizedSecondName
+  ) {
+    return false;
+  }
+
+  return (
+    normalizedFirstName ===
+      normalizedSecondName ||
+    normalizedFirstName.includes(
+      normalizedSecondName
+    ) ||
+    normalizedSecondName.includes(
+      normalizedFirstName
+    )
   );
 }
 
@@ -294,16 +383,10 @@ const handleScan = async () => {
   name: debt.name,
   type: "debt" as const,
   confidence:
-    debt.name.toLowerCase() ===
-    scannedName.toLowerCase()
-      ? 100
-      : debt.name
-          .toLowerCase()
-          .includes(
-            scannedName.toLowerCase()
-          )
-        ? 80
-        : 60,
+  calculateNameConfidence(
+    debt.name,
+    scannedName
+  ),
             })
           ),
           ...possibleBillMatches.map(
@@ -313,17 +396,10 @@ const handleScan = async () => {
   name: bill.name,
   type: "bill" as const,
   confidence:
-    bill.name.toLowerCase() ===
-    scannedName.toLowerCase()
-      ? 100
-      : bill.name
-          .toLowerCase()
-          .includes(
-            scannedName.toLowerCase()
-          )
-        ? 80
-        : 60,
-
+  calculateNameConfidence(
+    bill.name,
+    scannedName
+  ),
             })
           ),
         ],
@@ -446,6 +522,86 @@ const handleUpdateExistingDebt = (
       setFile(null);
     }
 
+const handleUpdateExistingBill = (
+  bill: ExtractedBill
+) => {
+  if (
+    bill.matchedRecordType !== "bill" ||
+    !bill.matchedRecordId
+  ) {
+    return;
+  }
+
+  const existingBill =
+    existingBills.find(
+      (existingBill) =>
+        existingBill.id ===
+        bill.matchedRecordId
+    );
+
+  if (!existingBill) {
+    console.warn(
+      "Matched bill could not be found:",
+      bill.matchedRecordId
+    );
+
+    return;
+  }
+
+  const updatedBill = {
+    ...existingBill,
+
+    name:
+      bill.name.trim() ||
+      existingBill.name,
+
+    statementDate:
+      bill.statementDate ??
+      existingBill.statementDate,
+
+    statementReviewed: true,
+
+    statementReviewedAt:
+      new Date().toISOString(),
+
+    statementBalance:
+      typeof bill.statementBalance ===
+      "number"
+        ? bill.statementBalance
+        : existingBill.statementBalance,
+
+    amount:
+      bill.amount,
+
+    dueDate:
+      bill.dueDate,
+
+    category:
+      bill.category,
+
+    autoPay:
+      bill.autoPay,
+
+    notes:
+      bill.notes ??
+      existingBill.notes,
+  };
+
+  updateBill(updatedBill);
+
+  setBills((currentBills) =>
+    currentBills.map(
+      (currentBill) =>
+        currentBill.id === bill.id
+          ? {
+              ...currentBill,
+              selected: false,
+            }
+          : currentBill
+    )
+  );
+};
+
     return remaining;
   });
 };
@@ -516,14 +672,55 @@ const handleAddDebt = (bill: ExtractedBill) => {
     setEditingBill(null);
   };
 
-  const addSelectedBills = () => {
-    const selectedBills = bills.filter(
-  (bill) =>
-    bill.selected &&
-    bill.name.trim() &&
-    bill.amount > 0 &&
-    bill.dueDate
-);
+    const addSelectedBills = () => {
+      const selectedBills =
+        bills.filter(
+          (bill) =>
+            bill.selected &&
+            bill.name.trim() &&
+            bill.amount > 0 &&
+            bill.dueDate &&
+            !(
+              bill.matchStatus ===
+                "existing" &&
+              Boolean(
+                bill.matchedRecordId
+              )
+            )
+        );
+
+      const skippedExistingMatches =
+        bills.filter(
+          (bill) =>
+            bill.selected &&
+            bill.matchStatus ===
+              "existing" &&
+            Boolean(
+              bill.matchedRecordId
+            )
+        );
+
+      if (
+        skippedExistingMatches.length > 0
+      ) {
+        console.warn(
+          "Existing matches were not added as new bills:",
+          skippedExistingMatches.map(
+            (bill) => ({
+              scannerId:
+                bill.id,
+              scannedName:
+                bill.name,
+              matchedRecordId:
+                bill.matchedRecordId,
+              matchedRecordName:
+                bill.matchedRecordName,
+              matchedRecordType:
+                bill.matchedRecordType,
+            })
+          )
+        );
+      }
 
     selectedBills.forEach((bill) => {
     const { confidence, selected, ...newBill } = bill;
@@ -1255,7 +1452,19 @@ const handleAddDebt = (bill: ExtractedBill) => {
         </button>
 
         {/* Convert credit card to debt */}
-        {bill.category === "Credit Card" && (
+        {bill.category === "Credit Card" &&
+          !(
+            bill.matchStatus ===
+              "existing" &&
+            bill.matchedRecordType ===
+              "debt" &&
+            bill.matchedRecordId
+          ) && (
+            bill.matchStatus ===
+              "existing" &&
+            bill.matchedRecordType ===
+              "debt"
+          ) && (
           <button
             type="button"
             onClick={() => handleAddDebt(bill)}
@@ -1264,6 +1473,21 @@ const handleAddDebt = (bill: ExtractedBill) => {
             Add as Debt
           </button>
         )}
+
+        {/* {bill.matchStatus === "existing" &&
+          bill.matchedRecordType === "bill" &&
+          bill.matchedRecordId && (
+            <button
+              type="button"
+              onClick={() =>
+                handleUpdateExistingBill(bill)
+              }
+              className="mt-2 w-full rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-700"
+            >
+              Update Existing Bill
+            </button>
+          )} */}
+
         {bill.matchStatus === "existing" &&
         bill.matchedRecordType === "debt" && (
               <button
@@ -1284,20 +1508,29 @@ const handleAddDebt = (bill: ExtractedBill) => {
               <button
                 type="button"
                 onClick={addSelectedBills}
-       disabled={
-  selectedCount === 0 ||
-  bills.some(
-    (bill) =>
-      bill.selected &&
-      (!bill.name.trim() ||
-        bill.amount <= 0 ||
-        !bill.dueDate)
-  )
-}
+                disabled={
+                  selectedCount === 0 ||
+                  bills.some(
+                    (bill) =>
+                      bill.selected &&
+                      (
+                        !bill.name.trim() ||
+                        bill.amount <= 0 ||
+                        !bill.dueDate ||
+                        (
+                          bill.matchStatus ===
+                            "existing" &&
+                          Boolean(
+                            bill.matchedRecordId
+                          )
+                        )
+                      )
+                  )
+                }
                 className="w-full rounded-xl bg-green-600 px-5 py-4 font-bold text-white 
                   shadow transition hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                ✅ Add {selectedCount} Selected{" "}
+                ✅ Add New {selectedCount} Selected{" "}
                 {selectedCount === 1 ? "Bill" : "Bills"}
               </button>
             </>
