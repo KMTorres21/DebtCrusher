@@ -6,7 +6,7 @@ import {
 
 interface DebtCardProps {
   debt: Debt;
-  showDebtStatementDate: boolean;
+  showDebtStatementDate: string;
   onEdit: (debt: Debt) => void;
   onDelete: (id: string) => void;
   onConvertToBill: (debt: Debt) => void;
