@@ -608,6 +608,88 @@ const handleUpdateExistingBill = (
   });
 };
 
+const handleUpdateExistingBill = (
+  bill: ExtractedBill
+) => {
+  if (
+    bill.matchedRecordType !== "bill" ||
+    !bill.matchedRecordId
+  ) {
+    return;
+  }
+
+  const existingBill =
+    existingBills.find(
+      (existingBill) =>
+        existingBill.id ===
+        bill.matchedRecordId
+    );
+
+  if (!existingBill) {
+    console.warn(
+      "Matched bill could not be found:",
+      bill.matchedRecordId
+    );
+
+    return;
+  }
+
+  const updatedBill: Bill = {
+    ...existingBill,
+
+    name:
+      bill.name.trim() ||
+      existingBill.name,
+
+    statementDate:
+      bill.statementDate ??
+      existingBill.statementDate,
+
+    statementReviewed: true,
+
+    statementReviewedAt:
+      new Date().toISOString(),
+
+    statementBalance:
+      typeof bill.statementBalance ===
+      "number"
+        ? bill.statementBalance
+        : existingBill.statementBalance,
+
+    amount:
+      bill.amount > 0
+        ? bill.amount
+        : existingBill.amount,
+
+    dueDate:
+      bill.dueDate ||
+      existingBill.dueDate,
+
+    category:
+      bill.category,
+
+    autoPay:
+      bill.autoPay,
+
+    notes:
+      bill.notes ??
+      existingBill.notes,
+  };
+
+  updateBill(updatedBill);
+
+  setBills((current) => {
+    const remaining =
+      current.filter(
+        (item) =>
+          item.id !== bill.id
+      );
+
+    return remaining;
+  });
+};
+
+
 const handleAddDebt = (bill: ExtractedBill) => {
   const latestBalance =
     typeof bill.statementBalance === "number"
@@ -1504,6 +1586,23 @@ const handleAddDebt = (bill: ExtractedBill) => {
                 Update Existing Debt
               </button>
           )}
+
+        {bill.matchStatus === "existing" &&
+          bill.matchedRecordType === "bill" &&
+          bill.matchedRecordId && (
+            <button
+              type="button"
+              onClick={() =>
+                handleUpdateExistingBill(
+                  bill
+                )
+              }
+              className="mt-2 w-full rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-700"
+            >
+              Update Existing Bill
+            </button>
+          )}
+
       </div>
     </div>
   </div>
