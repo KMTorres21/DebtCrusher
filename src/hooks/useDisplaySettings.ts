@@ -5,10 +5,12 @@ const STORAGE_KEY =
 
 export interface DisplaySettings {
   showBillStatementDate: boolean;
+  showDebtStatementDate: boolean;
 }
 
 const DEFAULT_SETTINGS: DisplaySettings = {
   showBillStatementDate: true,
+  showDebtStatementDate: true,
 };
 
 function loadSettings(): DisplaySettings {

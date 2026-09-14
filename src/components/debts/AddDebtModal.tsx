@@ -92,7 +92,8 @@ useEffect(() => {
     );
     setPromoDeferredInterest(prefill?.promoDeferredInterest ?? false
     );
-    setStatementDate(prefill?.statementDate ?? ""
+    setStatementDate(
+      prefill?.statementDate ?? ""
     );
     setStatementBalance(
       prefill?.statementBalance !== undefined
@@ -348,7 +349,6 @@ updatedAt: now,
 };
 
     onSave(debt);
-
     resetForm();
     onClose();
   }

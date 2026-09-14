@@ -6,6 +6,7 @@ import {
 
 interface DebtCardProps {
   debt: Debt;
+  showDebtStatementDate: boolean;
   onEdit: (debt: Debt) => void;
   onDelete: (id: string) => void;
   onConvertToBill: (debt: Debt) => void;
@@ -13,6 +14,7 @@ interface DebtCardProps {
 
 export default function DebtCard({
   debt,
+  showDebtStatementDate,
   onEdit,
   onDelete,
   onConvertToBill,
@@ -103,6 +105,12 @@ export default function DebtCard({
               <p className="text-xs text-slate-500">
                 Statement Balance
               </p>
+
+              {showDebtStatementDate && debt.statementDate && (
+                <p className="text-xs text-slate-500">
+                  Statement Date: {" "} {debt.statementDate}
+                </p>
+              )}
 
               <p className="text-xs font-semibold text-slate-900">
                 {formatCurrency(currentBalance)}

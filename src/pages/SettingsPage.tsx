@@ -401,6 +401,29 @@ export default function SettingsPage() {
         Display each bill's statement date on the Bills page when one is available.
       </p>
     </div>
+
+    <input
+          type="checkbox"
+          checked={
+            displaySettings.showDebtStatementDate
+          }
+          onChange={(event) =>
+            setDisplaySettings({
+              showDebtStatementDate:
+                event.target.checked,
+            })
+          }
+          className="mt-1 h-5 w-5"
+        />
+
+    <div>
+      <p className="font-semibold text-slate-900">
+      Show Statement Date on Debt Cards
+      </p>
+      <p className="mt-1 text-sm text-slate-500">
+        Display each debt's statement date on the Debts page when one is available.
+      </p>
+    </div>
   </label>
 </Card>
 
