@@ -554,7 +554,12 @@ const activityEntry: ActivityEntry = {
 };
 
     if (changes.length > 0) {
-      updatedDebt.activityHistory 
+      updatedDebt.activityHistory = [
+        ...(existingDebt.activityHistory ?? []),
+        activityEntry,
+      ];
+    }
+
 
   updateDebt(updatedDebt);
   console.log(
@@ -1771,4 +1776,4 @@ const handleAddDebt = (bill: ExtractedBill) => {
     />
   </>
   );
-}}
+}
