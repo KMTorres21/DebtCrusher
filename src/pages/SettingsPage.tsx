@@ -20,15 +20,14 @@ import {
 
 export default function SettingsPage() {
   const {
-    settings: displaySettings,
-    setSettings: setDisplaySettings,
-  } = useDisplaySettings();
-
-  const {
     settings,
     setSettings,
     resetSettings,
   } = usePaydayStrategySettings();
+  const {
+    displaySettings,
+    updateSettings,
+  } = useDisplaySettings();
 
   const fileInputRef =
     useRef<HTMLInputElement>(null);
@@ -384,7 +383,7 @@ export default function SettingsPage() {
         displaySettings.showBillStatementDate
       }
       onChange={(event) =>
-        setDisplaySettings({
+        updateSettings({
           showBillStatementDate:
             event.target.checked,
         })
@@ -408,7 +407,7 @@ export default function SettingsPage() {
             displaySettings.showDebtStatementDate
           }
           onChange={(event) =>
-            setDisplaySettings({
+            updateSettings({
               showDebtStatementDate:
                 event.target.checked,
             })

@@ -32,17 +32,17 @@ function loadSettings(): DisplaySettings {
 }
 
 export function useDisplaySettings() {
-  const [settings, setSettingsState] =
+  const [displaySettings, setSettingsState] =
     useState<DisplaySettings>(loadSettings);
 
   useEffect(() => {
     localStorage.setItem(
       STORAGE_KEY,
-      JSON.stringify(settings)
+      JSON.stringify(displaySettings)
     );
-  }, [settings]);
+  }, [displaySettings]);
 
-  function setSettings(
+  function updateSettings(
     updates: Partial<DisplaySettings>
   ) {
     setSettingsState((current) => ({
@@ -52,7 +52,7 @@ export function useDisplaySettings() {
   }
 
   return {
-    settings,
-    setSettings,
+    displaySettings,
+    updateSettings,
   };
 }

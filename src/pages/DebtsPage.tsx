@@ -15,6 +15,7 @@ import StatCard from "../components/common/StatCard";
 import { useNavigate } from "react-router-dom";
 import DebtCard from "../components/debts/DebtCard";
 import AddDebtModal from "../components/debts/AddDebtModal";
+import { useDisplaySettings } from "../hooks/useDisplaySettings";
 
 export default function DebtsPage() {
   const {
@@ -23,8 +24,8 @@ export default function DebtsPage() {
     updateDebt,
     deleteDebt,
   } = useDebts();
-  const { addBill 
-  } = useBills();
+const { addBill } = useBills();
+const { displaySettings } = useDisplaySettings();
 
   const [search, setSearch] = useState("");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -33,7 +34,7 @@ export default function DebtsPage() {
   const [sortBy, setSortBy] = useState<
       "name" | "dueDate" | "statementDate"
     >(() => {
-      const saved = localStorage.getItem(
+  const saved = localStorage.getItem(
         "debtSortBy"
       );
 
@@ -217,6 +218,9 @@ export default function DebtsPage() {
             <DebtCard
               key={debt.id}
               debt={debt}
+              showDebtStatementDate = {
+                displaySettings.showDebtStatementDate
+              }
               onEdit={handleEdit}
               onDelete={deleteDebt}
               onConvertToBill={handleConvertToBill}
