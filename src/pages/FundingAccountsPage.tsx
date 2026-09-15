@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import PageContainer from "../components/layout/PageContainer";
 import PageHeader from "../components/layout/PageHeader";
 import Card from "../components/common/Card";
-
+import { formatCurrency } from "../utils/formatCurrency";
 import { FundingAccount } from "../types/FundingAccount";
 
 import {
@@ -23,6 +23,28 @@ export default function FundingAccountsPage() {
   const [newAccountName, setNewAccountName] =
   useState("");
 
+  const [
+  editingAccountId,
+  setEditingAccountId,
+] = useState<string | null>(
+  null
+);
+
+const [
+  editingName,
+  setEditingName,
+] = useState("");
+
+const [
+  editingBalance,
+  setEditingBalance,
+] = useState("");
+
+  const [
+    currentBalance,
+    setCurrentBalance,
+  ] = useState("");
+
   function handleAddAccount() {
     if (
       !newAccountName.trim()
@@ -40,6 +62,12 @@ export default function FundingAccountsPage() {
       id: crypto.randomUUID(),
       name,
       type: "Checking",
+
+      currentBalance:
+        currentBalance.trim()
+          ? Number(currentBalance)
+          : undefined,
+
       createdAt: now,
       updatedAt: now,
     };
@@ -50,16 +78,13 @@ export default function FundingAccountsPage() {
     ];
 
 console.log(
-"Creating Funding Account:",
-account
-);
-    setAccounts(updated);
-console.log(
-"All Funding Accounts:",
-updated
-);
+  "Creating Funding Account:",
+  account
+);    
+
     saveFundingAccounts(updated);
     setNewAccountName("");
+    setCurrentBalance("");
   }
 
   function handleDeleteAccount(
@@ -70,10 +95,62 @@ updated
         (account) =>
           account.id !== id
       );
+      setAccounts(updated);
+      saveFundingAccounts(updated);
+      }
 
-    setAccounts(updated);
-    saveFundingAccounts(updated);
+  function handleStartEdit(
+    account: FundingAccount
+  ) {
+    setEditingAccountId(
+      account.id
+    );
+
+    setEditingName(
+      account.name
+    );
+
+    setEditingBalance(
+      account.currentBalance?.toString() ??
+        ""
+    );
   }
+
+  function handleSaveEdit() {
+    if (!editingAccountId) {
+      return;
+    }
+    const updated =
+      accounts.map(
+        (account) =>
+          account.id ===
+          editingAccountId
+            ? {
+                ...account,
+                name:
+                  editingName.trim(),
+                currentBalance:
+                  editingBalance.trim()
+                    ? Number(
+                        editingBalance
+                      )
+                    : undefined,
+                updatedAt:
+                  new Date().toISOString(),
+              }
+            : account
+      );
+    setAccounts(updated);
+    saveFundingAccounts(
+      updated
+    );
+    setEditingAccountId(
+      null
+    );
+    setEditingName("");
+    setEditingBalance("");
+  }
+
 
   return (
     <PageContainer>
@@ -93,6 +170,19 @@ updated
   className="mb-3 w-full rounded-xl border border-slate-300 px-3 py-2"
 />
 
+      <input
+        type="number"
+        step="0.01"
+        value={currentBalance}
+        onChange={(event) =>
+          setCurrentBalance(
+            event.target.value
+          )
+        }
+        placeholder="Current Balance"
+        className="mb-3 w-full rounded-xl border border-slate-300 px-3 py-2"
+      />
+
       <button
         onClick={handleAddAccount}
         className="mb-4 rounded-xl bg-blue-600 px-4 py-2 font-semibold text-white"
@@ -106,25 +196,91 @@ updated
             <Card key={account.id}>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-semibold">
-                    {account.name}
-                  </p>
+                  {editingAccountId ===
+                  account.id ? (
+                    <>
+                      <input
+                        value={editingName}
+                        onChange={(event) =>
+                          setEditingName(
+                            event.target.value
+                          )
+                        }
+                        className="mb-2 w-full rounded border px-2 py-1"
+                      />
 
-                  <p className="text-sm text-slate-500">
-                    {account.type}
-                  </p>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={editingBalance}
+                        onChange={(event) =>
+                          setEditingBalance(
+                            event.target.value
+                          )
+                        }
+                        placeholder="Current Balance"
+                        className="w-full rounded border px-2 py-1"
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <p className="font-semibold">
+                        {account.name}
+                      </p>
+
+                      {typeof
+                        account.currentBalance ===
+                        "number" && (
+                        <p className="text-sm text-green-600">
+                          Balance:{" "}
+                          {formatCurrency(
+                            account.currentBalance
+                          )}
+                        </p>
+                      )}
+
+                      <p className="text-sm text-slate-500">
+                        {account.type}
+                      </p>
+                    </>
+                  )}
                 </div>
 
-                <button
-                  onClick={() =>
-                    handleDeleteAccount(
-                      account.id
-                    )
-                  }
-                  className="text-red-600"
-                >
-                  Delete
-                </button>
+                <div className="flex gap-3">
+                  {editingAccountId ===
+                  account.id ? (
+                    <button
+                      onClick={
+                        handleSaveEdit
+                      }
+                      className="text-blue-600"
+                    >
+                      Save
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() =>
+                        handleStartEdit(
+                          account
+                        )
+                      }
+                      className="text-blue-600"
+                    >
+                      Edit
+                    </button>
+                  )}
+
+                  <button
+                    onClick={() =>
+                      handleDeleteAccount(
+                        account.id
+                      )
+                    }
+                    className="text-red-600"
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
             </Card>
           )

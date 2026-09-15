@@ -8,6 +8,7 @@ export interface FundingAccount {
   id: string;
   name: string;
   type: FundingAccountType;
+  currentBalance?: number;
   createdAt: string;
   updatedAt: string;
 }
