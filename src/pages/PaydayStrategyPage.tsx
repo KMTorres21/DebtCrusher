@@ -224,6 +224,31 @@ function PaydayCard({
           Accounts to Fund
         </h3>
 
+      <div className="mt-3 rounded-xl bg-slate-50 p-4">
+        <div className="space-y-2">
+          {fundingGroups.map((group) => (
+            <div
+              key={`summary-${group.accountId}`}
+              className="flex items-center justify-between"
+            >
+              <span
+                className={`font-medium ${
+                  group.accountId === "unassigned"
+                    ? "text-amber-600"
+                    : "text-slate-700"
+                }`}
+              >
+                {group.accountName}
+              </span>
+
+              <span className="font-bold text-blue-600">
+                {formatCurrency(group.total)}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>        
+
         {uniqueBillItems.length === 0 ? (
           <div className="mt-3 rounded-xl bg-slate-50 p-4">
             <p className="text-sm font-semibold text-slate-700">
