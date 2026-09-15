@@ -132,16 +132,17 @@ function PaydayCard({
     Array.from(
       uniqueBillItems.reduce(
         (groups, item) => {
+
           const accountId =
             item.bill.fundingAccountId ??
-            "unassigned";
+            "unassigned";     
 
           const account =
             fundingAccounts.find(
               (fundingAccount) =>
                 fundingAccount.id ===
                 accountId
-            );
+            );         
 
           const accountName =
             account?.name ??
