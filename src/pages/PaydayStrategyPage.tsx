@@ -1,8 +1,5 @@
-import {
-  useMemo,
-  useState,
-} from "react";
-
+import { useMemo, useState, } from "react";
+import { getFundingAccounts } from "../utils/fundingAccountsStorage";
 import { usePaydayStrategySettings } from "../hooks/usePaydayStrategySettings";
 import PageContainer from "../components/common/PageContainer";
 import PageHeader from "../components/common/PageHeader";
@@ -11,6 +8,7 @@ import StatCard from "../components/common/StatCard";
 import { useBills } from "../hooks/useBills";
 import { useIncome } from "../hooks/useIncome";
 import { useDebts } from "../hooks/useDebts";
+import type { FundingAccount } from "../types/FundingAccount";
 
 import {
   buildAllPaydayPlans,
@@ -73,8 +71,10 @@ function createObligationOccurrenceKey(
 
 function PaydayCard({
   plan,
+  fundingAccounts,
 }: {
   plan: PaydayPlan;
+  fundingAccounts: FundingAccount[]
 }) {
   const uniqueBillItems =
     Array.from(
@@ -128,6 +128,53 @@ function PaydayCard({
       ).values()
     );
 
+    const fundingGroups =
+    Array.from(
+      uniqueBillItems.reduce(
+        (groups, item) => {
+          const accountId =
+            item.bill.fundingAccountId ??
+            "unassigned";
+
+          const account =
+            fundingAccounts.find(
+              (fundingAccount) =>
+                fundingAccount.id ===
+                accountId
+            );
+
+          const accountName =
+            account?.name ??
+            "Unassigned";
+
+          const existingGroup = 
+            groups.get(accountId);
+
+          if (existingGroup) {
+            existingGroup.items.push(
+              item
+            );
+
+            existingGroup.total +=
+              item.allocatedAmount;
+
+            return groups;
+          }
+
+          groups.set(accountId, {
+            accountId,
+            accountName,
+            total:
+              item.allocatedAmount,
+            items: [item],
+          });
+
+          return groups;
+        },
+        new Map()
+      ).values()
+    );  
+
   const uniqueTotalBills =
     uniqueBillItems.reduce(
       (total, item) =>
@@ -142,7 +189,6 @@ function PaydayCard({
 
   const isPositive =
     adjustedRemaining >= 0;
-
 
   return (
     <Card>
@@ -174,7 +220,7 @@ function PaydayCard({
 
       <div className="mt-5">
         <h3 className="text-sm font-bold uppercase tracking-wide text-slate-500">
-          Bills to Fund
+          Accounts to Fund
         </h3>
 
         {uniqueBillItems.length === 0 ? (
@@ -183,74 +229,105 @@ function PaydayCard({
               No bills need funding from this paycheck.
             </p>
           </div>
-        ) : (
-          <div className="mt-3 space-y-2">
-            {uniqueBillItems.map(
-              (item, index) => {
-                const isFullyFunded =
-                  Math.abs(
-                    item.allocatedAmount -
-                      item.bill.amount
-                  ) < 0.01;
+ ) : (
+  <div className="mt-3 space-y-4">
+    {fundingGroups.map((group) => (
+      <div
+        key={group.accountId}
+        className="rounded-xl border border-slate-200 p-4"
+      >
+        <div className="flex items-center justify-between">
+          <h4
+            className={`font-bold ${
+              group.accountId === "unassigned"
+                ? "text-amber-600"
+                : "text-slate-900"
+            }`}
+          >
+            {group.accountName}
+          </h4>
 
-                return (
-                  <div
-                    key={`${createObligationOccurrenceKey(
-                      item.bill.name,
-                      item.bill.amount,
+          <span className="font-bold text-blue-600">
+            {formatCurrency(group.total)}
+          </span>
+        </div>
+
+        <div className="mt-3 space-y-2">
+          {group.items.map((
+            item: (typeof group.items)[number],
+            index: number
+          ) => {
+            const isFullyFunded =
+              Math.abs(
+                item.allocatedAmount -
+                  item.bill.amount
+              ) < 0.01;
+
+            return (
+              <div
+                key={`${item.bill.id}-${item.dueDate}-${index}`}
+                className="flex items-center justify-between rounded-xl bg-slate-50 p-4"
+              >
+                <div className="min-w-0">
+                  <p className="font-semibold text-slate-900">
+                    {item.bill.name}
+                  </p>
+
+                  <p className="text-sm text-slate-500">
+                    Due{" "}
+                    {formatDisplayDate(
                       item.dueDate
-                    )}-${index}`}
-                    className="flex items-center justify-between rounded-xl bg-slate-50 p-4"
+                    )}
+                  </p>
+
+                  <p
+                    className={`mt-1 text-xs font-semibold ${
+                      isFullyFunded
+                        ? "text-green-600"
+                        : "text-amber-600"
+                    }`}
                   >
-                    <div className="min-w-0">
-                      <p className="font-semibold text-slate-900">
-                        {item.bill.name}
-                      </p>
+                    {isFullyFunded
+                      ? "Fully Funded"
+                      : "Partially Funded"}
+                  </p>
+                </div>
 
-                      <p className="text-sm text-slate-500">
-                        Due{" "}
-                        {formatDisplayDate(
-                          item.dueDate
-                        )}
-                      </p>
+                <div className="ml-4 shrink-0 text-right">
+                  <p className="font-bold text-slate-900">
+                    {formatCurrency(
+                      item.allocatedAmount
+                    )}
+                  </p>
 
-                      <p
-                        className={`mt-1 text-xs font-semibold ${
-                          isFullyFunded
-                            ? "text-green-600"
-                            : "text-amber-600"
-                        }`}
-                      >
-                        {isFullyFunded
-                          ? "Fully Funded"
-                          : "Partially Funded"}
-                      </p>
-                    </div>
-
-                    <div className="ml-4 shrink-0 text-right">
-                      <p className="font-bold text-slate-900">
-                        {formatCurrency(
-                          item.allocatedAmount
-                        )}
-                      </p>
-
-                      {!isFullyFunded && (
-                        <p className="text-xs text-slate-400">
-                          of{" "}
-                          {formatCurrency(
-                            item.bill.amount
-                          )}
-                        </p>
+                  {!isFullyFunded && (
+                    <p className="text-xs text-slate-400">
+                      of{" "}
+                      {formatCurrency(
+                        item.bill.amount
                       )}
-                    </div>
-                  </div>
-                );
-              }
-            )}
-          </div>
-        )}
-      </div>
+                    </p>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
 
+        <div className="mt-3 border-t border-slate-200 pt-3 text-right">
+          <p className="text-xs uppercase tracking-wide text-slate-500">
+            Account Total
+          </p>
+
+          <p className="text-lg font-bold text-blue-600">
+            {formatCurrency(group.total)}
+          </p>
+        </div>
+      </div>
+    ))}
+  </div>
+)}
+</div>
       <div className="mt-5 grid grid-cols-2 gap-4">
         <StatCard
           title="Allocated"
@@ -291,7 +368,10 @@ export default function PaydayStrategyPage() {
   const { debts } = useDebts();
   const { settings } =
     usePaydayStrategySettings();
-
+  const fundingAccounts = useMemo(
+    () => getFundingAccounts(),
+    []
+    );
   const [
     showPastPaydays,
     setShowPastPaydays,
@@ -576,6 +656,7 @@ const summary = useMemo(() => {
                   <PaydayCard
                     key={`${plan.income.id}-${plan.payday}`}
                     plan={plan}
+                    fundingAccounts={fundingAccounts}
                   />
                 )
               )}
@@ -599,6 +680,7 @@ const summary = useMemo(() => {
               <PaydayCard
                 key={`${nextPaydayPlan.income.id}-${nextPaydayPlan.payday}`}
                 plan={nextPaydayPlan}
+                fundingAccounts={fundingAccounts}
               />
             </section>
           )}
@@ -616,6 +698,7 @@ const summary = useMemo(() => {
                     <PaydayCard
                       key={`${plan.income.id}-${plan.payday}`}
                       plan={plan}
+                      fundingAccounts={fundingAccounts}
                     />
                   )
                 )}
