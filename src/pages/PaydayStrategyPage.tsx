@@ -274,10 +274,120 @@ function PaydayCard({
             {group.accountName}
           </h4>
 
+            {(() => {
+              const account =
+                fundingAccounts.find(
+                  (fundingAccount) =>
+                    fundingAccount.id ===
+                    group.accountId
+                );
+
+              const currentBalance =
+                account?.currentBalance ?? 0;
+
+              const projectedBalance =
+                currentBalance -
+                group.total;
+
+              return (
+                <div className="mt-2 text-sm">
+                  <p>
+                    Current:{" "}
+                    {formatCurrency(
+                      currentBalance
+                    )}
+                  </p>
+
+                  <p>
+                    Projected:{" "}
+                    <span
+                      className={
+                        projectedBalance >= 0
+                          ? "text-green-600 font-semibold"
+                          : "text-red-600 font-semibold"
+                      }
+                    >
+                      {formatCurrency(
+                        projectedBalance
+                      )}
+                    </span>
+                  </p>
+                </div>
+              );
+            })()}          
+
           <span className="font-bold text-blue-600">
             {formatCurrency(group.total)}
           </span>
         </div>
+
+        {(() => {
+          const account =
+            fundingAccounts.find(
+              (fundingAccount) =>
+                fundingAccount.id ===
+                group.accountId
+            );
+
+          const currentBalance =
+            account?.currentBalance ?? 0;
+
+          const projectedBalance =
+            currentBalance -
+            group.total;
+
+          return (
+            <div className="mt-3 rounded-lg bg-slate-50 p-3">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-slate-500">
+                  Current Balance
+                </span>
+
+                <span className="font-semibold">
+                  {formatCurrency(
+                    currentBalance
+                  )}
+                </span>
+              </div>
+
+              <div className="mt-1 flex items-center justify-between text-sm">
+                <span className="text-slate-500">
+                  Funding Needed
+                </span>
+
+                <span className="font-semibold text-red-600">
+                  {formatCurrency(
+                    group.total
+                  )}
+                </span>
+              </div>
+
+              <div className="mt-1 flex items-center justify-between text-sm">
+                <span className="text-slate-500">
+                  Projected Balance
+                </span>
+
+                <span
+                  className={`font-bold ${
+                    projectedBalance >= 0
+                      ? "text-green-600"
+                      : "text-red-600"
+                  }`}
+                >
+                  {formatCurrency(
+                    projectedBalance
+                  )}
+                </span>
+              </div>
+
+              {projectedBalance < 0 && (
+                <p className="mt-2 text-xs font-semibold text-red-600">
+                  ⚠ Funding shortage detected.
+                </p>
+              )}
+            </div>
+          );
+        })()}        
 
         <div className="mt-3 space-y-2">
           {group.items.map((
