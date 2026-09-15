@@ -220,9 +220,9 @@ function PaydayCard({
       </div>
 
       <div className="mt-5">
-        <h3 className="text-sm font-bold uppercase tracking-wide text-slate-500">
-          Accounts to Fund
-        </h3>
+      <h4 className="mt-4 text-sm font-bold uppercase tracking-wide text-slate-500">
+        Funding Details
+      </h4>
 
       <div className="mt-3 rounded-xl bg-slate-50 p-4">
         <div className="space-y-2">
@@ -233,7 +233,8 @@ function PaydayCard({
             >
               <span
                 className={`font-medium ${
-                  group.accountId === "unassigned"
+                  group.accountId ===
+                  "unassigned"
                     ? "text-amber-600"
                     : "text-slate-700"
                 }`}
@@ -247,7 +248,7 @@ function PaydayCard({
             </div>
           ))}
         </div>
-      </div>        
+      </div>      
 
         {uniqueBillItems.length === 0 ? (
           <div className="mt-3 rounded-xl bg-slate-50 p-4">
