@@ -274,62 +274,47 @@ function PaydayCard({
             {group.accountName}
           </h4>
 
-{(() => {
-  const account =
-    fundingAccounts.find(
-      (fundingAccount) =>
-        fundingAccount.id ===
-        group.accountId
-    );
+            {(() => {
+              const account =
+                fundingAccounts.find(
+                  (fundingAccount) =>
+                    fundingAccount.id ===
+                    group.accountId
+                );
 
-  if (!account) {
-    return null;
-  }
+              const currentBalance =
+                account?.currentBalance ?? 0;
 
-  const currentBalance =
-    account.currentBalance ?? 0;
+              const projectedBalance =
+                currentBalance -
+                group.total;
 
-  const projectedBalance =
-    currentBalance -
-    group.total;
+              return (
+                <div className="mt-2 text-sm">
+                  <p>
+                    Current:{" "}
+                    {formatCurrency(
+                      currentBalance
+                    )}
+                  </p>
 
-  return (
-    <div className="mt-1 text-xs">
-      <div className="text-slate-500">
-        Current:{" "}
-        {formatCurrency(
-          currentBalance
-        )}
-      </div>
-
-      <div
-        className={`font-semibold ${
-          projectedBalance >= 0
-            ? "text-green-600"
-            : "text-red-600"
-        }`}
-      >
-        Projected:{" "}
-        {formatCurrency(
-          projectedBalance
-        )}
-      </div>
-
-      <div
-        className={`mt-1 text-xs font-semibold ${
-          projectedBalance >= 0
-            ? "text-green-600"
-            : "text-red-600"
-        }`}
-      >
-        {projectedBalance >= 0
-          ? "🟢 Funded"
-          : "🔴 Shortfall"}
-      </div>
-
-    </div>
-  );
-})()}       
+                  <p>
+                    Projected:{" "}
+                    <span
+                      className={
+                        projectedBalance >= 0
+                          ? "text-green-600 font-semibold"
+                          : "text-red-600 font-semibold"
+                      }
+                    >
+                      {formatCurrency(
+                        projectedBalance
+                      )}
+                    </span>
+                  </p>
+                </div>
+              );
+            })()}          
 
           <span className="font-bold text-blue-600">
             {formatCurrency(group.total)}
