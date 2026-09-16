@@ -76,6 +76,8 @@ function PaydayCard({
   plan: PaydayPlan;
   fundingAccounts: FundingAccount[]
 }) {
+
+
   const uniqueBillItems =
     Array.from(
       plan.bills.reduce(
@@ -276,15 +278,12 @@ function PaydayCard({
               {recommendedTransfers.map(
                 (transfer) => (
                   <div
-                    key={
-                      transfer.accountId
-                    }
-                    className="flex items-center justify-between"
+                    key={transfer.accountId}
+                    className="flex items-center justify-between rounded-lg bg-white px-3 py-2"
                   >
                     <span className="font-medium text-slate-700">
-                      {
-                        transfer.accountName
-                      }
+                      ✅ Transfer to{" "}
+                      {transfer.accountName}
                     </span>
 
                     <span className="font-bold text-blue-600">
