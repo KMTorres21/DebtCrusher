@@ -285,18 +285,17 @@ console.log(
                         "number" && (
                         <p className="text-sm text-green-600">
                           Balance:{" "}
-                          
+                          {typeof account.minimumBalance ===
+                            "number" && (
+                            <p className="text-sm text-blue-600">
+                              Minimum:{" "}
                               {formatCurrency(
-                                account.currentBalance
+                                account.minimumBalance
                               )}
                             </p>
                           )}
-                      {typeof account.minimumBalance ===
-                        "number" && (
-                        <p className="text-sm text-blue-600">
-                          Minimum:{" "}
                           {formatCurrency(
-                            account.minimumBalance
+                            account.currentBalance
                           )}
                         </p>
                       )}
