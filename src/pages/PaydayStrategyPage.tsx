@@ -288,20 +288,23 @@ function PaydayCard({
 
   const currentBalance =
     account.currentBalance ?? 0;
-
   const minimumBalance =
     account.minimumBalance ?? 0;
-
   const projectedBalance =
     currentBalance -
     group.total;
-
   const reserveDifference =
     projectedBalance -
     minimumBalance;
-
   const isAboveMinimum =
     reserveDifference >= -0.01;
+  const transferNeeded =
+    Math.max(
+      0,
+      group.total +
+      minimumBalance - 
+      currentBalance
+    )
 
   return (
     <div className="mt-1 text-xs">
@@ -325,6 +328,15 @@ function PaydayCard({
           group.total
         )}
       </div>
+
+      {transferNeeded > 0 && (
+        <div className="font-semibold text-blue-600">
+          Transfer Needed:{" "}
+          {formatCurrency(
+            transferNeeded
+          )}
+        </div>
+      )}
 
       <div
         className={`font-semibold ${
