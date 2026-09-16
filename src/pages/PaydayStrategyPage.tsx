@@ -289,16 +289,19 @@ function PaydayCard({
   const currentBalance =
     account.currentBalance ?? 0;
 
+  const minimumBalance =
+    account.minimumBalance ?? 0;
+
   const projectedBalance =
     currentBalance -
     group.total;
 
-  const minimumBalance =
-    account?.minimumBalance ?? 0;
-
-  const remainingAfterReserve =
+  const reserveDifference =
     projectedBalance -
     minimumBalance;
+
+  const isAboveMinimum =
+    reserveDifference >= -0.01;
 
   return (
     <div className="mt-1 text-xs">
@@ -309,9 +312,23 @@ function PaydayCard({
         )}
       </div>
 
+      <div className="text-slate-500">
+        Minimum:{" "}
+        {formatCurrency(
+          minimumBalance
+        )}
+      </div>
+
+      <div className="text-slate-500">
+        Obligations:{" "}
+        {formatCurrency(
+          group.total
+        )}
+      </div>
+
       <div
         className={`font-semibold ${
-          projectedBalance >= 0
+          isAboveMinimum
             ? "text-green-600"
             : "text-red-600"
         }`}
@@ -323,20 +340,23 @@ function PaydayCard({
       </div>
 
       <div
-        className={`mt-1 text-xs font-semibold ${
-          projectedBalance >= 0
+        className={`mt-1 font-semibold ${
+          isAboveMinimum
             ? "text-green-600"
             : "text-red-600"
         }`}
       >
-        {projectedBalance >= 0
-          ? "🟢 Funded"
-          : "🔴 Shortfall"}
+        {isAboveMinimum
+          ? "🟢 Above Minimum"
+          : `🔴 Below Minimum by ${formatCurrency(
+              Math.abs(
+                reserveDifference
+              )
+            )}`}
       </div>
-
     </div>
   );
-})()}       
+})()}      
 
           <span className="font-bold text-blue-600">
             {formatCurrency(group.total)}
