@@ -176,6 +176,51 @@ function PaydayCard({
       ).values()
     );  
 
+    const recommendedTransfers =
+      fundingGroups
+        .map((group) => {
+          const account =
+            fundingAccounts.find(
+              (fundingAccount) =>
+                fundingAccount.id ===
+                group.accountId
+            );
+
+          const currentBalance =
+            account?.currentBalance ?? 0;
+
+          const minimumBalance =
+            account?.minimumBalance ?? 0;
+
+          const transferNeeded =
+            Math.max(
+              0,
+              group.total +
+                minimumBalance -
+                currentBalance
+            );
+
+          return {
+            accountId:
+              group.accountId,
+            accountName:
+              group.accountName,
+            transferNeeded,
+          };
+        })
+        .filter(
+          (group) =>
+            group.transferNeeded > 0
+        );
+
+    const totalTransfersNeeded =
+      recommendedTransfers.reduce(
+        (sum, item) =>
+          sum +
+          item.transferNeeded,
+        0
+      );    
+
   const uniqueTotalBills =
     uniqueBillItems.reduce(
       (total, item) =>
@@ -220,6 +265,54 @@ function PaydayCard({
       </div>
 
       <div className="mt-5">
+        {recommendedTransfers.length >
+          0 && (
+          <div className="mt-4 rounded-xl border border-blue-200 bg-blue-50 p-4">
+            <h4 className="text-sm font-bold uppercase tracking-wide text-blue-700">
+              Recommended Transfers
+            </h4>
+
+            <div className="mt-3 space-y-2">
+              {recommendedTransfers.map(
+                (transfer) => (
+                  <div
+                    key={
+                      transfer.accountId
+                    }
+                    className="flex items-center justify-between"
+                  >
+                    <span className="font-medium text-slate-700">
+                      {
+                        transfer.accountName
+                      }
+                    </span>
+
+                    <span className="font-bold text-blue-600">
+                      {formatCurrency(
+                        transfer.transferNeeded
+                      )}
+                    </span>
+                  </div>
+                )
+              )}
+            </div>
+
+            <div className="mt-3 border-t border-blue-200 pt-3">
+              <div className="flex items-center justify-between">
+                <span className="font-semibold text-slate-700">
+                  Total Transfers Needed
+                </span>
+
+                <span className="font-bold text-blue-700">
+                  {formatCurrency(
+                    totalTransfersNeeded
+                  )}
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
+
       <h4 className="mt-4 text-sm font-bold uppercase tracking-wide text-slate-500">
         Funding Details
       </h4>
