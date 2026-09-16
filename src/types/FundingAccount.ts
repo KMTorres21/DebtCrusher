@@ -9,6 +9,7 @@ export interface FundingAccount {
   name: string;
   type: FundingAccountType;
   currentBalance?: number;
+  minimumBalance?: number;
   createdAt: string;
   updatedAt: string;
 }
