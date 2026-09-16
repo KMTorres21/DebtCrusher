@@ -259,6 +259,20 @@ console.log(
                         placeholder="Current Balance"
                         className="w-full rounded border px-2 py-1"
                       />
+
+                      <input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={editingMinimumBalance}
+                        onChange={(event) =>
+                          setEditingMinimumBalance(
+                            event.target.value
+                          )
+                        }
+                        placeholder="Minimum Balance"
+                        className="mt-2 w-full rounded border px-2 py-1"
+                      />
                     </>
                   ) : (
                     <>
