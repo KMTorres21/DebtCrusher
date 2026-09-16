@@ -40,10 +40,21 @@ const [
   setEditingBalance,
 ] = useState("");
 
+
+const [
+  editingMinimumBalance,
+  setEditingMinimumBalance,
+] = useState("");
+
   const [
     currentBalance,
-    setCurrentBalance,
+    setCurrentBalance
   ] = useState("");
+
+  const [
+    minimumBalance,
+    setMinimumBalance, 
+  ] = useState("")
 
   function handleAddAccount() {
     if (
@@ -114,6 +125,10 @@ console.log(
       account.currentBalance?.toString() ??
         ""
     );
+    setEditingMinimumBalance(
+    account.minimumBalance?.toString() ??
+      ""
+  );
   }
 
   function handleSaveEdit() {
@@ -135,6 +150,12 @@ console.log(
                         editingBalance
                       )
                     : undefined,
+                minimumBalance:
+                  editingMinimumBalance.trim()
+                    ? Number(
+                        editingMinimumBalance
+                      )
+                    : undefined,
                 updatedAt:
                   new Date().toISOString(),
               }
@@ -149,6 +170,10 @@ console.log(
     );
     setEditingName("");
     setEditingBalance("");
+    setEditingMinimumBalance("");
+    setNewAccountName("");
+    setCurrentBalance("");
+    setMinimumBalance("");
   }
 
 
@@ -182,6 +207,19 @@ console.log(
         placeholder="Current Balance"
         className="mb-3 w-full rounded-xl border border-slate-300 px-3 py-2"
       />
+          <input
+            type="number"
+            min="0"
+            step="0.01"
+            value={editingMinimumBalance}
+            onChange={(event) =>
+              setEditingMinimumBalance(
+                event.target.value
+              )
+            }
+            placeholder="Minimum Balance"
+            className="mb-3 w-full rounded-xl border border-slate-300 px-3 py-2"
+          />
 
       <button
         onClick={handleAddAccount}
@@ -233,6 +271,15 @@ console.log(
                         "number" && (
                         <p className="text-sm text-green-600">
                           Balance:{" "}
+                          {typeof account.minimumBalance ===
+                            "number" && (
+                            <p className="text-sm text-blue-600">
+                              Minimum:{" "}
+                              {formatCurrency(
+                                account.minimumBalance
+                              )}
+                            </p>
+                          )}
                           {formatCurrency(
                             account.currentBalance
                           )}

@@ -293,6 +293,13 @@ function PaydayCard({
     currentBalance -
     group.total;
 
+  const minimumBalance =
+    account?.minimumBalance ?? 0;
+
+  const remainingAfterReserve =
+    projectedBalance -
+    minimumBalance;
+
   return (
     <div className="mt-1 text-xs">
       <div className="text-slate-500">
