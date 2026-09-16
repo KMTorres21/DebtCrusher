@@ -2,12 +2,10 @@ import { Bill } from "../types/Bill";
 import { Income } from "../types/Income";
 import { getBillOccurrences } from "./calendarOccurrences";
 import { Debt } from "../types/Debt";
+import type {
+  FundingAccount,
+} from "../types/FundingAccount";
 
-export interface PaydayBill {
-  bill: Bill;
-  dueDate: string;
-  allocatedAmount: number;
-}
 
 export interface PaydayPlan {
   income: Income;
@@ -17,6 +15,11 @@ export interface PaydayPlan {
   bills: PaydayBill[];
   totalBills: number;
   remaining: number;
+}
+
+interface FundingAccountState {
+  balanceCents: number;
+  minimumBalanceCents: number;
 }
 
 const LARGE_BILL_THRESHOLD = 2 / 3;
@@ -689,29 +692,56 @@ function allocateProportionally(
  */
 function allocateNormally(
   occurrence: PaydayBill,
+  targetCents: number,
+  accountContributionCents: number,
   eligibleIndexes: number[],
   paydayPlans: PaydayPlan[],
   availableCents: number[]
-): void {
-  if (eligibleIndexes.length === 0) {
-    return;
+): number {
+  if (
+    eligibleIndexes.length === 0
+  ) {
+    return 0;
+  }
+
+  /*
+   * The account already covers the
+   * complete obligation. Keep the
+   * occurrence visible on the earliest
+   * eligible payday without consuming
+   * paycheck funds.
+   */
+  if (targetCents <= 0) {
+    const firstIndex =
+      eligibleIndexes[0];
+
+    paydayPlans[firstIndex].bills.push({
+      bill: occurrence.bill,
+      dueDate:
+        occurrence.dueDate,
+      allocatedAmount: 0,
+      obligationAmount:
+        occurrence.bill.amount,
+      accountContribution:
+        accountContributionCents /
+        100,
+    });
+
+    return 0;
   }
 
   let remainingCents =
-    Math.round(
-      occurrence.bill.amount * 100
-    );
+    targetCents;
 
-  /*
-   * Work forward through eligible paychecks.
-   *
-   * Earlier-due obligations are processed first,
-   * so available money is used for them before
-   * later-due obligations can consume it.
-   */
+  let allocatedCents = 0;
+
+  let accountContributionRecorded =
+    false;
+
   for (
     let position = 0;
-    position < eligibleIndexes.length &&
+    position <
+      eligibleIndexes.length &&
     remainingCents > 0;
     position++
   ) {
@@ -733,27 +763,45 @@ function allocateNormally(
 
     paydayPlans[index].bills.push({
       bill: occurrence.bill,
-      dueDate: occurrence.dueDate,
+      dueDate:
+        occurrence.dueDate,
+
       allocatedAmount:
         allocation / 100,
+
+      obligationAmount:
+        occurrence.bill.amount,
+
+      accountContribution:
+        !accountContributionRecorded
+          ? accountContributionCents /
+            100
+          : 0,
     });
+
+    accountContributionRecorded =
+      true;
 
     availableCents[index] -=
       allocation;
 
     remainingCents -=
       allocation;
+
+    allocatedCents +=
+      allocation;
   }
+
+  return allocatedCents;
 }
 
 function allocateBills(
   bills: Bill[],
   paydayPlans: PaydayPlan[],
-  protectedPaycheckAmount: number
+  fundingAccounts: FundingAccount[]
 ): PaydayPlan[] {
   if (
-    paydayPlans.length ===
-    0
+    paydayPlans.length === 0
   ) {
     return [];
   }
@@ -778,34 +826,60 @@ function allocateBills(
     );
 
   /*
-   * Available paycheck money.
+   * All paycheck funds are initially
+   * available. Account minimum balances
+   * now replace the global paycheck
+   * protection amount.
    */
-  const protectedCents =
-    Math.max(
-      0,
-      Math.round(
-        protectedPaycheckAmount * 100
-      )
-    );
   const availableCents =
     paydayPlans.map(
       (plan) =>
         Math.max(
           0,
-          Math.round(plan.amount * 100) -
-            protectedCents
+          Math.round(
+            plan.amount * 100
+          )
         )
     );
 
   /*
-   * Process occurrences in due-date order.
+   * Track funding-account balances as
+   * obligations are processed in
+   * due-date order.
    */
-  for (const occurrence of occurrences) {
-    const dueDate =
-      parseDate(
-        occurrence.dueDate
-      );
+  const accountState =
+    new Map<
+      string,
+      FundingAccountState
+    >(
+      fundingAccounts.map(
+        (account) => [
+          account.id,
+          {
+            balanceCents:
+              Math.round(
+                (
+                  account.currentBalance ??
+                  0
+                ) * 100
+              ),
 
+            minimumBalanceCents:
+              Math.max(
+                0,
+                Math.round(
+                  (
+                    account.minimumBalance ??
+                    0
+                  ) * 100
+                )
+              ),
+          },
+        ]
+      )
+    );
+
+  for (const occurrence of occurrences) {
     const previousDueDate =
       getPreviousOccurrence(
         occurrence,
@@ -820,44 +894,122 @@ function allocateBills(
       );
 
     if (
-      eligibleIndexes.length ===
-      0
+      eligibleIndexes.length === 0
     ) {
       continue;
     }
 
-    /*
-     * Calculate the income available
-     * in this bill's funding cycle.
-     */
+    const obligationCents =
+      Math.max(
+        0,
+        Math.round(
+          occurrence.bill.amount *
+            100
+        )
+      );
+
+    const fundingAccount =
+      occurrence.bill
+        .fundingAccountId
+        ? accountState.get(
+            occurrence.bill
+              .fundingAccountId
+          )
+        : undefined;
+
+    const availableAboveMinimumCents =
+      fundingAccount
+        ? Math.max(
+            0,
+            fundingAccount
+              .balanceCents -
+              fundingAccount
+                .minimumBalanceCents
+          )
+        : 0;
+
+    const accountContributionCents =
+      fundingAccount
+        ? Math.min(
+            obligationCents,
+            availableAboveMinimumCents
+          )
+        : 0;
+
+    const requiredTransferCents =
+      obligationCents -
+      accountContributionCents;
+
     const cycleIncome =
       eligibleIndexes.reduce(
         (sum, index) =>
           sum +
-          paydayPlans[index]
-            .amount,
+          paydayPlans[index].amount,
         0
       );
 
-    const isLargeBill =
-      occurrence.bill.amount >
+    /*
+     * Use the required paycheck transfer,
+     * rather than the full obligation,
+     * when determining whether the
+     * transfer is large.
+     */
+    const requiredTransfer =
+      requiredTransferCents /
+      100;
+
+    const isLargeTransfer =
+      requiredTransfer >
       cycleIncome *
         LARGE_BILL_THRESHOLD;
 
-    if (isLargeBill) {
-      allocateProportionally(
-        occurrence,
-        eligibleIndexes,
-        paydayPlans,
-        availableCents
-      );
+    let allocatedTransferCents = 0;
+
+    if (isLargeTransfer) {
+      allocatedTransferCents =
+        allocateProportionally(
+          occurrence,
+          requiredTransferCents,
+          accountContributionCents,
+          eligibleIndexes,
+          paydayPlans,
+          availableCents
+        );
     } else {
-      allocateNormally(
-        occurrence,
-        eligibleIndexes,
-        paydayPlans,
-        availableCents
-      );
+      allocatedTransferCents =
+        allocateNormally(
+          occurrence,
+          requiredTransferCents,
+          accountContributionCents,
+          eligibleIndexes,
+          paydayPlans,
+          availableCents
+        );
+    }
+
+    if (fundingAccount) {
+      /*
+       * Existing usable account money is
+       * reserved for this occurrence.
+       */
+      fundingAccount.balanceCents -=
+        accountContributionCents;
+
+      /*
+       * Any paycheck transfer allocated to
+       * this occurrence enters the account
+       * and is then consumed by the bill.
+       *
+       * If the transfer was partial, the
+       * remaining uncovered amount stays
+       * visible as partially funded.
+       */
+      const totalCoveredCents =
+        accountContributionCents +
+        allocatedTransferCents;
+
+        fundingAccount.balanceCents -=
+        accountContributionCents;
     }
   }
 
@@ -872,6 +1024,11 @@ function allocateBills(
           )
       );
 
+      /*
+       * This now represents the amount
+       * transferred from this paycheck,
+       * not the full obligation amount.
+       */
       const totalBills =
         billsForPlan.reduce(
           (sum, item) =>
@@ -896,9 +1053,10 @@ function allocateBills(
 
         remaining:
           Math.round(
-            (plan.amount -
-              roundedTotal) *
-              100
+            (
+              plan.amount -
+              roundedTotal
+            ) * 100
           ) / 100,
       };
     }
@@ -909,7 +1067,7 @@ export function buildAllPaydayPlans(
   incomes: Income[],
   bills: Bill[],
   debts: Debt[],
-  protectedPaycheckAmount = 0,
+  fundingAccounts: FundingAccount[]
 ): PaydayPlan[] {
 const debtBills: Bill[] = debts.map((debt) => ({
   id: `debt-${debt.id}`,
@@ -944,8 +1102,8 @@ const debtBills: Bill[] = debts.map((debt) => ({
     buildCombinedPaydays(incomes);
 
   return allocateBills(
-    allObligations,
-    paydayPlans,
-    protectedPaycheckAmount
-  );
+  allObligations,
+  paydayPlans,
+  fundingAccounts
+);
 }
