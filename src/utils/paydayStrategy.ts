@@ -482,16 +482,17 @@ function allocateProportionally(
    * Calculate the income represented by
    * the eligible paychecks.
    */
-  const totalEligibleAvailableCents =
-  eligibleIndexes.reduce(
-    (sum, index) =>
-      sum +
-      availableCents[index],
-    0
-  );
+  const totalEligibleIncome =
+    eligibleIndexes.reduce(
+      (sum, index) =>
+        sum +
+        paydayPlans[index]
+          .amount,
+      0
+    );
 
   if (
-    totalEligibleAvailableCents <= 0
+    totalEligibleIncome <= 0
   ) {
     return;
   }
@@ -502,8 +503,7 @@ function allocateProportionally(
    */
   if (
     occurrence.bill.amount <=
-    totalEligibleAvailableCents /
-      100 *
+    totalEligibleIncome *
       LARGE_BILL_THRESHOLD
   ) {
     return;
@@ -513,8 +513,9 @@ function allocateProportionally(
 
   eligibleIndexes.forEach(
     (index, position) => {
-      const paycheckAvailableCents =
-        availableCents[index];
+      const paycheckAmount =
+        paydayPlans[index]
+          .amount;
 
       /*
        * The percentage is based on the
@@ -522,8 +523,8 @@ function allocateProportionally(
        * in this funding cycle.
        */
       const percentage =
-        paycheckAvailableCents /
-        totalEligibleAvailableCents;
+        paycheckAmount /
+        totalEligibleIncome;
 
       let allocationCents =
         Math.round(
@@ -817,36 +818,6 @@ function allocateBills(
         previousDueDate,
         paydayPlans
       );
-
-if (
-  occurrence.bill.name
-    .toLowerCase()
-    .includes("costco")
-) {
-  console.log(
-    "Costco Allocation Window",
-    {
-      bill:
-        occurrence.bill.name,
-      dueDate:
-        occurrence.dueDate,
-      previousDueDate,
-      eligiblePaydays:
-        eligibleIndexes.map(
-          (index) => ({
-            index,
-            payday:
-              paydayPlans[index]
-                .payday,
-            income:
-              paydayPlans[index]
-                .amount,
-          })
-        ),
-    }
-  );
-}      
-
 
     if (
       eligibleIndexes.length ===
