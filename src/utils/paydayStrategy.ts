@@ -155,6 +155,68 @@ function getCombinedPaycheckAmount(
   incomes: Income[],
   paydayDate: string
 ): number {
+
+function getCombinedPaycheckAmountForAccount(
+  incomes: Income[],
+  paydayDate: string,
+  fundingAccountId?: string
+): number {
+  return incomes.reduce(
+    (total, income) => {
+      if (
+        income.fundingAccountId !==
+        fundingAccountId
+      ) {
+        return total;
+      }
+
+      let current =
+        parseDate(
+          income.nextPayDate
+        );
+
+      if (
+        Number.isNaN(
+          current.getTime()
+        )
+      ) {
+        return total;
+      }
+
+      for (
+        let index = 0;
+        index < 24;
+        index++
+      ) {
+        if (
+          formatDate(current) ===
+          paydayDate
+        ) {
+          return (
+            total +
+            income.amount
+          );
+        }
+
+        const next =
+          getNextPayday(
+            current,
+            income.frequency
+          );
+
+        if (!next) {
+          break;
+        }
+
+        current = next;
+      }
+
+      return total;
+    },
+    0
+  );
+}
+
   return incomes.reduce(
     (total, income) => {
       let current =
