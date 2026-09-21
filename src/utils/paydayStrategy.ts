@@ -961,18 +961,19 @@ function allocateBills(
      * Calculate the income available
      * in this bill's funding cycle.
      */
-    const cycleIncome =
+    const largestEligiblePaycheck =
       eligibleIndexes.reduce(
-        (sum, index) =>
-          sum +
-          paydayPlans[index]
-            .amount,
+        (largest, index) =>
+          Math.max(
+            largest,
+            paydayPlans[index].amount
+          ),
         0
       );
 
     const isLargeBill =
       occurrence.bill.amount >
-      cycleIncome *
+      largestEligiblePaycheck *
         LARGE_BILL_THRESHOLD;
 
     if (isLargeBill) {
