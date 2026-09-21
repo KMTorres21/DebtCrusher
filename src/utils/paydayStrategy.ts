@@ -100,16 +100,27 @@ function getNextPayday(
  * same calendar date, they become one
  * combined paycheck.
  */
-function getUniquePaydayDates(
+
+/*
+ * Create unique payday and funding-account
+ * combinations.
+ *
+ * Income deposited on the same date into
+ * the same account is combined into one
+ * PaydayPlan.
+ */
+function getUniquePaydayAccountKeys(
   incomes: Income[],
   count = 24
 ): string[] {
-  const dates = new Set<string>();
+  const keys =
+    new Set<string>();
 
   for (const income of incomes) {
-    let payday = parseDate(
-      income.nextPayDate
-    );
+    let payday =
+      parseDate(
+        income.nextPayDate
+      );
 
     if (
       Number.isNaN(
@@ -124,8 +135,12 @@ function getUniquePaydayDates(
       index < count;
       index++
     ) {
-      dates.add(
-        formatDate(payday)
+      const fundingAccountKey =
+        income.fundingAccountId ??
+        "unassigned";
+
+      keys.add(
+        `${formatDate(payday)}|${fundingAccountKey}`
       );
 
       const next =
@@ -143,19 +158,14 @@ function getUniquePaydayDates(
   }
 
   return Array.from(
-    dates
+    keys
   ).sort();
 }
 
 /*
- * Calculate how much income occurs on
- * a specific calendar date.
+ * Calculate the income occurring on a
+ * specific date for one funding account.
  */
-function getCombinedPaycheckAmount(
-  incomes: Income[],
-  paydayDate: string
-): number {
-
 function getCombinedPaycheckAmountForAccount(
   incomes: Income[],
   paydayDate: string,
@@ -170,55 +180,6 @@ function getCombinedPaycheckAmountForAccount(
         return total;
       }
 
-      let current =
-        parseDate(
-          income.nextPayDate
-        );
-
-      if (
-        Number.isNaN(
-          current.getTime()
-        )
-      ) {
-        return total;
-      }
-
-      for (
-        let index = 0;
-        index < 24;
-        index++
-      ) {
-        if (
-          formatDate(current) ===
-          paydayDate
-        ) {
-          return (
-            total +
-            income.amount
-          );
-        }
-
-        const next =
-          getNextPayday(
-            current,
-            income.frequency
-          );
-
-        if (!next) {
-          break;
-        }
-
-        current = next;
-      }
-
-      return total;
-    },
-    0
-  );
-}
-
-  return incomes.reduce(
-    (total, income) => {
       let current =
         parseDate(
           income.nextPayDate
@@ -267,34 +228,89 @@ function getCombinedPaycheckAmountForAccount(
   );
 }
 
+/*
+ * Build separate payday plans for each
+ * payday and funding-account combination.
+ */
 function buildCombinedPaydays(
   incomes: Income[]
 ): PaydayPlan[] {
-  const paydayDates =
-    getUniquePaydayDates(
+  const paydayKeys =
+    getUniquePaydayAccountKeys(
       incomes
     );
+    
 
-  return paydayDates.map(
-    (payday, index) => {
+  return paydayKeys.map(
+    (key, index) => {
+      const [
+        payday,
+        fundingAccountKey,
+      ] = key.split("|");
+
+      const fundingAccountId =
+        fundingAccountKey ===
+        "unassigned"
+          ? undefined
+          : fundingAccountKey;
+
       const amount =
-        getCombinedPaycheckAmount(
+        getCombinedPaycheckAmountForAccount(
           incomes,
-          payday
+          payday,
+          fundingAccountId
         );
+
+      /*
+       * Find the next payday associated
+       * with the same funding account.
+       */
+      const nextPayday =
+        paydayKeys
+          .slice(index + 1)
+          .map(
+            (nextKey) => {
+              const [
+                nextDate,
+                nextAccountKey,
+              ] = nextKey.split(
+                "|"
+              );
+
+              return {
+                nextDate,
+                nextAccountKey,
+              };
+            }
+          )
+          .find(
+            (candidate) =>
+              candidate
+                .nextAccountKey ===
+              fundingAccountKey
+          )?.nextDate ??
+        null;
 
       return {
         income: {
           id:
-            `combined-${payday}`,
+            `combined-${payday}-${fundingAccountKey}`,
+
           source:
             "Combined Income",
+
           amount,
+
+          fundingAccountId,
+
           frequency:
             "onetime",
+
           nextPayDate:
             payday,
+
           createdAt: "",
+
           updatedAt: "",
         },
 
@@ -302,16 +318,14 @@ function buildCombinedPaydays(
 
         amount,
 
-        nextPayday:
-          paydayDates[
-            index + 1
-          ] ?? null,
+        nextPayday,
 
         bills: [],
 
         totalBills: 0,
 
-        remaining: amount,
+        remaining:
+          amount,
       };
     }
   );
@@ -504,15 +518,41 @@ function getEligiblePaydays(
      * Do not use a paycheck that belongs
      * to the previous recurring bill cycle.
      */
-    if (
-      previousDueDate &&
-      payday <= previousDueDate
-    ) {
-      continue;
-    }
+if (
+  previousDueDate &&
+  payday <= previousDueDate
+) {
+  continue;
+}
 
-    eligible.push(index);
-  }
+const obligationAccountId =
+  occurrence.bill
+    .fundingAccountId;
+
+const paycheckAccountId =
+  paydayPlans[index]
+    .income
+    .fundingAccountId;
+
+/*
+ * Temporary single-account rule:
+ *
+ * A bill or debt may only use income
+ * deposited into its assigned funding
+ * account.
+ *
+ * Unassigned obligations may only use
+ * unassigned income.
+ */
+if (
+  paycheckAccountId !==
+  obligationAccountId
+) {
+  continue;
+}
+
+eligible.push(index);
+ }
 
   return eligible;
 }
@@ -881,6 +921,35 @@ function allocateBills(
         paydayPlans
       );
 
+      if (
+  occurrence.bill.name
+    .toLowerCase()
+    .includes("costco")
+) {
+  console.table(
+    eligibleIndexes.map(
+      (index) => ({
+        payday:
+          paydayPlans[index]
+            .payday,
+
+        amount:
+          paydayPlans[index]
+            .amount,
+
+        billAccountId:
+          occurrence.bill
+            .fundingAccountId,
+
+        paycheckAccountId:
+          paydayPlans[index]
+            .income
+            .fundingAccountId,
+      })
+    )
+  );
+}
+
     if (
       eligibleIndexes.length ===
       0
@@ -973,6 +1042,14 @@ export function buildAllPaydayPlans(
   debts: Debt[],
   protectedPaycheckAmount = 0,
 ): PaydayPlan[] {
+
+console.log(
+"buildAllPaydayPlans called",
+incomes.length,
+bills.length,
+debts.length
+);
+
 const debtBills: Bill[] = debts.map((debt) => ({
   id: `debt-${debt.id}`,
   name: debt.name,
@@ -1004,6 +1081,23 @@ const debtBills: Bill[] = debts.map((debt) => ({
 
   const paydayPlans =
     buildCombinedPaydays(incomes);
+
+console.table(
+  paydayPlans.map(
+    (plan) => ({
+      payday:
+        plan.payday,
+
+      amount:
+        plan.amount,
+
+      fundingAccountId:
+        plan.income
+          .fundingAccountId ??
+        "unassigned",
+    })
+  )
+);
 
   return allocateBills(
     allObligations,
