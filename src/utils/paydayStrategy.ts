@@ -258,7 +258,10 @@ function buildCombinedPaydays(
         getCombinedPaycheckAmountForAccount(
           incomes,
           payday,
-          fundingAccountId
+          fundingAccountId ===
+          "unassigned"
+          ? undefined
+          : fundingAccountId
         );
 
       /*
@@ -295,35 +298,27 @@ function buildCombinedPaydays(
         income: {
           id:
             `combined-${payday}-${fundingAccountKey}`,
-
           source:
             "Combined Income",
-
           amount,
-
-          fundingAccountId,
-
+          fundingAccountId:
+            fundingAccountId ===
+            "unassigned"
+              ? undefined
+              : fundingAccountId,
           frequency:
             "onetime",
-
           nextPayDate:
             payday,
-
           createdAt: "",
-
           updatedAt: "",
         },
 
         payday,
-
         amount,
-
         nextPayday,
-
         bills: [],
-
         totalBills: 0,
-
         remaining:
           amount,
       };
