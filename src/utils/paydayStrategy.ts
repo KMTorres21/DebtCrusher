@@ -599,18 +599,6 @@ function allocateProportionally(
     return;
   }
 
-  /*
-   * If the bill is not actually large,
-   * don't use proportional allocation.
-   */
-  if (
-    occurrence.bill.amount <=
-    totalEligibleIncome *
-      LARGE_BILL_THRESHOLD
-  ) {
-    return;
-  }
-
   let allocatedCents = 0;
 
   eligibleIndexes.forEach(
