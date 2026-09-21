@@ -76,8 +76,12 @@ function PaydayCard({
   plan: PaydayPlan;
   fundingAccounts: FundingAccount[]
 }) {
-
-
+  const receivingAccount =
+  fundingAccounts.find(
+    (account) =>
+      account.id ===
+      plan.income.fundingAccountId
+  ); 
   const uniqueBillItems =
     Array.from(
       plan.bills.reduce(
@@ -246,11 +250,23 @@ function PaydayCard({
             Payday
           </p>
 
+          <p className="mt-1 text-sm font-semibold text-blue-600">
+            Deposit to:{" "}
+            {receivingAccount?.name ??
+              "Unassigned Account"}
+          </p>
+
           <h2 className="mt-1 text-2xl font-bold text-slate-900">
             {formatDisplayDate(
               plan.payday
             )}
           </h2>
+
+          <p className="mt-1 text-sm font-semibold text-blue-600">
+            Deposit to:{" "}
+            {receivingAccount?.name ??
+              "Unassigned Account"}
+          </p>
         </div>
 
         <div className="text-right">
