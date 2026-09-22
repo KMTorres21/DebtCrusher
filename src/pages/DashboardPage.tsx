@@ -77,7 +77,7 @@ function getDaysUntilStatement(
       );
     }
 
-  const availableStatements = [
+  const statementItems = [
     ...bills
       .filter(
         (bill) =>
@@ -103,14 +103,20 @@ function getDaysUntilStatement(
         statementDate:
           debt.statementDate!,
       })),
-  ].filter((item) => {
-    return (
-      getDaysUntilStatement(
-        item.statementDate
-      ) <= 0
+  ]
+    .map((item) => ({
+      ...item,
+      daysUntil:
+        getDaysUntilStatement(
+          item.statementDate
+        ),
+    }))
+    .sort(
+      (a, b) =>
+        a.daysUntil -
+        b.daysUntil
     );
-  });
-    
+      
 
   function handleAddBill(bill: Bill) {
     addBill(bill);
@@ -221,14 +227,14 @@ function getDaysUntilStatement(
           Statements Likely Available
         </h3>
 
-        {availableStatements.length ===
+        {statementItems.length ===
         0 ? (
           <p className="mt-3 text-sm text-green-600">
             ✅ No statements need review.
           </p>
         ) : (
           <div className="mt-3 space-y-2">
-            {availableStatements.map(
+            {statementItems.map(
               (statement) => (
                 <div
                   key={`${statement.type}-${statement.name}`}
@@ -238,8 +244,20 @@ function getDaysUntilStatement(
                     {statement.name}
                   </span>
 
-                  <span className="font-semibold text-blue-600">
-                    Available
+                  <span
+                    className={`font-semibold ${
+                      statement.daysUntil <= 0
+                        ? "text-blue-600"
+                        : "text-amber-600"
+                    }`}
+                  >
+                    {statement.daysUntil <= 0
+                      ? "Available"
+                      : `Available in ${statement.daysUntil} day${
+                          statement.daysUntil === 1
+                            ? ""
+                            : "s"
+                        }`}
                   </span>
                 </div>
               )
