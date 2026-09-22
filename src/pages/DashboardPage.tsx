@@ -51,34 +51,31 @@ export default function DashboardPage() {
 
   const today = new Date();
 
-  function getDaysUntilStatement(
-    statementDate: string
-  ): number {
-    const statementDay =
-      Number(statementDate);
+function getDaysUntilStatement(
+  statementDate: string
+    ): number {
+      const statement =
+        new Date(
+          `${statementDate}T12:00:00`
+        );
 
-    if (
-      Number.isNaN(statementDay)
-    ) {
-      return 999;
-    }
+      if (
+        Number.isNaN(
+          statement.getTime()
+        )
+      ) {
+        return 999;
+      }
 
-    const statement =
-      new Date(
-        today.getFullYear(),
-        today.getMonth(),
-        statementDay
+      const diffMs =
+        statement.getTime() -
+        Date.now();
+
+      return Math.ceil(
+        diffMs /
+          (1000 * 60 * 60 * 24)
       );
-
-    const diffMs =
-      statement.getTime() -
-      today.getTime();
-
-    return Math.ceil(
-      diffMs /
-        (1000 * 60 * 60 * 24)
-    );
-  }
+    }
 
   const availableStatements = [
     ...bills
