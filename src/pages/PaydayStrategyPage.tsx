@@ -182,55 +182,45 @@ function PaydayCard({
       ).values()
     );  
 
-    const recommendedTransfers =
-      fundingGroups
-        .map((group) => {
-          const account =
-            fundingAccounts.find(
-              (fundingAccount) =>
-                fundingAccount.id ===
-                group.accountId
-            );
-
+          const recommendedTransfers =
+            fundingGroups
+              .map((group) => {
+                const account =
+                  fundingAccounts.find(
+                    (fundingAccount) =>
+                      fundingAccount.id ===
+                      group.accountId
+                  );
           const currentBalance =
             account?.currentBalance ?? 0;
-
           const minimumBalance =
             account?.minimumBalance ?? 0;
-
           const projectedBalance =
             currentBalance -
             group.total;
-
           const reserveDifference =
             projectedBalance -
-            minimumBalance;  
-
-          const transferNeeded =
-            Math.max(
-              0,
-              group.total +
-                minimumBalance -
-                currentBalance
-            );
-
+            minimumBalance;
           const availableToday =
             Math.max(
               0,
               currentBalance -
                 minimumBalance
             );
-
           const futureIncome =
             plan.income.fundingAccountId ===
             group.accountId
               ? plan.amount
               : 0;
-
           const fundingCapacity =
             availableToday +
             futureIncome;
-
+          const transferNeeded =
+            Math.max(
+              0,
+              group.total -
+              fundingCapacity
+            ); 
 
           return {
             accountId:
@@ -560,7 +550,7 @@ function PaydayCard({
             currentBalance +
             futureIncome -
             group.total;
-            
+
           return (
             <div className="mt-3 rounded-lg bg-slate-50 p-3">
               <div className="flex items-center justify-between text-sm">
