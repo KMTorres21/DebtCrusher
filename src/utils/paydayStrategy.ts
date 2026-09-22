@@ -232,6 +232,60 @@ function getCombinedPaycheckAmountForAccount(
  * Build separate payday plans for each
  * payday and funding-account combination.
  */
+function getIncomeSourcesForAccountAndDate(
+  incomes: Income[],
+  paydayDate: string,
+  fundingAccountId?: string
+): string[] {
+  return incomes
+    .filter((income) => {
+      if (
+        income.fundingAccountId !==
+        fundingAccountId
+      ) {
+        return false;
+      }
+      let current =
+        parseDate(
+          income.nextPayDate
+        );
+      if (
+        Number.isNaN(
+          current.getTime()
+        )
+      ) {
+        return false;
+      }
+      for (
+        let index = 0;
+        index < 24;
+        index++
+      ) {
+        if (
+          formatDate(
+            current
+          ) === paydayDate
+        ) {
+          return true;
+        }
+        const next =
+          getNextPayday(
+            current,
+            income.frequency
+          );
+        if (!next) {
+          break;
+        }
+        current = next;
+      }
+      return false;
+    })
+    .map(
+      (income) =>
+        income.source
+    );
+}
+
 function buildCombinedPaydays(
   incomes: Income[]
 ): PaydayPlan[] {
@@ -258,8 +312,28 @@ function buildCombinedPaydays(
         getCombinedPaycheckAmountForAccount(
           incomes,
           payday,
-          fundingAccountId
+          fundingAccountId  
         );
+
+const contributingSources =
+  incomes
+    .filter(
+      (income) =>
+        income.fundingAccountId ===
+        fundingAccountId
+    )
+    .map(
+      (income) =>
+        income.source
+    );
+
+const combinedSource =
+  contributingSources.length > 0
+    ? contributingSources.join(
+        " + "
+      )
+    : "Unassigned Income";
+
 
       /*
        * Find the next payday associated
@@ -297,7 +371,7 @@ function buildCombinedPaydays(
             `combined-${payday}-${fundingAccountKey}`,
 
           source:
-            "Combined Income",
+            combinedSource,
 
           amount,
 
@@ -544,18 +618,44 @@ const paycheckAccountId =
  * Unassigned obligations may only use
  * unassigned income.
  */
+
 if (
-  paycheckAccountId !==
-  obligationAccountId
+  occurrence.bill.fundingAccountId
 ) {
-  continue;
+  console.log(
+    "Eligibility Check",
+    {
+      bill:
+        occurrence.bill.name,
+
+      obligationAccountId,
+
+      paycheckAccountId,
+
+      payday:
+        paydayPlans[index]
+          .payday,
+
+      incomeSource:
+        paydayPlans[index]
+          .income
+          .source,
+    }
+  );
 }
 
-eligible.push(index);
- }
+    if (
+      paycheckAccountId !==
+      obligationAccountId
+    ) {
+      continue;
+    }
 
-  return eligible;
-}
+    eligible.push(index);
+    }
+
+      return eligible;
+    }
 
 /*
  * Allocate a large bill proportionally
@@ -908,6 +1008,49 @@ function allocateBills(
         previousDueDate,
         paydayPlans
       );
+if (
+  occurrence.bill.name
+    .toLowerCase()
+    .includes("venmo")
+) {
+  console.log(
+    "Kendra Allowance Eligibility",
+    {
+      bill:
+        occurrence.bill.name,
+
+      dueDate:
+        occurrence.dueDate,
+
+      obligationAccountId:
+        occurrence.bill
+          .fundingAccountId,
+
+      eligiblePaydays:
+        eligibleIndexes.map(
+          (index) => ({
+            payday:
+              paydayPlans[index]
+                .payday,
+
+            amount:
+              paydayPlans[index]
+                .amount,
+
+            incomeSource:
+              paydayPlans[index]
+                .income
+                .source,
+
+            paycheckAccountId:
+              paydayPlans[index]
+                .income
+                .fundingAccountId,
+          })
+        ),
+    }
+  );
+}
 
       if (
   occurrence.bill.name
