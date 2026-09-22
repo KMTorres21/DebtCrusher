@@ -977,14 +977,71 @@ function allocateBills(
         protectedPaycheckAmount * 100
       )
     );
+
+  /*
+  * Payday plans are separated by funding
+  * account. Apply the global protected
+  * amount once per calendar payday, divided
+  * proportionally among that day's plans.
+  */
+  const totalIncomeByPayday =
+    paydayPlans.reduce(
+      (totals, plan) => {
+        const currentTotal =
+          totals.get(
+            plan.payday
+          ) ?? 0;
+
+        totals.set(
+          plan.payday,
+          currentTotal +
+            Math.round(
+              plan.amount * 100
+            )
+        );
+
+        return totals;
+      },
+      new Map<string, number>()
+    );
+
   const availableCents =
     paydayPlans.map(
-      (plan) =>
-        Math.max(
+      (plan) => {
+        const planAmountCents =
+          Math.max(
+            0,
+            Math.round(
+              plan.amount * 100
+            )
+          );
+
+        const totalPaydayCents =
+          totalIncomeByPayday.get(
+            plan.payday
+          ) ?? planAmountCents;
+
+        if (
+          totalPaydayCents <= 0
+        ) {
+          return 0;
+        }
+
+        const protectedShareCents =
+          Math.round(
+            protectedCents *
+              (
+                planAmountCents /
+                totalPaydayCents
+              )
+          );
+
+        return Math.max(
           0,
-          Math.round(plan.amount * 100) -
-            protectedCents
-        )
+          planAmountCents -
+            protectedShareCents
+        );
+      }
     );
 
   /*
