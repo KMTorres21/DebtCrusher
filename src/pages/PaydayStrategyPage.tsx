@@ -198,6 +198,14 @@ function PaydayCard({
           const minimumBalance =
             account?.minimumBalance ?? 0;
 
+          const projectedBalance =
+            currentBalance -
+            group.total;
+
+          const reserveDifference =
+            projectedBalance -
+            minimumBalance;  
+
           const transferNeeded =
             Math.max(
               0,
@@ -205,6 +213,24 @@ function PaydayCard({
                 minimumBalance -
                 currentBalance
             );
+
+          const availableToday =
+            Math.max(
+              0,
+              currentBalance -
+                minimumBalance
+            );
+
+          const futureIncome =
+            plan.income.fundingAccountId ===
+            group.accountId
+              ? plan.amount
+              : 0;
+
+          const fundingCapacity =
+            availableToday +
+            futureIncome;
+
 
           return {
             accountId:
@@ -407,6 +433,20 @@ function PaydayCard({
       minimumBalance - 
       currentBalance
     )
+  const availableToday =
+    Math.max(
+      0,
+      currentBalance -
+        minimumBalance
+    );
+  const futureIncome =
+    plan.income.fundingAccountId ===
+    group.accountId
+      ? plan.amount
+      : 0;
+  const fundingCapacity =
+    availableToday +
+    futureIncome;
 
   return (
     <div className="mt-1 text-xs">
@@ -428,6 +468,27 @@ function PaydayCard({
         Obligations:{" "}
         {formatCurrency(
           group.total
+        )}
+      </div>
+
+      <div className="text-slate-500">
+        Available Today:{" "}
+        {formatCurrency(
+          availableToday
+        )}
+      </div>
+
+      <div className="text-slate-500">
+        Future Income:{" "}
+        {formatCurrency(
+          futureIncome
+        )}
+      </div>
+
+      <div className="font-semibold text-blue-600">
+        Funding Capacity:{" "}
+        {formatCurrency(
+          fundingCapacity
         )}
       </div>
 
