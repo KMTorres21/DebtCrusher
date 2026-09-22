@@ -551,10 +551,16 @@ function PaydayCard({
           const currentBalance =
             account?.currentBalance ?? 0;
 
+          const futureIncome =
+            plan.income.fundingAccountId ===
+            group.accountId
+              ? plan.amount
+              : 0;
           const projectedBalance =
-            currentBalance -
+            currentBalance +
+            futureIncome -
             group.total;
-
+            
           return (
             <div className="mt-3 rounded-lg bg-slate-50 p-3">
               <div className="flex items-center justify-between text-sm">
