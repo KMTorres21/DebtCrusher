@@ -418,8 +418,23 @@ function PaydayCard({
     account.currentBalance ?? 0;
   const minimumBalance =
     account.minimumBalance ?? 0;
+  const availableToday =
+    Math.max(
+      0,
+      currentBalance -
+        minimumBalance
+    );  
+  const futureIncome =
+    plan.income.fundingAccountId ===
+    group.accountId
+      ? plan.amount
+      : 0;
+  const fundingCapacity =
+      availableToday +
+      futureIncome;
   const projectedBalance =
-    currentBalance -
+    currentBalance +
+    futureIncome -
     group.total;
   const reserveDifference =
     projectedBalance -
@@ -430,23 +445,10 @@ function PaydayCard({
     Math.max(
       0,
       group.total +
-      minimumBalance - 
-      currentBalance
-    )
-  const availableToday =
-    Math.max(
-      0,
-      currentBalance -
-        minimumBalance
+        minimumBalance -
+        fundingCapacity
     );
-  const futureIncome =
-    plan.income.fundingAccountId ===
-    group.accountId
-      ? plan.amount
-      : 0;
-  const fundingCapacity =
-    availableToday +
-    futureIncome;
+
 
   return (
     <div className="mt-1 text-xs">
