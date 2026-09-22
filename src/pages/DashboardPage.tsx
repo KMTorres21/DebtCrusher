@@ -49,6 +49,72 @@ export default function DashboardPage() {
       ? 0
       : Math.round((paidBills / totalBills) * 100);
 
+  const today = new Date();
+
+  function getDaysUntilStatement(
+    statementDate: string
+  ): number {
+    const statementDay =
+      Number(statementDate);
+
+    if (
+      Number.isNaN(statementDay)
+    ) {
+      return 999;
+    }
+
+    const statement =
+      new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        statementDay
+      );
+
+    const diffMs =
+      statement.getTime() -
+      today.getTime();
+
+    return Math.ceil(
+      diffMs /
+        (1000 * 60 * 60 * 24)
+    );
+  }
+
+  const availableStatements = [
+    ...bills
+      .filter(
+        (bill) =>
+          bill.statementDate &&
+          !bill.statementReviewed
+      )
+      .map((bill) => ({
+        name: bill.name,
+        type: "Bill",
+        statementDate:
+          bill.statementDate!,
+      })),
+
+    ...debts
+      .filter(
+        (debt) =>
+          debt.statementDate &&
+          !debt.statementReviewed
+      )
+      .map((debt) => ({
+        name: debt.name,
+        type: "Debt",
+        statementDate:
+          debt.statementDate!,
+      })),
+  ].filter((item) => {
+    return (
+      getDaysUntilStatement(
+        item.statementDate
+      ) <= 0
+    );
+  });
+    
+
   function handleAddBill(bill: Bill) {
     addBill(bill);
     setIsAddBillOpen(false);
@@ -152,6 +218,38 @@ export default function DashboardPage() {
         <p className="mt-3 text-sm text-slate-600">
           {paidBills} of {totalBills} bills paid
         </p>
+
+      <Card>
+        <h3 className="text-lg font-semibold text-slate-900">
+          Statements Likely Available
+        </h3>
+
+        {availableStatements.length ===
+        0 ? (
+          <p className="mt-3 text-sm text-green-600">
+            ✅ No statements need review.
+          </p>
+        ) : (
+          <div className="mt-3 space-y-2">
+            {availableStatements.map(
+              (statement) => (
+                <div
+                  key={`${statement.type}-${statement.name}`}
+                  className="flex items-center justify-between"
+                >
+                  <span>
+                    {statement.name}
+                  </span>
+
+                  <span className="font-semibold text-blue-600">
+                    Available
+                  </span>
+                </div>
+              )
+            )}
+          </div>
+        )}
+      </Card>  
 
       </Card>
       <FinancialTimeline
