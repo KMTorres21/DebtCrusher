@@ -41,6 +41,8 @@ export interface Bill {
     semiMonthlyDay1?: number;
     semiMonthlyDay2?: number;
   autoPay: boolean;
+  autoPayEnabled?: boolean;
+  autoPayAmount?: number;
   notes?: string;
   createdAt: string;
   updatedAt?: string;

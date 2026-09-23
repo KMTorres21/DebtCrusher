@@ -19,6 +19,8 @@ export interface Debt {
   originalBalance: number;
   interestRate: number;
   minimumPayment: number;
+  autoPayEnabled?: boolean;
+  autoPayAmount?: number;
   dueDate: string;
   statementDate?: string;
   statementBalance?: number;
