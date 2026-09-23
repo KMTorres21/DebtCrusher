@@ -83,6 +83,7 @@ function getDaysUntilStatement(
         (bill) =>
           bill.statementDate &&
           !bill.statementReviewed
+          
       )
       .map((bill) => ({
         name: bill.name,
@@ -90,6 +91,9 @@ function getDaysUntilStatement(
         statementDate:
           bill.statementDate!,
         reviewed: bill.statementReviewed ?? false,
+        autoPayEnabled:
+          bill.autoPayEnabled ??
+  false,
       })),
 
     ...debts
@@ -104,6 +108,9 @@ function getDaysUntilStatement(
         statementDate:
           debt.statementDate!,
         reviewed: debt.statementReviewed ?? false,
+        autoPayEnabled:
+          debt.autoPayEnabled ??
+          false,
       })),
   ]
     .map((item) => ({
@@ -245,7 +252,7 @@ function getDaysUntilStatement(
           Reviewed: {reviewedCount} •
           Needs Review: {needsReviewCount}
         </p>
-        
+
         {statementItems.length ===
         0 ? (
           <p className="mt-3 text-sm text-green-600">
@@ -259,9 +266,19 @@ function getDaysUntilStatement(
                   key={`${statement.type}-${statement.name}`}
                   className="flex items-center justify-between"
                 >
-                  <span>
-                    {statement.name}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span>
+                      {statement.name}
+                    </span>
+
+                    {statement.autoPayEnabled && (
+                      <span
+                        className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-700"
+                      >
+                        AutoPay
+                      </span>
+                    )}
+                  </div>
 
                   <div className="text-right">
                   <div
