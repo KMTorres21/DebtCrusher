@@ -60,6 +60,14 @@ export default function AddBillModal({
     setSemiMonthlyDay2] =
     useState("15");
   const [notes, setNotes] = useState("");
+  const [
+  autoPayEnabled,
+  setAutoPayEnabled,
+] = useState(false);
+  const [
+    autoPayAmount,
+    setAutoPayAmount,
+  ] = useState("");
   const [showHistory, setShowHistory] = useState(false);
   const [fundingAccounts] =
   useState<FundingAccount[]>(
@@ -73,6 +81,16 @@ const [
 
   useEffect(() => {
   if (bill) {
+    setAutoPayEnabled(
+    bill.autoPayEnabled ?? false
+      );
+      setAutoPayAmount(
+        bill.autoPayAmount !== undefined
+          ? String(
+              bill.autoPayAmount
+            )
+          : ""
+      );
     setName(bill.name);
     setStatementDate(bill.statementDate ?? "");
     setStatementBalance(bill.statementBalance !== undefined
@@ -116,6 +134,8 @@ const [
     setSemiMonthlyDay1("1");
     setSemiMonthlyDay2("15");
     setNotes("");
+    setAutoPayEnabled(false);
+    setAutoPayAmount("");
     setFundingAccountId("");
   }
 
@@ -160,14 +180,17 @@ const [
         recurring && frequency === "semimonthly"
           ? Number(semiMonthlyDay2)
           : undefined,
-    
+    autoPayEnabled,
+    autoPayAmount: autoPayAmount 
+      ? Number(autoPayAmount) 
+      : undefined,
     autoPay: bill?.autoPay ?? false,
     paid: bill?.paid ?? false,
     notes: notes.trim() || undefined,
     createdAt: bill?.createdAt ?? now,
     updatedAt: now,
     activityHistory: history,
-};
+      };
 
     const oldAmount =
       bill?.amount;
@@ -527,6 +550,49 @@ if (
     </div>
   </div>
 </div>
+
+          <div className="rounded-2xl bg-slate-50 p-4">
+            <h3 className="mb-4 font-semibold text-slate-800">
+              AutoPay
+            </h3>
+
+            <label className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                checked={autoPayEnabled}
+                onChange={(event) =>
+                  setAutoPayEnabled(
+                    event.target.checked
+                  )
+                }
+              />
+
+              <span>
+                AutoPay Enabled
+              </span>
+            </label>
+
+            {autoPayEnabled && (
+              <div className="mt-3">
+                <label className="mb-2 block text-sm font-semibold text-slate-700">
+                  AutoPay Amount
+                </label>
+
+                <input
+                  type="number"
+                  step="0.01"
+                  value={autoPayAmount}
+                  onChange={(event) =>
+                    setAutoPayAmount(
+                      event.target.value
+                    )
+                  }
+                  placeholder="0.00"
+                  className="w-full rounded-xl border border-slate-200 px-4 py-3"
+                />
+              </div>
+            )}
+          </div>
 
           {/* Category */}
           <div>
