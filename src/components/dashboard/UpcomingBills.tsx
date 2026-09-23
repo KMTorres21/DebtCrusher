@@ -33,9 +33,18 @@ export default function UpcomingBills({ bills }: Props) {
               className="flex items-center justify-between border-b border-slate-100 pb-3 last:border-0"
             >
               <div>
-                <p className="font-semibold">
-                  {bill.name}
-                </p>
+                <p className="font-semibold flex items-center gap-2">
+                {bill.name}
+                {bill.autoPayEnabled && (
+                  <span
+                    className="text-green-600"
+                    title="AutoPay Enabled"
+                  >
+                    🔄
+                  </span>
+                )}
+              </p>
+
 
                 <p className="text-sm text-slate-500">
                   Due {bill.dueDate}
