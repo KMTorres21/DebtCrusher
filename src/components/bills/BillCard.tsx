@@ -14,7 +14,7 @@ interface BillCardProps {
   onEdit: (bill: Bill) => void;
   onDelete: (id: string) => void;
   onConvertToDebt: (bill: Bill) => void;
-  onMarkReviewed: (bill: Bill) => void;
+  onMarkReviewed?: (bill: Bill) => void;
 }
 
 export default function BillCard({
@@ -144,7 +144,7 @@ export default function BillCard({
 
           <Button
             className="bg-blue-500 hover:bg-blue-600 text-white"
-            onClick={() => onMarkReviewed(bill)}
+            onClick={() => onMarkReviewed?.(bill)}
           >
             ✅ Mark as Reviewed
           </Button>
