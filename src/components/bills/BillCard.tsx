@@ -65,21 +65,6 @@ export default function BillCard({
             </p>
           )}
 
-          {fundingAccount && (
-          <p className="text-sm text-slate-500">
-            Paid From: {fundingAccount.name}
-          </p>
-        )}
-          {bill.autoPayEnabled && (
-          <p className="text-sm font-semibold text-green-600">
-            🔄 AutoPay
-            {bill.autoPayAmount
-              ? `: ${formatCurrency(
-                  bill.autoPayAmount
-                )}`
-              : " Enabled"}
-          </p>
-        )}
           {bill.statementDate && (
             <div className="mt-2">
               {bill.statementReviewed ? (
@@ -105,6 +90,22 @@ export default function BillCard({
               )}
             </div>
           )}
+
+          {fundingAccount && (
+          <p className="text-sm text-slate-500">
+            Paid From: {fundingAccount.name}
+          </p>
+        )}
+          {bill.autoPayEnabled && (
+          <p className="text-sm font-semibold text-green-600">
+            🔄 AutoPay
+            {bill.autoPayAmount
+              ? `: ${formatCurrency(
+                  bill.autoPayAmount
+                )}`
+              : " Enabled"}
+          </p>
+        )}
         </div>
       </div>
 
