@@ -68,7 +68,7 @@ export default function BillCard({
           {bill.statementDate && (
             <div className="mt-2">
               {bill.statementReviewed ? (
-                <div className="text-sm font-semibold text-green-600">
+                <div className="text-xs text-green-500">
                   <div>✅ Reviewed</div>
 
                   {bill.statementReviewedAt && (
@@ -81,12 +81,10 @@ export default function BillCard({
                   )}
                 </div>
               ) : (
-                <button
-                  type="button"
-                  className="text-sm font-semibold text-blue-600"
+                <p className="text-xs text-blue-500"
                 >
                   ✅ Mark as Reviewed
-                </button>
+                </p>
               )}
             </div>
           )}
