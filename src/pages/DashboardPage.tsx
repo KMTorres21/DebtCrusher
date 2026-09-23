@@ -89,6 +89,7 @@ function getDaysUntilStatement(
         type: "Bill",
         statementDate:
           bill.statementDate!,
+        reviewed: bill.statementReviewed ?? false,
       })),
 
     ...debts
@@ -102,6 +103,7 @@ function getDaysUntilStatement(
         type: "Debt",
         statementDate:
           debt.statementDate!,
+        reviewed: debt.statementReviewed ?? false,
       })),
   ]
     .map((item) => ({
@@ -111,17 +113,29 @@ function getDaysUntilStatement(
           item.statementDate
         ),
     }))
+    
     .sort(
       (a, b) =>
         a.daysUntil -
         b.daysUntil
     );
       
-
   function handleAddBill(bill: Bill) {
     addBill(bill);
     setIsAddBillOpen(false);
   }
+
+  const reviewedCount =
+  statementItems.filter(
+  (item) =>
+  item.reviewed
+  ).length;
+
+  const needsReviewCount =
+  statementItems.filter(
+  (item) =>
+  !item.reviewed
+  ).length;
 
   return (
     <PageContainer>
@@ -224,9 +238,14 @@ function getDaysUntilStatement(
 
       <Card>
         <h3 className="text-lg font-semibold text-slate-900">
-          Statements Likely Available
+          Statements
         </h3>
 
+        <p className="mt-2 text-sm text-slate-500">
+          Reviewed: {reviewedCount} •
+          Needs Review: {needsReviewCount}
+        </p>
+        
         {statementItems.length ===
         0 ? (
           <p className="mt-3 text-sm text-green-600">
@@ -244,7 +263,8 @@ function getDaysUntilStatement(
                     {statement.name}
                   </span>
 
-                  <span
+                  <div className="text-right">
+                  <div
                     className={`font-semibold ${
                       statement.daysUntil <= 0
                         ? "text-blue-600"
@@ -258,7 +278,18 @@ function getDaysUntilStatement(
                             ? ""
                             : "s"
                         }`}
-                  </span>
+                  </div>
+
+                  {statement.reviewed ? (
+                    <div className="text-xs text-green-600">
+                      ✅ Reviewed
+                    </div>
+                  ) : (
+                    <div className="text-xs text-amber-600">
+                      ⚠ Needs Review
+                    </div>
+                  )}
+                </div>
                 </div>
               )
             )}
