@@ -68,6 +68,16 @@ export default function BillCard({
             Paid From: {fundingAccount.name}
           </p>
         )}
+          {bill.autoPayEnabled && (
+          <p className="text-sm font-semibold text-green-600">
+            🔄 AutoPay
+            {bill.autoPayAmount
+              ? `: ${formatCurrency(
+                  bill.autoPayAmount
+                )}`
+              : " Enabled"}
+          </p>
+        )}
           
         </div>
       </div>
