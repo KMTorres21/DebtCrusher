@@ -18,6 +18,7 @@ interface TimelineEvent {
   title: string;
   icon: string;
   reviewNeeded?: boolean;
+  autoPayEnabled?: boolean;
 }
 
 export default function FinancialTimeline({
@@ -108,6 +109,7 @@ export default function FinancialTimeline({
           !bill.statementReviewedAt &&
           bill.statementDate <= today.toISOString().slice(0, 10) &&
           bill.dueDate >= today.toISOString().slice(0, 10),
+        autoPayEnabled: bill.autoPayEnabled,
       });
 
       if (
@@ -137,6 +139,7 @@ export default function FinancialTimeline({
           !debt.statementReviewedAt &&
           debt.statementDate <= today.toISOString().slice(0, 10) &&
           debt.dueDate >= today.toISOString().slice(0, 10),
+        autoPayEnabled: debt.autoPayEnabled,
       });
 
       if (
@@ -273,8 +276,14 @@ export default function FinancialTimeline({
               className="flex items-center justify-between"
             >
               <div>
-                <div className="font-medium">
+               <div className="font-medium">
                   {event.icon} {event.title}
+
+                  {event.autoPayEnabled && (
+                    <span className="ml-2 rounded-full bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-700">
+                      AutoPay
+                    </span>
+                  )}
                 </div>
 
                 {event.reviewNeeded && (
