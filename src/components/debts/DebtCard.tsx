@@ -195,6 +195,17 @@ export default function DebtCard({
           </p>
         )}
 
+        {debt.autoPayEnabled && (
+          <p className="text-sm font-semibold text-green-600">
+            🔄 AutoPay
+            {debt.autoPayAmount
+              ? `: ${formatCurrency(
+                  debt.autoPayAmount
+                )}`
+              : " Enabled"}
+          </p>
+        )}
+
       </div>
 
       <div className="mt-6 space-y-2">
