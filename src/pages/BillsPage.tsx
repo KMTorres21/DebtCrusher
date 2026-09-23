@@ -145,6 +145,17 @@ export default function BillsPage() {
     setIsAddModalOpen(true);
   }
 
+  function handleMarkReviewed(
+  bill: Bill
+  ) {
+    updateBill({
+      ...bill,
+      statementReviewed: true,
+      statementReviewedAt:
+        new Date().toISOString(),
+    });
+  }
+
   function handleConvertToDebt(bill: Bill) {
       const confirmed = window.confirm(
         `Convert "${bill.name}" to a Debt?\n\nThe Bill will be removed and a new Debt will be created.`
@@ -319,6 +330,7 @@ export default function BillsPage() {
               onEdit={handleEdit}
               onDelete={deleteBill}
               onConvertToDebt={handleConvertToDebt}
+              onMarkReviewed={handleMarkReviewed}
             />
           ))}
         </div>

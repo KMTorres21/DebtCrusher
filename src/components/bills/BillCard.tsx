@@ -14,6 +14,7 @@ interface BillCardProps {
   onEdit: (bill: Bill) => void;
   onDelete: (id: string) => void;
   onConvertToDebt: (bill: Bill) => void;
+  onMarkReviewed: (bill: Bill) => void;
 }
 
 export default function BillCard({
@@ -23,6 +24,7 @@ export default function BillCard({
   onEdit,
   onDelete,
   onConvertToDebt,
+  onMarkReviewed,
 }: BillCardProps) {
   const status = bill.paid ? "paid" : "due";
   const fundingAccount =
@@ -78,7 +80,27 @@ export default function BillCard({
               : " Enabled"}
           </p>
         )}
-          
+          {bill.statementDate && (
+            <div className="mt-2">
+              {bill.statementReviewed ? (
+                <p className="text-sm font-semibold text-green-600">
+                  ✅ Reviewed
+                </p>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() =>
+                    onMarkReviewed(
+                      bill
+                    )
+                  }
+                  className="text-sm font-semibold text-blue-600"
+                >
+                  ✅ Mark Reviewed
+                </button>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
@@ -116,6 +138,14 @@ export default function BillCard({
               🔄 Convert to Debt
             </Button>
           </div>
+
+          <Button
+            className="bg-blue-500 hover:bg-blue-600 text-white"
+            onClick={() => onMarkReviewed(bill)}
+          >
+            ✅ Mark as Reviewed
+          </Button>
+
       </Card>
   );
 }
