@@ -52,6 +52,14 @@ export default function AddDebtModal({
   const [dueDate, setDueDate] = useState("");
   const [creditLimit, setCreditLimit] = useState("");
   const [notes, setNotes] = useState("");
+  const [
+    autoPayEnabled,
+    setAutoPayEnabled,
+    ] = useState(false);    
+const [
+    autoPayAmount,
+    setAutoPayAmount,
+    ] = useState("");
   const [showHistory, setShowHistory] = useState(false);
   const [fundingAccounts] =
     useState<FundingAccount[]>(
@@ -115,7 +123,19 @@ useEffect(() => {
     setFundingAccountId(
       prefill.fundingAccountId ?? ""
     );
-  }
+    setAutoPayEnabled(
+      prefill.autoPayEnabled ??
+        false
+        );
+    setAutoPayAmount(
+      prefill.autoPayAmount !==
+        undefined
+        ? String(
+            prefill.autoPayAmount
+          )
+        : ""
+    );
+    }
 }, [open, prefill]);
 
   if (!open) return null;
@@ -135,6 +155,8 @@ useEffect(() => {
     setCreditLimit("");
     setNotes("");
     setFundingAccountId("");
+    setAutoPayEnabled(false);
+    setAutoPayAmount("");
   }
 
   function handleClose() {
@@ -162,6 +184,13 @@ useEffect(() => {
       : undefined,
   interestRate: Number(interestRate),
   minimumPayment: Number(minimumPayment),
+  autoPayEnabled,
+    autoPayAmount:
+      autoPayAmount
+        ? Number(
+            autoPayAmount
+          )
+        : undefined,
   dueDate,
   creditLimit: creditLimit
     ? Number(creditLimit)
@@ -421,6 +450,49 @@ updatedAt: now,
               )
             )}
           </select>
+        </div>
+
+        <div className="rounded-2xl bg-slate-50 p-4">
+          <h3 className="font-semibold text-slate-800">
+            AutoPay
+          </h3>
+
+          <label className="mt-2 flex items-center gap-3">
+            <input
+              type="checkbox"
+              checked={autoPayEnabled}
+              onChange={(event) =>
+                setAutoPayEnabled(
+                  event.target.checked
+                )
+              }
+            />
+
+            <span>
+              AutoPay Enabled
+            </span>
+          </label>
+
+          {autoPayEnabled && (
+            <div className="mt-3">
+              <label className="mb-2 block text-sm font-semibold text-slate-700">
+                AutoPay Amount
+              </label>
+
+              <input
+                type="number"
+                step="0.01"
+                value={autoPayAmount}
+                onChange={(event) =>
+                  setAutoPayAmount(
+                    event.target.value
+                  )
+                }
+                placeholder="0.00"
+                className="w-full rounded-xl border border-slate-200 px-4 py-3"
+              />
+            </div>
+          )}
         </div>
 
           <select
