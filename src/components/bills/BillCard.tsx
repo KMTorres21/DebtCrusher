@@ -83,20 +83,24 @@ export default function BillCard({
           {bill.statementDate && (
             <div className="mt-2">
               {bill.statementReviewed ? (
-                <p className="text-sm font-semibold text-green-600">
-                  ✅ Reviewed
-                </p>
+                <div className="text-sm font-semibold text-green-600">
+                  <div>✅ Reviewed</div>
+
+                  {bill.statementReviewedAt && (
+                    <div className="text-xs text-slate-500">
+                      Reviewed{" "}
+                      {new Date(
+                        bill.statementReviewedAt
+                      ).toLocaleDateString()}
+                    </div>
+                  )}
+                </div>
               ) : (
                 <button
                   type="button"
-                  onClick={() =>
-                    onMarkReviewed(
-                      bill
-                    )
-                  }
                   className="text-sm font-semibold text-blue-600"
                 >
-                  ✅ Mark Reviewed
+                  ✅ Mark as Reviewed
                 </button>
               )}
             </div>
