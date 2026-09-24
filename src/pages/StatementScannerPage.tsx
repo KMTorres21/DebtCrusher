@@ -407,27 +407,27 @@ const handleScan = async () => {
         possibleMatches: [
           ...possibleDebtMatches.map(
             (debt) => ({
-  id: debt.id,
-  name: debt.name,
-  type: "debt" as const,
-  confidence:
-  calculateNameConfidence(
-    debt.name,
-    scannedName
-  ),
+        id: debt.id,
+        name: debt.name,
+        type: "debt" as const,
+        confidence:
+        calculateNameConfidence(
+          debt.name,
+          scannedName
+        ),
             })
           ),
           ...possibleBillMatches.map(
             (bill) => ({
  
-  id: bill.id,
-  name: bill.name,
-  type: "bill" as const,
-  confidence:
-  calculateNameConfidence(
-    bill.name,
-    scannedName
-  ),
+        id: bill.id,
+        name: bill.name,
+        type: "bill" as const,
+        confidence:
+        calculateNameConfidence(
+          bill.name,
+          scannedName
+        ),
             })
           ),
         ],
@@ -436,6 +436,27 @@ const handleScan = async () => {
         matchedRecordName:
           matchedRecord?.name,
       };
+
+console.table(
+  extractedBills.map(
+    (bill) => ({
+      name: bill.name,
+
+      autoPayEnabled:
+        bill.autoPayEnabled,
+
+      autoPayAmount:
+        bill.autoPayAmount,
+
+      autoPayDate:
+        bill.autoPayDate,
+
+      autoPayEvidence:
+        bill.autoPayEvidence,
+    })
+  )
+);
+
     }
   );
 
@@ -1410,6 +1431,13 @@ const handleAddDebt = (bill: ExtractedBill) => {
             </span>
           )}
         </div>
+
+            {bill.possibleMatches &&
+              bill.possibleMatches.length > 0 && (
+                <div className="mt-3 rounded-xl bg-amber-50 p-3">
+                  <p className="text-sm font-semibold text-amber-800">
+                    Possible Matches
+                  </p>
 
             {bill.matchedRecordId &&
               bill.matchedRecordType === "debt" &&
