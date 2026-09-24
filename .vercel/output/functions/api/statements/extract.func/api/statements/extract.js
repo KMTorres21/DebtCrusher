@@ -90,8 +90,21 @@ Rules:
 - If APR is not explicitly stated, return null.
 - recurring should be true only when the payment appears recurring.
 - paid should reflect whether the statement indicates the bill was already paid.
-- autoPay should be true only when the statement explicitly indicates
-  automatic payment/autopay.
+- autoPayEnabled must be true only when the statement explicitly confirms
+that an automatic payment, AutoPay debit, recurring automatic debit,
+or scheduled automatic payment is active or scheduled.
+- Do not set autoPayEnabled to true merely because the statement advertises
+AutoPay, recommends enrollment, explains how to enroll, or mentions
+AutoPay as an available service.
+- Set autoPayEnabled to false only when the statement explicitly says AutoPay is disabled, canceled, inactive, or not enrolled.
+- If AutoPay status cannot be reliably determined, use null.
+- autoPayAmount must be the amount explicitly scheduled for automatic collection. Do not use the statement balance or minimum payment unless the statement explicitly identifies that amount as the AutoPay amount.
+- autoPayDate must be the explicitly stated automatic debit or scheduled payment date. Return YYYY-MM-DD when identifiable.
+- autoPayEvidence must contain a short supporting phrase from the statementconfirming the automatic payment. If no reliable evidence exists, use null.
+- autoPayEnabled, autoPayAmount, autoPayDate, and autoPayEvidence must alldescribe the same scheduled automatic payment.
+- Keep the legacy autoPay field consistent with autoPayEnabled:
+true when autoPayEnabled is true, false when autoPayEnabled is false,
+and null when autoPayEnabled is null.
 - confidence should be a number from 0 to 100.
 - Do not invent information.
 - If something cannot be determined, use null.
@@ -163,22 +176,7 @@ AUTOPAY EXTRACTION RULES:
                                                 type: Type.NUMBER,
                                                 nullable: true,
                                             },
-                                            autoPayEnabled: {
-                                                type: Type.BOOLEAN,
-                                                nullable: true,
-                                            },
-                                            autoPayAmount: {
-                                                type: Type.NUMBER,
-                                                nullable: true,
-                                            },
-                                            autoPayDate: {
-                                                type: Type.STRING,
-                                                nullable: true,
-                                            },
-                                            autoPayEvidence: {
-                                                type: Type.STRING,
-                                                nullable: true,
-                                            },
+                                        
                                             category: {
                                                 type: Type.STRING,
                                                 nullable: true,
@@ -193,6 +191,22 @@ AUTOPAY EXTRACTION RULES:
                                             },
                                             autoPay: {
                                                 type: Type.BOOLEAN,
+                                                nullable: true,
+                                            },
+                                            autoPayEnabled: {
+                                                type: Type.BOOLEAN,
+                                                nullable: true,
+                                            },
+                                            autoPayAmount: {
+                                                type: Type.NUMBER,
+                                                nullable: true,
+                                            },
+                                            autoPayDate: {
+                                                type: Type.STRING,
+                                                nullable: true,
+                                            },
+                                            autoPayEvidence: {
+                                                type: Type.STRING,
                                                 nullable: true,
                                             },
                                             notes: {
@@ -247,7 +261,9 @@ AUTOPAY EXTRACTION RULES:
             throw new Error("Gemini did not return a response.");
         }
         const extracted = JSON.parse(response.text || '{"bills":[]}');
+
         console.log("GEMINI EXTRACTED DATA:", JSON.stringify(extracted, null, 2));
+        
         return res.status(200).json({
             ok: true,
             bills: extracted.bills ?? [],
