@@ -20,7 +20,6 @@ type MatchRecordType =
 interface ExtractedBill extends Bill {
   confidence: number;
   selected: boolean;
-
   apr?: number;
   statementDate?: string;
   statementBalance?: number;
@@ -246,6 +245,10 @@ const handleScan = async () => {
         statementDate?: string | null;
         statementBalance?: number | null;
         currentBalance?: number | null;
+        autoPayEnabled?: boolean | null;
+        autoPayAmount?: number | null;
+        autoPayDate?: string | null;
+        autoPayEvidence?: string | null;
         creditLimit?: number | null;
         category?: string | null;
         recurring?: boolean | null;
@@ -268,6 +271,7 @@ const handleScan = async () => {
         "Medical",
         "Transportation",
         "Other",
+        "Tithe"
       ] as const;
 
       const category = validCategories.includes(
@@ -362,9 +366,28 @@ const handleScan = async () => {
           typeof bill.statementBalance === "number"
             ? bill.statementBalance
             : undefined,
-        currentBalance:
-          typeof bill.currentBalance === "number"
-            ? bill.currentBalance
+        autoPayEnabled:
+        typeof bill.autoPayEnabled ===
+        "boolean"
+          ? bill.autoPayEnabled
+          : undefined,
+
+        autoPayAmount:
+          typeof bill.autoPayAmount ===
+          "number"
+            ? bill.autoPayAmount
+            : undefined,
+
+        autoPayDate:
+          bill.autoPayDate ??
+          undefined,
+
+        autoPayEvidence:
+          bill.autoPayEvidence ??
+          undefined,    
+              currentBalance:
+                typeof bill.currentBalance === "number"
+                  ? bill.currentBalance
             : undefined,
         dueDate: bill.dueDate ?? "",
         category,
@@ -415,6 +438,7 @@ const handleScan = async () => {
       };
     }
   );
+
 
     setBills((current) => [
     ...current,
