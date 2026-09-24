@@ -538,14 +538,6 @@ const handleUpdateExistingDebt = (
       typeof bill.statementBalance === "number"
         ? bill.statementBalance
         : existingDebt.statementBalance,
-    autoPayEnabled:
-      typeof bill.autoPayEnabled === "boolean"
-        ? bill.autoPayEnabled
-        : existingDebt.autoPayEnabled,
-    autoPayAmount:
-      typeof bill.autoPayAmount === "number"
-        ? bill.autoPayAmount
-        : existingDebt.autoPayAmount,
     minimumPayment:
       bill.amount > 0
         ? bill.amount
@@ -561,6 +553,14 @@ const handleUpdateExistingDebt = (
       typeof bill.creditLimit === "number"
         ? bill.creditLimit
         : existingDebt.creditLimit,
+    autoPayEnabled:
+      typeof bill.autoPayEnabled === "boolean"
+        ? bill.autoPayEnabled
+        : existingDebt.autoPayEnabled,
+    autoPayAmount:
+      typeof bill.autoPayAmount === "number"
+        ? bill.autoPayAmount
+        : existingDebt.autoPayAmount,
     updatedAt:
       new Date().toISOString(),
     
@@ -673,7 +673,7 @@ const handleUpdateExistingBill = (
     console.warn(
       "Matched bill could not be found:",
       bill.matchedRecordId
-    );
+    ); 
 
     return;
   }
@@ -727,6 +727,18 @@ const handleUpdateExistingBill = (
         `Amount: ${existingBill.amount} → ${updatedBill.amount}`
       );
     }
+
+    if (
+      existingBill.autoPayEnabled !==
+      bill.autoPayEnabled
+    ) {
+      changes.push(
+        bill.autoPayEnabled
+          ? "AutoPay Enabled"
+          : "AutoPay Disabled"
+      );
+    }
+
 
     if (
       existingBill.dueDate !==
@@ -788,7 +800,7 @@ const handleUpdateExistingBill = (
     bill.matchedRecordType !== "bill" ||
     !bill.matchedRecordId
   ) {
-    return;
+    return; 
   }
 
   const existingBill =
