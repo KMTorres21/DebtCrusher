@@ -118,6 +118,39 @@ creditLimit:
 - Return a number only.
 - Do NOT confuse available credit with the credit limit.
 - If it cannot be determined, return null.
+
+AUTOPAY EXTRACTION RULES:
+
+- autoPayEnabled must be true only when the statement explicitly confirms
+  that an automatic payment, AutoPay debit, recurring automatic debit,
+  or scheduled automatic payment is active or scheduled.
+
+- Do not set autoPayEnabled to true merely because the statement advertises
+  AutoPay, recommends enrollment, explains how to enroll, or mentions
+  AutoPay as an available service.
+
+- Set autoPayEnabled to false only when the statement explicitly says
+  AutoPay is disabled, canceled, inactive, or not enrolled.
+
+- If AutoPay status cannot be reliably determined, use null.
+
+- autoPayAmount must be the amount explicitly scheduled for automatic
+  collection. Do not use the statement balance or minimum payment unless
+  the statement explicitly identifies that amount as the AutoPay amount.
+
+- autoPayDate must be the explicitly stated automatic debit or scheduled
+  payment date. Return YYYY-MM-DD when identifiable.
+
+- autoPayEvidence must contain a short supporting phrase from the statement
+  confirming the automatic payment. If no reliable evidence exists, use null.
+
+- autoPayEnabled, autoPayAmount, autoPayDate, and autoPayEvidence must all
+  describe the same scheduled automatic payment.
+
+- Keep the legacy autoPay field consistent with autoPayEnabled:
+  true when autoPayEnabled is true, false when autoPayEnabled is false,
+  and null when autoPayEnabled is null.
+
 `;
 
     let response;
