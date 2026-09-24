@@ -84,6 +84,10 @@ For each bill, extract:
 - recurring
 - paid
 - autoPay
+- autoPayEnabled
+- autoPayAmount
+- autoPayDate
+- autoPayEvidence
 - notes
 - confidence
 
@@ -195,6 +199,22 @@ creditLimit:
                         type: Type.BOOLEAN,
                         nullable: true,
                       },
+                      autoPayEnabled: {
+                        type: Type.BOOLEAN,
+                        nullable: true,
+                      },
+                      autoPayAmount: {
+                        type: Type.NUMBER,
+                        nullable: true,
+                      },
+                      autoPayDate: {
+                        type: Type.STRING,
+                        nullable: true,
+                      },
+                      autoPayEvidence: {
+                        type: Type.STRING,
+                        nullable: true,
+                      },
                       creditLimit: {
                         type: Type.NUMBER,
                         nullable: true,
@@ -221,6 +241,10 @@ creditLimit:
                       "recurring",
                       "paid",
                       "autoPay",
+                      "autoPayEnabled",
+                      "autoPayAmount",
+                      "autoPayDate",
+                      "autoPayEvidence",
                       "notes",
                       "confidence",
                     ],
