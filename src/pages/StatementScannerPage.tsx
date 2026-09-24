@@ -531,69 +531,81 @@ const handleUpdateExistingDebt = (
     ...existingDebt,
 
     balance: latestBalance,
-
     statementDate:
       bill.statementDate ??
       existingDebt.statementDate,
-
     statementBalance:
       typeof bill.statementBalance === "number"
         ? bill.statementBalance
         : existingDebt.statementBalance,
-
+    autoPayEnabled:
+      typeof bill.autoPayEnabled === "boolean"
+        ? bill.autoPayEnabled
+        : existingDebt.autoPayEnabled,
+    autoPayAmount:
+      typeof bill.autoPayAmount === "number"
+        ? bill.autoPayAmount
+        : existingDebt.autoPayAmount,
     minimumPayment:
       bill.amount > 0
         ? bill.amount
         : existingDebt.minimumPayment,
-
     dueDate:
       bill.dueDate ||
       existingDebt.dueDate,
-
     interestRate:
       typeof bill.apr === "number"
         ? bill.apr
         : existingDebt.interestRate,
-
     creditLimit:
       typeof bill.creditLimit === "number"
         ? bill.creditLimit
         : existingDebt.creditLimit,
-
     updatedAt:
       new Date().toISOString(),
     
   };
 
-const changes: string[] = [];
+  const changes: string[] = [];
 
-if (existingDebt.balance !== latestBalance) {
-  changes.push(
-    `Balance: ${existingDebt.balance} → ${latestBalance}`
-  );
-}
+  if (existingDebt.balance !== latestBalance) {
+    changes.push(
+      `Balance: ${existingDebt.balance} → ${latestBalance}`
+    );
+  }
 
-if (
-  existingDebt.dueDate !==
-  updatedDebt.dueDate
-) {
-  changes.push(
-    `Due Date: ${existingDebt.dueDate} → ${updatedDebt.dueDate}`
-  );
-}
+  if (
+    existingDebt.dueDate !==
+    updatedDebt.dueDate
+  ) {
+    changes.push(
+      `Due Date: ${existingDebt.dueDate} → ${updatedDebt.dueDate}`
+    );
+  }
 
-if (
-  existingDebt.statementDate !==
-  updatedDebt.statementDate
-) {
-  changes.push(
-    `Statement Date: ${
-      existingDebt.statementDate ?? "N/A"
-    } → ${
-      updatedDebt.statementDate ?? "N/A"
-    }`
-  );
-}
+  if (
+    existingDebt.autoPayEnabled !==
+    bill.autoPayEnabled
+  ) {
+    changes.push(
+      bill.autoPayEnabled
+        ? "AutoPay Enabled"
+        : "AutoPay Disabled"
+    );
+  }
+
+  if (
+    existingDebt.statementDate !==
+    updatedDebt.statementDate
+  ) {
+    changes.push(
+      `Statement Date: ${
+        existingDebt.statementDate ?? "N/A"
+      } → ${
+        updatedDebt.statementDate ?? "N/A"
+      }`
+    );
+  }
 
 const activityEntry: ActivityEntry = {
   id: crypto.randomUUID(),
@@ -668,38 +680,38 @@ const handleUpdateExistingBill = (
 
   const updatedBill = {
     ...existingBill,
-
     name:
       bill.name.trim() ||
       existingBill.name,
-
     statementDate:
       bill.statementDate ??
       existingBill.statementDate,
-
     statementReviewed: true,
-
     statementReviewedAt:
       new Date().toISOString(),
-
     statementBalance:
       typeof bill.statementBalance ===
       "number"
         ? bill.statementBalance
         : existingBill.statementBalance,
-
     amount:
       bill.amount,
-
     dueDate:
       bill.dueDate,
-
     category:
       bill.category,
-
     autoPay:
       bill.autoPay,
-
+    autoPayEnabled:
+      typeof bill.autoPayEnabled ===
+      "boolean"
+        ? bill.autoPayEnabled
+        : existingBill.autoPayEnabled,
+    autoPayAmount:
+      typeof bill.autoPayAmount ===
+      "number"
+        ? bill.autoPayAmount
+        : existingBill.autoPayAmount,
     notes:
       bill.notes ??
       existingBill.notes,
