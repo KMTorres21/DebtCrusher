@@ -436,7 +436,8 @@ const handleScan = async () => {
         matchedRecordName:
           matchedRecord?.name,
       };
-
+    }
+  );
 console.table(
   extractedBills.map(
     (bill) => ({
@@ -456,10 +457,6 @@ console.table(
     })
   )
 );
-
-    }
-  );
-
 
     setBills((current) => [
     ...current,
@@ -491,227 +488,93 @@ console.table(
     );
   };
 
-const handleEditBill = (bill:
-  ExtractedBill) => {
-    
-    // New bill update logic
-    setEditingBill(bill);
-  };
-
-const handleUpdateExistingDebt = (
-  bill: ExtractedBill
-) => {
-
-  // Existing debt update logic
-  if (
-    bill.matchedRecordType !== "debt" ||
-    !bill.matchedRecordId
-  ) {
-    return;
-  }
-
-  const existingDebt =
-    existingDebts.find(
-      (debt) =>
-        debt.id === bill.matchedRecordId
-    );
-
-  if (!existingDebt) {
-    return;
-  }
-
-  const latestBalance =
-    typeof bill.currentBalance === "number"
-      ? bill.currentBalance
-      : typeof bill.statementBalance === "number"
-        ? bill.statementBalance
-        : existingDebt.balance;
-
-  const updatedDebt: Debt = {
-    ...existingDebt,
-
-    balance: latestBalance,
-    statementDate:
-      bill.statementDate ??
-      existingDebt.statementDate,
-    statementBalance:
-      typeof bill.statementBalance === "number"
-        ? bill.statementBalance
-        : existingDebt.statementBalance,
-    minimumPayment:
-      bill.amount > 0
-        ? bill.amount
-        : existingDebt.minimumPayment,
-    dueDate:
-      bill.dueDate ||
-      existingDebt.dueDate,
-    interestRate:
-      typeof bill.apr === "number"
-        ? bill.apr
-        : existingDebt.interestRate,
-    creditLimit:
-      typeof bill.creditLimit === "number"
-        ? bill.creditLimit
-        : existingDebt.creditLimit,
-    autoPayEnabled:
-      typeof bill.autoPayEnabled === "boolean"
-        ? bill.autoPayEnabled
-        : existingDebt.autoPayEnabled,
-    autoPayAmount:
-      typeof bill.autoPayAmount === "number"
-        ? bill.autoPayAmount
-        : existingDebt.autoPayAmount,
-    updatedAt:
-      new Date().toISOString(),
-    
-  };
-
-  const changes: string[] = [];
-
-  if (existingDebt.balance !== latestBalance) {
-    changes.push(
-      `Balance: ${existingDebt.balance} → ${latestBalance}`
-    );
-  }
-
-  if (
-    existingDebt.dueDate !==
-    updatedDebt.dueDate
-  ) {
-    changes.push(
-      `Due Date: ${existingDebt.dueDate} → ${updatedDebt.dueDate}`
-    );
-  }
-
-  if (
-    existingDebt.autoPayEnabled !==
-    bill.autoPayEnabled
-  ) {
-    changes.push(
-      bill.autoPayEnabled
-        ? "AutoPay Enabled"
-        : "AutoPay Disabled"
-    );
-  }
-
-  if (
-    existingDebt.statementDate !==
-    updatedDebt.statementDate
-  ) {
-    changes.push(
-      `Statement Date: ${
-        existingDebt.statementDate ?? "N/A"
-      } → ${
-        updatedDebt.statementDate ?? "N/A"
-      }`
-    );
-  }
-
-const activityEntry: ActivityEntry = {
-  id: crypto.randomUUID(),
-  date: new Date().toISOString(),
-  action: "Statement Imported",
-  details: changes.join(" | "),
-};
-
-    if (changes.length > 0) {
-      updatedDebt.activityHistory = [
-        ...(existingDebt.activityHistory ?? []),
-        activityEntry,
-      ];
+  const handleUpdateExistingBill = (
+    bill: ExtractedBill
+  ) => {
+    if (
+      bill.matchedRecordType !==
+        "bill" ||
+      !bill.matchedRecordId
+    ) {
+      return;
     }
 
+    const existingBill =
+      existingBills.find(
+        (item) =>
+          item.id ===
+          bill.matchedRecordId
+      );
 
-  updateDebt(updatedDebt);
-  console.log(
-  "Updating Debt AutoPay",
-  {
-    extractedAutoPay:
-      bill.autoPayEnabled,
-    extractedAmount:
-      bill.autoPayAmount,
-
-    savedAutoPay:
-      updatedDebt.autoPayEnabled,
-    savedAmount:
-      updatedDebt.autoPayAmount,
-  }
-);
-
-  setBills((current) => {
-    const remaining = current.filter(
-      (item) => item.id !== bill.id
-    );
-
-    if (remaining.length === 0) {
-      setHasScanned(false);
-      setFile(null);
-    }
-
-const handleUpdateExistingBill = (
-  bill: ExtractedBill
-) => {
-  if (
-    bill.matchedRecordType !== "bill" ||
-    !bill.matchedRecordId
-  ) {
-    return;
-  }
-
-  const existingBill =
-    existingBills.find(
-      (existingBill) =>
-        existingBill.id ===
+    if (!existingBill) {
+      console.warn(
+        "Matched bill could not be found:",
         bill.matchedRecordId
-    );
+      );
 
-  if (!existingBill) {
-    console.warn(
-      "Matched bill could not be found:",
-      bill.matchedRecordId
-    ); 
+      return;
+    }
 
-    return;
-  }
+    const now =
+      new Date().toISOString();
 
-  const updatedBill = {
-    ...existingBill,
-    name:
-      bill.name.trim() ||
-      existingBill.name,
-    statementDate:
-      bill.statementDate ??
-      existingBill.statementDate,
-    statementReviewed: true,
-    statementReviewedAt:
-      new Date().toISOString(),
-    statementBalance:
-      typeof bill.statementBalance ===
-      "number"
-        ? bill.statementBalance
-        : existingBill.statementBalance,
-    amount:
-      bill.amount,
-    dueDate:
-      bill.dueDate,
-    category:
-      bill.category,
-    autoPay:
-      bill.autoPay,
-    autoPayEnabled:
-      typeof bill.autoPayEnabled ===
-      "boolean"
-        ? bill.autoPayEnabled
-        : existingBill.autoPayEnabled,
-    autoPayAmount:
-      typeof bill.autoPayAmount ===
-      "number"
-        ? bill.autoPayAmount
-        : existingBill.autoPayAmount,
-    notes:
-      bill.notes ??
-      existingBill.notes,
-  };
+    const updatedBill: Bill = {
+      ...existingBill,
+
+      name:
+        bill.name.trim() ||
+        existingBill.name,
+
+      statementDate:
+        bill.statementDate ??
+        existingBill.statementDate,
+
+      statementBalance:
+        typeof bill.statementBalance ===
+        "number"
+          ? bill.statementBalance
+          : existingBill.statementBalance,
+
+      statementReviewed:
+        true,
+
+      statementReviewedAt:
+        now,
+
+      amount:
+        bill.amount > 0
+          ? bill.amount
+          : existingBill.amount,
+
+      dueDate:
+        bill.dueDate ||
+        existingBill.dueDate,
+
+      category:
+        bill.category,
+
+      autoPay:
+        bill.autoPay,
+
+      autoPayEnabled:
+        typeof bill.autoPayEnabled ===
+        "boolean"
+          ? bill.autoPayEnabled
+          : existingBill.autoPayEnabled,
+
+      autoPayAmount:
+        typeof bill.autoPayAmount ===
+        "number"
+          ? bill.autoPayAmount
+          : existingBill.autoPayAmount,
+
+      notes:
+        bill.notes ??
+        existingBill.notes,
+
+      updatedAt:
+        now,
+    };
 
     const changes: string[] = [];
 
@@ -720,21 +583,13 @@ const handleUpdateExistingBill = (
       updatedBill.amount
     ) {
       changes.push(
-        `Amount: ${existingBill.amount} → ${updatedBill.amount}`
+        `Amount: ${formatCurrency(
+          existingBill.amount
+        )} → ${formatCurrency(
+          updatedBill.amount
+        )}`
       );
     }
-
-    if (
-      existingBill.autoPayEnabled !==
-      bill.autoPayEnabled
-    ) {
-      changes.push(
-        bill.autoPayEnabled
-          ? "AutoPay Enabled"
-          : "AutoPay Disabled"
-      );
-    }
-
 
     if (
       existingBill.dueDate !==
@@ -751,26 +606,76 @@ const handleUpdateExistingBill = (
     ) {
       changes.push(
         `Statement Date: ${
-          existingBill.statementDate ?? "N/A"
+          existingBill.statementDate ??
+          "N/A"
         } → ${
-          updatedBill.statementDate ?? "N/A"
+          updatedBill.statementDate ??
+          "N/A"
         }`
       );
     }
 
-    const activityEntry: ActivityEntry = {
-      id: crypto.randomUUID(),
-      date: new Date().toISOString(),
-      action: "Statement Imported",
-      details: changes.join(" | "),
-    };
+    if (
+      typeof bill.autoPayEnabled ===
+        "boolean" &&
+      existingBill.autoPayEnabled !==
+        updatedBill.autoPayEnabled
+    ) {
+      changes.push(
+        updatedBill.autoPayEnabled
+          ? "AutoPay Enabled"
+          : "AutoPay Disabled"
+      );
+    }
 
-      if (changes.length > 0) {
-        updatedBill.activityHistory = [
-          ...(existingBill.activityHistory ?? []),
-          activityEntry,
-        ];
+    if (
+      typeof bill.autoPayAmount ===
+        "number" &&
+      existingBill.autoPayAmount !==
+        updatedBill.autoPayAmount
+    ) {
+      changes.push(
+        `AutoPay Amount: ${
+          existingBill.autoPayAmount !==
+          undefined
+            ? formatCurrency(
+                existingBill.autoPayAmount
+              )
+            : "Not set"
+        } → ${formatCurrency(
+          bill.autoPayAmount
+        )}`
+      );
+    }
+
+    updatedBill.activityHistory = [
+      ...(existingBill.activityHistory ??
+        []),
+      {
+        id: crypto.randomUUID(),
+        date: now,
+        action:
+          "Statement Imported",
+        details:
+          changes.length > 0
+            ? changes.join(" | ")
+            : "Statement scan matched to this existing bill.",
+      },
+    ];
+
+    console.log(
+      "Updating Bill AutoPay",
+      {
+        extractedEnabled:
+          bill.autoPayEnabled,
+        extractedAmount:
+          bill.autoPayAmount,
+        savedEnabled:
+          updatedBill.autoPayEnabled,
+        savedAmount:
+          updatedBill.autoPayAmount,
       }
+    );
 
     updateBill(updatedBill);
 
@@ -781,83 +686,211 @@ const handleUpdateExistingBill = (
             item.id !== bill.id
         );
 
+      if (remaining.length === 0) {
+        setHasScanned(false);
+        setFile(null);
+      }
+
       return remaining;
     });
+  }; 
+
+const handleEditBill = (bill:
+  ExtractedBill) => {
+    
+    // New bill update logic
+    setEditingBill(bill);
   };
-
-    return remaining;
-  });
-};
-
-const handleUpdateExistingBill = (
+const handleUpdateExistingDebt = (
   bill: ExtractedBill
 ) => {
   if (
-    bill.matchedRecordType !== "bill" ||
+    bill.matchedRecordType !==
+      "debt" ||
     !bill.matchedRecordId
   ) {
-    return; 
-  }
-
-  const existingBill =
-    existingBills.find(
-      (existingBill) =>
-        existingBill.id ===
-        bill.matchedRecordId
-    );
-
-  if (!existingBill) {
-    console.warn(
-      "Matched bill could not be found:",
-      bill.matchedRecordId
-    );
-
     return;
   }
 
-  const updatedBill: Bill = {
-    ...existingBill,
+  const existingDebt =
+    existingDebts.find(
+      (debt) =>
+        debt.id ===
+        bill.matchedRecordId
+    );
 
-    name:
-      bill.name.trim() ||
-      existingBill.name,
+  if (!existingDebt) {
+    return;
+  }
+
+  const now =
+    new Date().toISOString();
+
+  const latestBalance =
+    typeof bill.currentBalance ===
+    "number"
+      ? bill.currentBalance
+      : typeof bill.statementBalance ===
+          "number"
+        ? bill.statementBalance
+        : existingDebt.balance;
+
+  const updatedDebt: Debt = {
+    ...existingDebt,
+
+    balance:
+      latestBalance,
 
     statementDate:
       bill.statementDate ??
-      existingBill.statementDate,
-
-    statementReviewed: true,
-
-    statementReviewedAt:
-      new Date().toISOString(),
+      existingDebt.statementDate,
 
     statementBalance:
       typeof bill.statementBalance ===
       "number"
         ? bill.statementBalance
-        : existingBill.statementBalance,
+        : existingDebt.statementBalance,
 
-    amount:
+    statementReviewed:
+      true,
+
+    statementReviewedAt:
+      now,
+
+    minimumPayment:
       bill.amount > 0
         ? bill.amount
-        : existingBill.amount,
+        : existingDebt.minimumPayment,
 
     dueDate:
       bill.dueDate ||
-      existingBill.dueDate,
+      existingDebt.dueDate,
 
-    category:
-      bill.category,
+    interestRate:
+      typeof bill.apr === "number"
+        ? bill.apr
+        : existingDebt.interestRate,
 
-    autoPay:
-      bill.autoPay,
+    creditLimit:
+      typeof bill.creditLimit ===
+      "number"
+        ? bill.creditLimit
+        : existingDebt.creditLimit,
 
-    notes:
-      bill.notes ??
-      existingBill.notes,
+    autoPayEnabled:
+      typeof bill.autoPayEnabled ===
+      "boolean"
+        ? bill.autoPayEnabled
+        : existingDebt.autoPayEnabled,
+
+    autoPayAmount:
+      typeof bill.autoPayAmount ===
+      "number"
+        ? bill.autoPayAmount
+        : existingDebt.autoPayAmount,
+
+    updatedAt:
+      now,
   };
 
-  updateBill(updatedBill);
+  const changes: string[] = [];
+
+  if (
+    existingDebt.balance !==
+    updatedDebt.balance
+  ) {
+    changes.push(
+      `Balance: ${existingDebt.balance} → ${updatedDebt.balance}`
+    );
+  }
+
+  if (
+    existingDebt.dueDate !==
+    updatedDebt.dueDate
+  ) {
+    changes.push(
+      `Due Date: ${existingDebt.dueDate} → ${updatedDebt.dueDate}`
+    );
+  }
+
+  if (
+    existingDebt.statementDate !==
+    updatedDebt.statementDate
+  ) {
+    changes.push(
+      `Statement Date: ${
+        existingDebt.statementDate ??
+        "N/A"
+      } → ${
+        updatedDebt.statementDate ??
+        "N/A"
+      }`
+    );
+  }
+
+  if (
+    typeof bill.autoPayEnabled ===
+      "boolean" &&
+    existingDebt.autoPayEnabled !==
+      updatedDebt.autoPayEnabled
+  ) {
+    changes.push(
+      updatedDebt.autoPayEnabled
+        ? "AutoPay Enabled"
+        : "AutoPay Disabled"
+    );
+  }
+
+  if (
+    typeof bill.autoPayAmount ===
+      "number" &&
+    existingDebt.autoPayAmount !==
+      updatedDebt.autoPayAmount
+  ) {
+    changes.push(
+      `AutoPay Amount: ${
+        existingDebt.autoPayAmount !==
+        undefined
+          ? formatCurrency(
+              existingDebt.autoPayAmount
+            )
+          : "Not set"
+      } → ${formatCurrency(
+        bill.autoPayAmount
+      )}`
+    );
+  }
+
+  updatedDebt.activityHistory = [
+    ...(existingDebt.activityHistory ??
+      []),
+    {
+      id: crypto.randomUUID(),
+      date: now,
+      action:
+        "Statement Imported",
+      details:
+        changes.length > 0
+          ? changes.join(" | ")
+          : "Statement scan matched to this existing debt.",
+    },
+  ];
+
+  console.log(
+    "Updating Debt AutoPay",
+    {
+      extractedEnabled:
+        bill.autoPayEnabled,
+      extractedAmount:
+        bill.autoPayAmount,
+      savedEnabled:
+        updatedDebt.autoPayEnabled,
+      savedAmount:
+        updatedDebt.autoPayAmount,
+    }
+  );
+
+  updateDebt(updatedDebt);
 
   setBills((current) => {
     const remaining =
@@ -866,11 +899,14 @@ const handleUpdateExistingBill = (
           item.id !== bill.id
       );
 
+    if (remaining.length === 0) {
+      setHasScanned(false);
+      setFile(null);
+    }
+
     return remaining;
   });
 };
-
-
 const handleAddDebt = (bill: ExtractedBill) => {
   const latestBalance =
     typeof bill.statementBalance === "number"
@@ -883,6 +919,17 @@ const handleAddDebt = (bill: ExtractedBill) => {
   setDebtPrefill({
     name: bill.name,
     type: "Credit Card",
+    autoPayEnabled:
+      typeof bill.autoPayEnabled ===
+      "boolean"
+        ? bill.autoPayEnabled
+        : undefined,
+
+    autoPayAmount:
+      typeof bill.autoPayAmount ===
+      "number"
+        ? bill.autoPayAmount
+        : undefined,
 
     // Keep internal balance compatible with the debt model
     balance: latestBalance,
@@ -1651,20 +1698,6 @@ const handleAddDebt = (bill: ExtractedBill) => {
             Add as Debt
           </button>
         )}
-
-        {/* {bill.matchStatus === "existing" &&
-          bill.matchedRecordType === "bill" &&
-          bill.matchedRecordId && (
-            <button
-              type="button"
-              onClick={() =>
-                handleUpdateExistingBill(bill)
-              }
-              className="mt-2 w-full rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-700"
-            >
-              Update Existing Bill
-            </button>
-          )} */}
 
         {bill.matchStatus === "existing" &&
         bill.matchedRecordType === "debt" && (
