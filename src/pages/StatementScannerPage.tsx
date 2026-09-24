@@ -919,7 +919,18 @@ const handleAddDebt = (bill: ExtractedBill) => {
   setDebtPrefill({
     name: bill.name,
     type: "Credit Card",
-    autoPayEnabled:
+    // Keep internal balance compatible with the debt model
+    balance: latestBalance,
+    // Statement information from scanner
+    statementBalance:
+      typeof bill.statementBalance === "number"
+        ? bill.statementBalance
+        : typeof bill.currentBalance === "number"
+          ? bill.currentBalance
+          : undefined,
+    statementDate:
+      bill.statementDate ?? undefined,
+        autoPayEnabled:
       typeof bill.autoPayEnabled ===
       "boolean"
         ? bill.autoPayEnabled
@@ -930,20 +941,6 @@ const handleAddDebt = (bill: ExtractedBill) => {
       "number"
         ? bill.autoPayAmount
         : undefined,
-
-    // Keep internal balance compatible with the debt model
-    balance: latestBalance,
-
-    // Statement information from scanner
-    statementBalance:
-      typeof bill.statementBalance === "number"
-        ? bill.statementBalance
-        : typeof bill.currentBalance === "number"
-          ? bill.currentBalance
-          : undefined,
-
-    statementDate:
-      bill.statementDate ?? undefined,
 
     // Initial value until manually corrected, if necessary
     originalBalance: latestBalance,
@@ -1795,11 +1792,8 @@ const handleAddDebt = (bill: ExtractedBill) => {
 
       return remainingBills;
     });
-
-    setDebtPrefill(null);
-    setConvertingBillId(null);
-     }}
-    />
+  }}
+/>
   </>
   );
 }
