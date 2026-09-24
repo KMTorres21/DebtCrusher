@@ -1411,13 +1411,6 @@ const handleAddDebt = (bill: ExtractedBill) => {
           )}
         </div>
 
-            {bill.possibleMatches &&
-              bill.possibleMatches.length > 0 && (
-                <div className="mt-3 rounded-xl bg-amber-50 p-3">
-                  <p className="text-sm font-semibold text-amber-800">
-                    Possible Matches
-                  </p>
-
             {bill.matchedRecordId &&
               bill.matchedRecordType === "debt" &&
               (() => {
