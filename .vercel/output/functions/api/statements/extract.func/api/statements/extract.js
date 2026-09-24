@@ -66,6 +66,9 @@ For each bill, extract:
 - recurring
 - paid
 - autoPay
+- autoPayAmount
+- autoPayDate
+- autoPayEvidence
 - notes
 - confidence
 
@@ -94,6 +97,13 @@ Rules:
 - If something cannot be determined, use null.
 - Identify actual bills from the document.
 - Do not create example or placeholder bills.
+- Set autoPayEnabled to true only when the statement explicitly indicates that an automatic payment, AutoPay payment, recurring automatic debit, or scheduled automatic payment is active or scheduled.
+- Do not set autoPayEnabled to true merely because the statement advertises AutoPay, recommends enrollment, or provides instructions for enabling AutoPay.
+- Extract autoPayAmount only when the statement explicitly identifies the amount scheduled for automatic collection.
+- Extract autoPayDate when an automatic payment date is explicitly shown. Return the date as YYYY-MM-DD when possible.
+- Store a short supporting phrase in autoPayEvidence.
+- If AutoPay status is unclear, return null rather than guessing.
+- If AutoPay is explicitly disabled, canceled, or not enrolled, return autoPayEnabled as false.
 `;
         let response;
         for (let attempt = 1; attempt <= 3; attempt++) {
@@ -142,7 +152,19 @@ Rules:
                                                 type: Type.NUMBER,
                                                 nullable: true,
                                             },
-                                            dueDate: {
+                                            autoPayEnabled: {
+                                                type: Type.BOOLEAN,
+                                                nullable: true,
+                                            },
+                                            autoPayAmount: {
+                                                type: Type.NUMBER,
+                                                nullable: true,
+                                            },
+                                            autoPayDate: {
+                                                type: Type.STRING,
+                                                nullable: true,
+                                            },
+                                            autoPayEvidence: {
                                                 type: Type.STRING,
                                                 nullable: true,
                                             },

@@ -24,6 +24,10 @@ interface ExtractedBill extends Bill {
   apr?: number;
   statementDate?: string;
   statementBalance?: number;
+  autoPayEnabled?: boolean;
+  autoPayAmount?: number;
+  autoPayDate?: string;
+  autoPayEvidence?: string;
   currentBalance?: number;
   creditLimit?: number;
   possibleMatches?: {
