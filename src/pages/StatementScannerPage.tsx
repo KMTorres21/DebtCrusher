@@ -1275,6 +1275,29 @@ const handleAddDebt = (bill: ExtractedBill) => {
               APR: {bill.apr.toFixed(2)}%
             </p>
           )}
+
+          {bill.autoPayEnabled && (
+            <p>
+              🔄 AutoPay Detected
+            </p>
+          )}
+
+          {typeof bill.autoPayAmount ===
+            "number" && (
+            <p>
+              AutoPay Amount:{" "}
+              {formatCurrency(
+                bill.autoPayAmount
+              )}
+            </p>
+          )}
+
+          {bill.autoPayDate && (
+            <p>
+              AutoPay Date:{" "}
+              {bill.autoPayDate}
+            </p>
+          )}
         </div>
 
         {/* Tags */}
