@@ -624,21 +624,17 @@ const activityEntry: ActivityEntry = {
 
   updateDebt(updatedDebt);
   console.log(
-  "Updating Debt",
+  "Updating Debt AutoPay",
   {
-    originalDueDate:
-      existingDebt.dueDate,
-    scannedDueDate:
-      bill.dueDate,
-    updatedDueDate:
-      updatedDebt.dueDate,
+    extractedAutoPay:
+      bill.autoPayEnabled,
+    extractedAmount:
+      bill.autoPayAmount,
 
-    originalStatementDate:
-      existingDebt.statementDate,
-    scannedStatementDate:
-      bill.statementDate,
-    updatedStatementDate:
-      updatedDebt.statementDate,
+    savedAutoPay:
+      updatedDebt.autoPayEnabled,
+    savedAmount:
+      updatedDebt.autoPayAmount,
   }
 );
 
