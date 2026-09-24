@@ -24,9 +24,8 @@ export default function DebtsPage() {
     updateDebt,
     deleteDebt,
   } = useDebts();
-const { addBill } = useBills();
-const { displaySettings } = useDisplaySettings();
-
+  const { addBill } = useBills();
+  const { displaySettings } = useDisplaySettings();
   const [search, setSearch] = useState("");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingDebt, setEditingDebt] =
@@ -61,6 +60,19 @@ const { displaySettings } = useDisplaySettings();
     function handleEdit(debt: Debt) {
       setEditingDebt(debt);
       setIsAddModalOpen(true);
+    }
+
+    function handleMarkReviewed(
+      debt: Debt
+    ) {
+      updateDebt({
+        ...debt,
+
+        statementReviewed: true,
+
+        statementReviewedAt:
+          new Date().toISOString(),
+      });
     }
 
     function handleConvertToBill(debt: Debt) {
@@ -224,6 +236,7 @@ const { displaySettings } = useDisplaySettings();
               onEdit={handleEdit}
               onDelete={deleteDebt}
               onConvertToBill={handleConvertToBill}
+              onMarkReviewed={handleMarkReviewed}
             />
           ))}
         </div>

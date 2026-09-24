@@ -10,6 +10,7 @@ interface DebtCardProps {
   onEdit: (debt: Debt) => void;
   onDelete: (id: string) => void;
   onConvertToBill: (debt: Debt) => void;
+  onMarkReviewed?: (debt: Debt) => void;
 }
 
 export default function DebtCard({
@@ -18,6 +19,7 @@ export default function DebtCard({
   onEdit,
   onDelete,
   onConvertToBill,
+  onMarkReviewed,
 }: DebtCardProps) {
   const currentBalance =
     debt.statementBalance ?? debt.balance ?? 0;
@@ -205,8 +207,38 @@ export default function DebtCard({
               : " Enabled"}
           </p>
         )}
-
       </div>
+
+      {debt.statementDate && (
+        <div className="mt-2">
+          {debt.statementReviewed ? (
+            <div className="text-sm font-semibold text-green-600">
+              <div>✅ Reviewed</div>
+
+              {debt.statementReviewedAt && (
+                <div className="text-xs text-slate-500">
+                  Reviewed{" "}
+                  {new Date(
+                    debt.statementReviewedAt
+                  ).toLocaleDateString()}
+                </div>
+              )}
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() =>
+                onMarkReviewed?.(
+                  debt
+                )
+              }
+              className="text-sm font-semibold text-blue-600"
+            >
+              ✅ Mark as Reviewed
+            </button>
+          )}
+        </div>
+      )}
 
       <div className="mt-6 space-y-2">
         <div className="flex gap-3">
