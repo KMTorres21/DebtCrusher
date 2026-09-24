@@ -97,13 +97,20 @@ Rules:
 - If something cannot be determined, use null.
 - Identify actual bills from the document.
 - Do not create example or placeholder bills.
-- Set autoPayEnabled to true only when the statement explicitly indicates that an automatic payment, AutoPay payment, recurring automatic debit, or scheduled automatic payment is active or scheduled.
-- Do not set autoPayEnabled to true merely because the statement advertises AutoPay, recommends enrollment, or provides instructions for enabling AutoPay.
-- Extract autoPayAmount only when the statement explicitly identifies the amount scheduled for automatic collection.
-- Extract autoPayDate when an automatic payment date is explicitly shown. Return the date as YYYY-MM-DD when possible.
-- Store a short supporting phrase in autoPayEvidence.
-- If AutoPay status is unclear, return null rather than guessing.
-- If AutoPay is explicitly disabled, canceled, or not enrolled, return autoPayEnabled as false.
+
+AUTOPAY EXTRACTION RULES:
+1. Set autoPayEnabled to true only when the statement explicitly confirms that an automatic payment, AutoPay debit, recurring automatic debit, or scheduled automatic payment is active or scheduled.
+2. Do not set autoPayEnabled to true merely because the statement:
+   - advertises AutoPay,
+   - recommends enrolling in AutoPay,
+   - explains how to enable AutoPay,
+   - or mentions AutoPay as an available service.
+3. Set autoPayEnabled to false only when the statement explicitly says AutoPay is disabled, canceled, inactive, or not enrolled.
+4. If AutoPay status cannot be reliably determined, return null.
+5. Extract autoPayAmount only when the statement explicitly states the amount scheduled for automatic collection.
+6. Extract autoPayDate only when the automatic debit or scheduled-payment date is explicitly shown. Return the date in YYYY-MM-DD format when possible.
+7. Put a short supporting phrase from the statement in autoPayEvidence. Do not include unrelated text.
+8. The fields autoPayEnabled, autoPayAmount, autoPayDate, and autoPayEvidence must describe the same scheduled automatic payment.
 `;
         let response;
         for (let attempt = 1; attempt <= 3; attempt++) {
@@ -142,6 +149,10 @@ Rules:
                                             },
                                             apr: {
                                                 type: Type.NUMBER,
+                                                nullable: true,
+                                            },
+                                            dueDate: {
+                                                type: Type.STRING,
                                                 nullable: true,
                                             },
                                             statementDate: {
@@ -204,6 +215,10 @@ Rules:
                                             "recurring",
                                             "paid",
                                             "autoPay",
+                                            "autoPayEnabled",
+                                            "autoPayAmount",
+                                            "autoPayDate",
+                                            "autoPayEvidence",
                                             "notes",
                                             "confidence",
                                         ],

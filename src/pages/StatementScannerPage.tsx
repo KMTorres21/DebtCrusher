@@ -1276,9 +1276,18 @@ const handleAddDebt = (bill: ExtractedBill) => {
             </p>
           )}
 
-          {bill.autoPayEnabled && (
-            <p>
-              🔄 AutoPay Detected
+          {typeof bill.autoPayEnabled ===
+            "boolean" && (
+            <p
+              className={
+                bill.autoPayEnabled
+                  ? "font-semibold text-green-600"
+                  : "font-semibold text-slate-500"
+              }
+            >
+              {bill.autoPayEnabled
+                ? "🔄 AutoPay Detected"
+                : "AutoPay Not Active"}
             </p>
           )}
 
@@ -1296,6 +1305,13 @@ const handleAddDebt = (bill: ExtractedBill) => {
             <p>
               AutoPay Date:{" "}
               {bill.autoPayDate}
+            </p>
+          )}
+
+          {bill.autoPayEvidence && (
+            <p className="text-xs italic text-slate-400">
+              Evidence:{" "}
+              {bill.autoPayEvidence}
             </p>
           )}
         </div>
