@@ -128,6 +128,9 @@ function hasScannedStatement(
         autoPayEnabled:
           debt.autoPayEnabled ??
           false,
+        scanned:
+        hasScannedStatement
+          (debt.activityHistory),
       })),
   ]
     .map((item) => ({
