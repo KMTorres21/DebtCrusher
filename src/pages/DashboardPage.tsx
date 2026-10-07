@@ -85,7 +85,7 @@ function hasScannedStatement(
     activityHistory?.some(
       (entry) =>
         entry.action ===
-        "Statement Imprted"
+        "Statement Imported"
     ) ?? false
   );
 }    
