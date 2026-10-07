@@ -105,13 +105,6 @@ export default function DebtCard({
 
             <div className="text-right"
             >
-             {showDebtStatementDate &&
-                debt.statementDate && (
-                  <p className="text-sm text-slate-500">
-                    Statement Date:{" "}
-                    {debt.statementDate}
-                  </p>
-              )}
 
               <p className="text-xs text-slate-500">
                 Statement Balance
@@ -208,6 +201,13 @@ export default function DebtCard({
                 )}`
               : " Enabled"}
           </p>
+        )}
+        {showDebtStatementDate &&
+          debt.statementDate && (
+            <p className="text-sm text-slate-500">
+              Statement Date:{" "}
+              {debt.statementDate}
+            </p>
         )}
       </div>
 

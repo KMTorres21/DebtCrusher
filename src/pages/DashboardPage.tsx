@@ -106,7 +106,11 @@ function hasScannedStatement(
         reviewed: bill.statementReviewed ?? false,
         autoPayEnabled:
           bill.autoPayEnabled ??
-  false,
+          false,
+        scanned: 
+        hasScannedStatement
+          (bill.activityHistory
+        ),
       })),
 
     ...debts
@@ -156,6 +160,36 @@ function hasScannedStatement(
   (item) =>
   !item.reviewed
   ).length;
+
+  const scannedCount =
+  statementItems.filter(
+    (item) =>
+      item.scanned
+  ).length;
+
+  const notScannedCount =
+  statementItems.filter(
+    (item) =>
+      !item.scanned
+  ).length;
+
+  const availableCount =
+  statementItems.filter(
+    (item) =>
+      item.daysUntil > 0 &&
+      item.reviewed &&
+      item.scanned
+  ).length;
+
+  const attentionNeeded =
+  statementItems.filter(
+    (item) =>
+      item.daysUntil <= 0 &&
+      (
+        !item.reviewed ||
+        !item.scanned
+      )
+  );
 
   return (
     <PageContainer>
