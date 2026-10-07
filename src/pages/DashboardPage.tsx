@@ -94,8 +94,7 @@ function hasScannedStatement(
     ...bills
       .filter(
         (bill) =>
-          bill.statementDate &&
-          !bill.statementReviewed
+          bill.statementDate
           
       )
       .map((bill) => ({
@@ -116,8 +115,7 @@ function hasScannedStatement(
     ...debts
       .filter(
         (debt) =>
-          debt.statementDate &&
-          !debt.statementReviewed
+          debt.statementDate 
       )
       .map((debt) => ({
         name: debt.name,
@@ -179,9 +177,7 @@ function hasScannedStatement(
   const availableCount =
   statementItems.filter(
     (item) =>
-      item.daysUntil > 0 &&
-      item.reviewed &&
-      item.scanned
+      item.daysUntil <= 0
   ).length;
 
   const attentionNeeded =
@@ -191,9 +187,27 @@ function hasScannedStatement(
       (
         !item.reviewed ||
         !item.scanned
-      )
+      )    
   );
 
+  const availableStatements =
+  statementItems.filter(
+    (item) =>
+      item.daysUntil <= 0 &&
+      !item.reviewed
+  );
+
+  const upcomingStatements =
+  statementItems.filter(
+    (item) =>
+      item.daysUntil > 0 &&
+      item.daysUntil <=7
+  );
+
+  const upcomingCount = 
+  upcomingStatements.length;
+
+  
   return (
     <PageContainer>
 
@@ -299,8 +313,8 @@ function hasScannedStatement(
         </h3>
 
         <p className="mt-2 text-sm text-slate-500">
-          Reviewed: {reviewedCount} •
-          Needs Review: {needsReviewCount}
+          Available: {availableCount} •
+          Upcoming: {upcomingCount}
         </p>
 
         {statementItems.length ===
@@ -310,7 +324,7 @@ function hasScannedStatement(
           </p>
         ) : (
           <div className="mt-3 space-y-2">
-            {statementItems.map(
+            {availableStatements.map(
               (statement) => (
                 <div
                   key={`${statement.type}-${statement.name}`}
@@ -360,6 +374,36 @@ function hasScannedStatement(
                 </div>
               )
             )}
+          </div>
+        )}
+
+        {upcomingStatements.length >
+          0 && (
+          <div className="mt-4 border-t border-slate-200 pt-4">
+            <h4 className="font-semibold text-slate-700">
+              ⏳ Upcoming Statements
+            </h4>
+
+            <div className="mt-2 space-y-2">
+              {upcomingStatements.map(
+                (statement) => (
+                  <div
+                    key={`upcoming-${statement.type}-${statement.name}`}
+                    className="flex items-center justify-between text-sm"
+                  >
+                    <span>
+                      {statement.name}
+                    </span>
+
+                    <span className="text-amber-600">
+                      {statement.daysUntil === 1
+                        ? "Tomorrow"
+                        : `In ${statement.daysUntil} days`}
+                    </span>
+                  </div>
+                )
+              )}
+            </div>
           </div>
         )}
       </Card>  
