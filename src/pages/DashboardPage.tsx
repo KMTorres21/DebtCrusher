@@ -197,6 +197,17 @@ function hasScannedStatement(
       !item.reviewed
   );
 
+  const readyToScan =
+  statementItems.filter(
+    (item) =>
+      item.daysUntil <= 0 &&
+      item.reviewed &&
+      !item.scanned
+  );
+
+const readyToScanCount =
+  readyToScan.length;
+
   const upcomingStatements =
   statementItems.filter(
     (item) =>
@@ -313,7 +324,8 @@ function hasScannedStatement(
         </h3>
 
         <p className="mt-2 text-sm text-slate-500">
-          Available: {availableCount} •
+          Available: {availableCount} • {" "}
+          Ready to Scan: {readyToScanCount} • {" "}
           Upcoming: {upcomingCount}
         </p>
 
@@ -374,6 +386,42 @@ function hasScannedStatement(
                 </div>
               )
             )}
+          </div>
+        )}
+
+        {readyToScan.length > 
+          0 && (
+          <div className="mt-4 border-t border-slate-200 pt-4">
+            <h4 className="font-semibold text-slate-700">
+              📄 Ready to Scan
+            </h4>
+
+            <div className="mt-2 space-y-2">
+              {readyToScan.map(
+                (statement) => (
+                  <div
+                    key={`ready-to-scan-${statement.type}-${statement.name}`}
+                    className="flex items-center justify-between text-sm"
+                  >
+                    <div>
+                      <div className="font-medium text-slate-800">
+                        {statement.name}
+                      </div>
+
+                      <div className="text-xs text-slate-500">
+                        Reviewed • Not Scanned
+                      </div>
+                    </div>
+
+                    {statement.autoPayEnabled && (
+                      <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-700">
+                        AutoPay
+                      </span>
+                    )}
+                  </div>
+                )
+              )}
+            </div>
           </div>
         )}
 
