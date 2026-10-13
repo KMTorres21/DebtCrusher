@@ -1,4 +1,8 @@
-import { Settings } from "lucide-react";
+import {
+  FileScan,
+  Settings,
+} from "lucide-react";
+
 import { Link } from "react-router-dom";
 
 export default function Header() {
@@ -25,13 +29,29 @@ export default function Header() {
           </div>
         </Link>
 
-        <Link
-          to="/settings"
-          aria-label="Settings"
-          className="rounded-full p-3 hover:bg-blue-600"
-        >
-          <Settings size={30} />
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            to="/statement-scanner"
+            aria-label="Scan Statement"
+            title="Scan Statement"
+            className="flex items-center gap-2 rounded-full px-3 py-3 hover:bg-blue-600"
+          >
+            <FileScan size={30} />
+
+            <span className="hidden sm:inline text-sm font-semibold">
+              Scan Statement
+            </span>
+          </Link>
+
+          <Link
+            to="/settings"
+            aria-label="Settings"
+            title="Settings"
+            className="rounded-full p-3 hover:bg-blue-600"
+          >
+            <Settings size={30} />
+          </Link>
+        </div>
 
       </div>
     </header>
