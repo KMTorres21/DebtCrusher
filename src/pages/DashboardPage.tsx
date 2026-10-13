@@ -3,7 +3,7 @@ import { Plus } from "lucide-react";
 import FinancialTimeline from "../components/dashboard/FinancialTimeline";
 import { Bill } from "../types/Bill";
 import { formatCurrency } from "../utils/formatCurrency";
-
+import { Link, useNavigate } from "react-router-dom";
 import PageContainer from "../components/common/PageContainer";
 import PageHeader from "../components/common/PageHeader";
 import StatCard from "../components/common/StatCard";
@@ -389,41 +389,35 @@ const readyToScanCount =
           </div>
         )}
 
-        {readyToScan.length > 
-          0 && (
-          <div className="mt-4 border-t border-slate-200 pt-4">
-            <h4 className="font-semibold text-slate-700">
-              📄 Ready to Scan
-            </h4>
-
-            <div className="mt-2 space-y-2">
-              {readyToScan.map(
-                (statement) => (
-                  <div
-                    key={`ready-to-scan-${statement.type}-${statement.name}`}
-                    className="flex items-center justify-between text-sm"
-                  >
-                    <div>
-                      <div className="font-medium text-slate-800">
-                        {statement.name}
-                      </div>
-
-                      <div className="text-xs text-slate-500">
-                        Reviewed • Not Scanned
-                      </div>
-                    </div>
-
-                    {statement.autoPayEnabled && (
-                      <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-700">
-                        AutoPay
-                      </span>
-                    )}
+        {readyToScan.map(
+            (statement) => (
+              <Link
+                key={`ready-to-scan-${statement.type}-${statement.name}`}
+                to="/statement-scanner"
+                className="flex items-center justify-between rounded-xl px-3 py-3 text-sm transition hover:bg-slate-50"
+              >
+                <div>
+                  <div className="font-medium text-slate-800">
+                    {statement.name}
                   </div>
-                )
-              )}
-            </div>
-          </div>
-        )}
+
+                  <div className="text-xs text-slate-500">
+                    Reviewed • Not Scanned
+                  </div>
+
+                  <div className="mt-1 text-xs font-semibold text-blue-600">
+                    Scan Statement →
+                  </div>
+                </div>
+
+                {statement.autoPayEnabled && (
+                  <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-700">
+                    AutoPay
+                  </span>
+                )}
+              </Link>
+            )
+          )}
 
         {upcomingStatements.length >
           0 && (
