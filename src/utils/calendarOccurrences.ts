@@ -229,23 +229,29 @@ export function getIncomeOccurrences(
   year: number,
   month: number
 ): string[] {
-  const originalDate = new Date(
+  const anchorDate = new Date(
     `${income.nextPayDate}T12:00:00`
   );
 
-  if (Number.isNaN(originalDate.getTime())) {
+  if (Number.isNaN(anchorDate.getTime())) {
     return [];
   }
 
   const monthStart = new Date(
     year,
     month,
-    1
+    1,
+    12,
+    0,
+    0
   );
 
   const monthEnd = new Date(
     year,
     month + 1,
+    0,
+    12,
+    0,
     0
   );
 
@@ -253,11 +259,11 @@ export function getIncomeOccurrences(
 
   if (income.frequency === "onetime") {
     if (
-      originalDate >= monthStart &&
-      originalDate <= monthEnd
+      anchorDate >= monthStart &&
+      anchorDate <= monthEnd
     ) {
       occurrences.push(
-        toDateString(originalDate)
+        toDateString(anchorDate)
       );
     }
 
@@ -265,40 +271,116 @@ export function getIncomeOccurrences(
   }
 
   if (income.frequency === "monthly") {
-    const day =
-      originalDate.getDate();
+    const anchorDay =
+      anchorDate.getDate();
+
+    const lastDayOfMonth =
+      monthEnd.getDate();
 
     const occurrence = new Date(
       year,
       month,
       Math.min(
-        day,
-        new Date(
-          year,
-          month + 1,
-          0
-        ).getDate()
-      )
+        anchorDay,
+        lastDayOfMonth
+      ),
+      12,
+      0,
+      0
     );
 
-    if (
-      occurrence >= monthStart &&
-      occurrence <= monthEnd
+    occurrences.push(
+      toDateString(occurrence)
+    );
+
+    return occurrences;
+  }
+
+  if (
+    income.frequency === "weekly" ||
+    income.frequency === "biweekly"
+  ) {
+    const intervalDays =
+      income.frequency === "weekly"
+        ? 7
+        : 14;
+
+    let occurrence =
+      new Date(anchorDate);
+
+    while (occurrence > monthEnd) {
+      occurrence = addDays(
+        occurrence,
+        -intervalDays
+      );
+    }
+
+    while (
+      addDays(
+        occurrence,
+        -intervalDays
+      ) >= monthStart
     ) {
+      occurrence = addDays(
+        occurrence,
+        -intervalDays
+      );
+    }
+
+    while (occurrence < monthStart) {
+      occurrence = addDays(
+        occurrence,
+        intervalDays
+      );
+    }
+
+    while (occurrence <= monthEnd) {
       occurrences.push(
         toDateString(occurrence)
+      );
+
+      occurrence = addDays(
+        occurrence,
+        intervalDays
       );
     }
 
     return occurrences;
   }
 
-  if (
-    income.frequency ===
-    "semimonthly"
-  ) {
+  if (income.frequency === "semimonthly") {
+    /*
+     * Temporary behavior based on the existing
+     * data model.
+     *
+     * A true semi-monthly schedule needs two
+     * configured calendar days, such as the
+     * 1st and 15th or the 15th and final day.
+     *
+     * Using a 15-day interval is not equivalent
+     * to a semi-monthly schedule and can drift.
+     */
     let occurrence =
-      new Date(originalDate);
+      new Date(anchorDate);
+
+    while (occurrence > monthEnd) {
+      occurrence = addDays(
+        occurrence,
+        -15
+      );
+    }
+
+    while (
+      addDays(
+        occurrence,
+        -15
+      ) >= monthStart
+    ) {
+      occurrence = addDays(
+        occurrence,
+        -15
+      );
+    }
 
     while (occurrence < monthStart) {
       occurrence = addDays(
@@ -319,39 +401,6 @@ export function getIncomeOccurrences(
     }
 
     return occurrences;
-  }
-
-  const intervalDays =
-    income.frequency === "weekly"
-      ? 7
-      : income.frequency ===
-          "biweekly"
-        ? 14
-        : 0;
-
-  if (intervalDays === 0) {
-    return [];
-  }
-
-  let occurrence =
-    new Date(originalDate);
-
-  while (occurrence < monthStart) {
-    occurrence = addDays(
-      occurrence,
-      intervalDays
-    );
-  }
-
-  while (occurrence <= monthEnd) {
-    occurrences.push(
-      toDateString(occurrence)
-    );
-
-    occurrence = addDays(
-      occurrence,
-      intervalDays
-    );
   }
 
   return occurrences;
