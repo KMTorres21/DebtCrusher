@@ -19,6 +19,7 @@ import { useIncome } from "../hooks/useIncome";
 
 import { calculateFinancialSummary } from "../utils/cashFlow";
 import { ActivityEntry } from "../types/ActivityEntry";
+import { formatDate } from "../utils/formatDate";
 
 export default function DashboardPage() {
   const { bills, addBill, updateBill } = useBills();
@@ -356,6 +357,10 @@ const readyToScanCount =
                     )}
                   </div>
 
+                  <div className="text-xs text-slate-500">
+                    Statement Date: {formatDate(statement.statementDate)}
+                  </div>
+
                   <div className="text-right">
                   <div
                     className={`font-semibold ${
@@ -402,11 +407,11 @@ const readyToScanCount =
                   </div>
 
                   <div className="text-xs text-slate-500">
-                    Reviewed • Not Scanned
+                    Statement Date: {formatDate(statement.statementDate)}
                   </div>
 
-                  <div className="mt-1 text-xs font-semibold text-blue-600">
-                    Scan Statement →
+                  <div className="text-xs text-slate-500">
+                    Reviewed • Not Scanned
                   </div>
                 </div>
 
