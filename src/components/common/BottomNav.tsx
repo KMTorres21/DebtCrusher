@@ -4,8 +4,6 @@ import {
   Wallet,
   Target,
   CalendarDays,
-  ScanLine,
-  BarChart3,
   Landmark,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
@@ -15,11 +13,6 @@ const navItems = [
     label: "Dashboard",
     path: "/",
     icon: Home,
-  },
-  {
-    label: "Scanner",
-    path: "/statement-scanner",
-    icon: ScanLine,
   },
   {
     label: "Income",
