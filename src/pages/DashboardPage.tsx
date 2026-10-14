@@ -191,23 +191,30 @@ function hasScannedStatement(
       )    
   );
 
-  const availableStatements =
+    const activeStatementItems =
   statementItems.filter(
     (item) =>
-      item.daysUntil <= 0 &&
-      !item.reviewed
-  );
-
-  const readyToScan =
-  statementItems.filter(
-    (item) =>
-      item.daysUntil <= 0 &&
-      item.reviewed &&
+      !item.reviewed ||
       !item.scanned
   );
 
-const readyToScanCount =
-  readyToScan.length;
+    const availableStatements =
+    activeStatementItems.filter(
+      (item) =>
+        item.daysUntil <= 0 &&
+        !item.reviewed
+    );
+
+    const readyToScan =
+    activeStatementItems.filter(
+      (item) =>
+        item.daysUntil <= 0 &&
+        item.reviewed &&
+        !item.scanned
+    );
+
+  const readyToScanCount =
+    readyToScan.length;
 
   const upcomingStatements =
   statementItems.filter(
@@ -378,15 +385,31 @@ const readyToScanCount =
                         }`}
                   </div>
 
-                  {statement.reviewed ? (
-                    <div className="text-xs text-green-600">
-                      ✅ Reviewed
-                    </div>
-                  ) : (
-                    <div className="text-xs text-amber-600">
-                      ⚠ Needs Review
-                    </div>
-                  )}
+                  <div className="mt-1 flex flex-wrap gap-2 text-xs">
+                    <span
+                      className={
+                        statement.reviewed
+                          ? "font-medium text-green-600"
+                          : "font-medium text-amber-600"
+                      }
+                    >
+                      {statement.reviewed
+                        ? "✅ Reviewed"
+                        : "⚠ Needs Review"}
+                    </span>
+
+                    <span
+                      className={
+                        statement.scanned
+                          ? "font-medium text-green-600"
+                          : "font-medium text-slate-500"
+                      }
+                    >
+                      {statement.scanned
+                        ? "✅ Scanned"
+                        : "Not Scanned"}
+                    </span>
+                  </div>
                 </div>
                 </div>
               )
