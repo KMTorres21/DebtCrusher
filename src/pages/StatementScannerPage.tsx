@@ -515,8 +515,7 @@ console.table(
       return;
     }
 
-    const now =
-      new Date().toISOString();
+    const now = new Date().toISOString();
 
     const updatedBill: Bill = {
       ...existingBill,
@@ -723,8 +722,7 @@ const handleUpdateExistingDebt = (
     return;
   }
 
-  const now =
-    new Date().toISOString();
+  const now = new Date().toISOString();
 
   const latestBalance =
     typeof bill.currentBalance ===
@@ -751,11 +749,8 @@ const handleUpdateExistingDebt = (
         ? bill.statementBalance
         : existingDebt.statementBalance,
 
-    statementReviewed:
-      true,
-
-    statementReviewedAt:
-      now,
+    statementReviewed: true,
+    statementReviewedAt: now,
 
     minimumPayment:
       bill.amount > 0
@@ -875,20 +870,6 @@ const handleUpdateExistingDebt = (
           : "Statement scan matched to this existing debt.",
     },
   ];
-
-  console.log(
-    "Updating Debt AutoPay",
-    {
-      extractedEnabled:
-        bill.autoPayEnabled,
-      extractedAmount:
-        bill.autoPayAmount,
-      savedEnabled:
-        updatedDebt.autoPayEnabled,
-      savedAmount:
-        updatedDebt.autoPayAmount,
-    }
-  );
 
   updateDebt(updatedDebt);
 
@@ -1018,9 +999,26 @@ const handleAddDebt = (bill: ExtractedBill) => {
         );
       }
 
+    const now = new Date().toISOString();
     selectedBills.forEach((bill) => {
-    const { confidence, selected, ...newBill } = bill;
+    const { confidence, selected, ...billData } = bill;
 
+    const newBill: Bill = {
+      ...billData,
+      statementReviewed: false,
+      statementScanned: true,
+      statementScannedAt: now,
+      activityHistory: [
+        ...(billData.activityHistory ?? []),
+        {
+          id: crypto.randomUUID(),
+          date: now,
+          action: "Statement Imported",
+          details:
+            "Statement scan created this bill.",
+        },
+      ],
+    };
     if (
       bill.matchedRecordType ===
         "bill" &&
@@ -1034,8 +1032,7 @@ const handleAddDebt = (bill: ExtractedBill) => {
   );
 
     if (existingBill) {
-      const now =
-        new Date().toISOString();
+      const now = new Date().toISOString();
 
       const previousStatementBalance =
         existingBill.statementBalance;
@@ -1120,6 +1117,9 @@ const handleAddDebt = (bill: ExtractedBill) => {
         statementDate:
           bill.statementDate ??
           existingBill.statementDate,
+
+        statementScanned: true,
+        statementScannedAt: now,
 
         statementBalance:
           updatedStatementBalance,

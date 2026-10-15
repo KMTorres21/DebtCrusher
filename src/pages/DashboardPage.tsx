@@ -82,9 +82,7 @@ function getDaysUntilStatement(
     ...bills
         .filter(
           (bill) =>
-            bill.statementDate &&
-            bill.category !== "Credit Card" &&
-            bill.category !== "Loan"
+            bill.statementDate
         )
         .map((bill) => ({
         name: bill.name,
