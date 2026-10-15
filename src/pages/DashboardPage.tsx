@@ -78,6 +78,30 @@ function getDaysUntilStatement(
       );
     }
 
+  function hasScannedStatement(
+    activityHistory?: ActivityEntry[]
+  ): boolean {
+    return (
+      activityHistory?.some(
+        (entry) =>
+          entry.action ===
+          "Statement Imported"
+      ) ?? false
+    );
+  }
+
+  function hasReviewedStatement(
+    activityHistory?: ActivityEntry[]
+  ): boolean {
+    return (
+      activityHistory?.some(
+        (entry) =>
+          entry.action ===
+          "Statement Reviewed"
+      ) ?? false
+    );
+  }
+
   const statementItems = [
     ...bills
         .filter(
@@ -89,11 +113,20 @@ function getDaysUntilStatement(
         type: "Bill",
         statementDate:
           bill.statementDate!,
-        reviewed: bill.statementReviewed ?? false,
+        reviewed:
+          bill.statementReviewed ??
+          hasReviewedStatement(
+            bill.activityHistory
+          ),
+
+        scanned:
+          bill.statementScanned ??
+          hasScannedStatement(
+            bill.activityHistory
+          ),
         autoPayEnabled:
           bill.autoPayEnabled ??
           false,
-        scanned: bill.statementScanned ?? false,
       })),
 
     ...debts
@@ -106,12 +139,19 @@ function getDaysUntilStatement(
         type: "Debt",
         statementDate:
           debt.statementDate!,
-        reviewed: debt.statementReviewed ?? false,
+        reviewed:
+          debt.statementReviewed ??
+          hasReviewedStatement(
+            debt.activityHistory
+          ),
+        scanned:
+          debt.statementScanned ??
+          hasScannedStatement(
+            debt.activityHistory
+          ),
         autoPayEnabled:
           debt.autoPayEnabled ??
           false,
-        scanned:
-        debt.statementScanned ?? false,
       })),
   ]
     .map((item) => ({
@@ -174,39 +214,38 @@ function getDaysUntilStatement(
   );
 
     const activeStatementItems =
-  statementItems.filter(
-    (item) =>
+      statementItems.filter(
+      (item) =>
       !item.reviewed ||
       !item.scanned
-  );
+      );
 
     const availableStatements =
-    activeStatementItems.filter(
+      activeStatementItems.filter(
       (item) =>
         item.daysUntil <= 0 &&
         !item.reviewed
-    );
+      );
 
     const readyToScan =
-    activeStatementItems.filter(
+      activeStatementItems.filter(
       (item) =>
         item.daysUntil <= 0 &&
         item.reviewed &&
         !item.scanned
-    );
+      );
 
-  const readyToScanCount =
-    readyToScan.length;
+    const readyToScanCount =
+      readyToScan.length;
 
-  const upcomingStatements =
-  statementItems.filter(
-    (item) =>
-      item.daysUntil > 0 &&
-      item.daysUntil <=7
-  );
+    const upcomingStatements =
+      statementItems.filter(
+      (item) =>
+        item.daysUntil > 0 &&
+        item.daysUntil <=7
+      );
 
-  const upcomingCount = 
-  upcomingStatements.length;
+    const upcomingCount = upcomingStatements.length;
 
   
   return (
