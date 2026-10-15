@@ -1797,21 +1797,76 @@ const handleAddDebt = (bill: ExtractedBill) => {
     setConvertingBillId(null);
   }}
   onSave={(debt) => {
-    addDebt(debt);
+      const now = new Date().toISOString();
 
-    setBills((current) => {
-      const remainingBills = current.filter(
-        (bill) => bill.id !== convertingBillId
-      );
+      const convertedDebt: Debt = {
+        ...debt,
 
-      if (remainingBills.length === 0) {
-        setHasScanned(false);
-        setFile(null);
-      }
+        statementDate:
+          debt.statementDate ??
+          debtPrefill?.statementDate,
 
-      return remainingBills;
-    });
-  }}
+        statementBalance:
+          debt.statementBalance ??
+          debtPrefill?.statementBalance,
+
+        statementReviewed:
+          debtPrefill?.statementReviewed ??
+          debt.statementReviewed ??
+          false,
+
+        statementReviewedAt:
+          debtPrefill?.statementReviewedAt ??
+          debt.statementReviewedAt,
+
+        statementScanned:
+          debtPrefill?.statementScanned ??
+          debt.statementScanned ??
+          true,
+
+        statementScannedAt:
+          debtPrefill?.statementScannedAt ??
+          debt.statementScannedAt ??
+          now,
+
+        activityHistory: [
+          ...(debtPrefill?.activityHistory ?? []),
+          ...(debt.activityHistory ?? []).filter(
+            (entry) =>
+              !debtPrefill?.activityHistory?.some(
+                (existingEntry) =>
+                  existingEntry.id === entry.id
+              )
+          ),
+          {
+            id: crypto.randomUUID(),
+            date: now,
+            action: "Converted to Debt",
+            details:
+              "Converted a scanner-created bill into a debt record.",
+          },
+        ],
+
+        updatedAt: now,
+      };
+
+      addDebt(convertedDebt);
+
+      setBills((current) => {
+        const remainingBills =
+          current.filter(
+            (bill) =>
+              bill.id !== convertingBillId
+          );
+
+        if (remainingBills.length === 0) {
+          setHasScanned(false);
+          setFile(null);
+        }
+
+        return remainingBills;
+      });
+    }}
 />
   </>
   );
