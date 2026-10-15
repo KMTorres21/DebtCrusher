@@ -9,7 +9,6 @@ import PageHeader from "../components/common/PageHeader";
 import StatCard from "../components/common/StatCard";
 import Card from "../components/common/Card";
 import Button from "../components/common/Button";
-
 import UpcomingBills from "../components/dashboard/UpcomingBills";
 import AddBillModal from "../components/bills/AddBillModal";
 
@@ -332,60 +331,40 @@ function hasScannedStatement(
         </h3>
 
         <p className="mt-2 text-sm text-slate-500">
-          Available: {availableCount} • {" "}
-          Ready to Scan: {readyToScanCount} • {" "}
+          Available: {availableCount} •{" "}
+          Ready to Scan: {readyToScanCount} •{" "}
           Upcoming: {upcomingCount}
         </p>
 
-        {statementItems.length ===
-        0 ? (
+        {activeStatementItems.length === 0 ? (
           <p className="mt-3 text-sm text-green-600">
-            ✅ No statements need review.
+            ✅ No statements need attention.
           </p>
         ) : (
-          <div className="mt-3 space-y-2">
-            {availableStatements.map(
-              (statement) => (
-                <div
-                  key={`${statement.type}-${statement.name}`}
-                  className="flex items-center justify-between"
-                >
+          <div className="mt-3 space-y-3">
+            {availableStatements.map((statement) => (
+              <div
+                key={`${statement.type}-${statement.name}`}
+                className="flex items-start justify-between rounded-xl px-3 py-2"
+              >
+                <div>
                   <div className="flex items-center gap-2">
-                    <span>
+                    <span className="font-medium text-slate-800">
                       {statement.name}
                     </span>
 
                     {statement.autoPayEnabled && (
-                      <span
-                        className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-700"
-                      >
+                      <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-700">
                         AutoPay
                       </span>
                     )}
                   </div>
 
-                  <div className="text-xs text-slate-500">
+                  <div className="mt-1 text-xs text-slate-500">
                     Statement Date: {formatDate(statement.statementDate)}
                   </div>
 
-                  <div className="text-right">
-                  <div
-                    className={`font-semibold ${
-                      statement.daysUntil <= 0
-                        ? "text-blue-600"
-                        : "text-amber-600"
-                    }`}
-                  >
-                    {statement.daysUntil <= 0
-                      ? "Available"
-                      : `Available in ${statement.daysUntil} day${
-                          statement.daysUntil === 1
-                            ? ""
-                            : "s"
-                        }`}
-                  </div>
-
-                  <div className="mt-1 flex flex-wrap gap-2 text-xs">
+                  <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs">
                     <span
                       className={
                         statement.reviewed
@@ -411,30 +390,52 @@ function hasScannedStatement(
                     </span>
                   </div>
                 </div>
-                </div>
-              )
-            )}
-          </div>
-        )}
 
-        {readyToScan.map(
-            (statement) => (
+                <div
+                  className={`text-sm font-semibold ${
+                    statement.daysUntil <= 0
+                      ? "text-blue-600"
+                      : "text-amber-600"
+                  }`}
+                >
+                  {statement.daysUntil <= 0
+                    ? "Available"
+                    : `Available in ${statement.daysUntil} day${
+                        statement.daysUntil === 1
+                          ? ""
+                          : "s"
+                      }`}
+                </div>
+              </div>
+            ))}
+
+            {readyToScan.map((statement) => (
               <Link
                 key={`ready-to-scan-${statement.type}-${statement.name}`}
                 to="/statement-scanner"
-                className="flex items-center justify-between rounded-xl px-3 py-3 text-sm transition hover:bg-slate-50"
+                className="flex items-start justify-between rounded-xl px-3 py-3 text-sm transition hover:bg-slate-50"
               >
                 <div>
                   <div className="font-medium text-slate-800">
                     {statement.name}
                   </div>
 
-                  <div className="text-xs text-slate-500">
+                  <div className="mt-1 text-xs text-slate-500">
                     Statement Date: {formatDate(statement.statementDate)}
                   </div>
 
-                  <div className="text-xs text-slate-500">
-                    Reviewed • Not Scanned
+                  <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs">
+                    <span className="font-medium text-green-600">
+                      ✅ Reviewed
+                    </span>
+
+                    <span className="font-medium text-slate-500">
+                      Not Scanned
+                    </span>
+                  </div>
+
+                  <div className="mt-1 text-xs font-semibold text-blue-600">
+                    Scan Statement →
                   </div>
                 </div>
 
@@ -444,39 +445,42 @@ function hasScannedStatement(
                   </span>
                 )}
               </Link>
-            )
-          )}
+            ))}
 
-        {upcomingStatements.length >
-          0 && (
-          <div className="mt-4 border-t border-slate-200 pt-4">
-            <h4 className="font-semibold text-slate-700">
-              ⏳ Upcoming Statements
-            </h4>
+            {upcomingStatements.length > 0 && (
+              <div className="mt-4 border-t border-slate-200 pt-4">
+                <h4 className="font-semibold text-slate-700">
+                  ⏳ Upcoming Statements
+                </h4>
 
-            <div className="mt-2 space-y-2">
-              {upcomingStatements.map(
-                (statement) => (
-                  <div
-                    key={`upcoming-${statement.type}-${statement.name}`}
-                    className="flex items-center justify-between text-sm"
-                  >
-                    <span>
-                      {statement.name}
-                    </span>
+                <div className="mt-2 space-y-2">
+                  {upcomingStatements.map((statement) => (
+                    <div
+                      key={`upcoming-${statement.type}-${statement.name}`}
+                      className="flex items-center justify-between text-sm"
+                    >
+                      <div>
+                        <div>{statement.name}</div>
 
-                    <span className="text-amber-600">
-                      {statement.daysUntil === 1
-                        ? "Tomorrow"
-                        : `In ${statement.daysUntil} days`}
-                    </span>
-                  </div>
-                )
-              )}
-            </div>
+                        <div className="text-xs text-slate-500">
+                          Statement Date:{" "}
+                          {formatDate(statement.statementDate)}
+                        </div>
+                      </div>
+
+                      <span className="text-amber-600">
+                        {statement.daysUntil === 1
+                          ? "Tomorrow"
+                          : `In ${statement.daysUntil} days`}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
-      </Card>  
+      </Card> 
 
       </Card>
       <FinancialTimeline
