@@ -44,6 +44,7 @@ export default function AddBillModal({
   onSave,
 }: AddBillModalProps) {
   const [name, setName] = useState("");
+  const [receivesStatements, setReceivesStatements] = useState(false);
   const [statementDate, setStatementDate] = useState("");
   const [statementBalance, setStatementBalance] = useState("");
   const [amount, setAmount] = useState("");

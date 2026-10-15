@@ -22,6 +22,7 @@ export interface Debt {
   autoPayEnabled?: boolean;
   autoPayAmount?: number;
   dueDate: string;
+  receivesStatements?: boolean;
   statementDate?: string;
   statementBalance?: number;
   statementReviewed?: boolean;

@@ -39,6 +39,7 @@ export default function AddDebtModal({
   onSave,
 }: AddDebtModalProps) {
   const [name, setName] = useState("");
+  const [receivesStatements, setReceivesStatements] = useState(true);
   const [type, setType] = useState<DebtType>("Credit Card");
   const [statementDate, setStatementDate] = useState("");
   const [balance, setBalance] = useState("");
@@ -80,7 +81,8 @@ useEffect(() => {
       prefill.balance !== undefined
         ? String(prefill.balance)
         : ""
-    );
+        );
+    setReceivesStatements(prefill.receivesStatements ?? true);
     setOriginalBalance(
       prefill.originalBalance !== undefined
         ? String(prefill.originalBalance)
@@ -149,6 +151,7 @@ useEffect(() => {
     setPromoInterestRate("");
     setPromoEndDate("");
     setPromoDeferredInterest(false);
+    setReceivesStatements(true);
     setStatementDate("");
     setMinimumPayment("");
     setDueDate("");
@@ -177,11 +180,21 @@ useEffect(() => {
   balance: Number(statementBalance),
   originalBalance: Number(originalBalance),
   statementDate:
-    statementDate || undefined,
+  statementDate ||
+  prefill?.statementDate ||
+  undefined,
   statementBalance:
     statementBalance
       ? Number(statementBalance)
-      : undefined,
+      : prefill?.statementBalance,
+  statementReviewed:
+    prefill?.statementReviewed ?? false,
+  statementReviewedAt:
+    prefill?.statementReviewedAt,
+  statementScanned:
+    prefill?.statementScanned ?? false,
+  statementScannedAt:
+    prefill?.statementScannedAt,
   interestRate: Number(interestRate),
   minimumPayment: Number(minimumPayment),
   autoPayEnabled,
