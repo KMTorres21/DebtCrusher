@@ -29,6 +29,8 @@ export interface Bill {
   statementDate?: string;
   statementReviewed?: boolean;
   statementReviewedAt?: string;
+  statementScanned?: boolean;
+  statementScannedAt?: string;
   activityHistory?: ActivityEntry[];
   statementBalance?: number;
   amount: number;

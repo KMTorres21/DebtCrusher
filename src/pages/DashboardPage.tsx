@@ -78,26 +78,15 @@ function getDaysUntilStatement(
       );
     }
 
-function hasScannedStatement(
-  activityHistory?: ActivityEntry[]
-): boolean {
-  return (
-    activityHistory?.some(
-      (entry) =>
-        entry.action ===
-        "Statement Imported"
-    ) ?? false
-  );
-}    
-
   const statementItems = [
     ...bills
-      .filter(
-        (bill) =>
-          bill.statementDate
-          
-      )
-      .map((bill) => ({
+        .filter(
+          (bill) =>
+            bill.statementDate &&
+            bill.category !== "Credit Card" &&
+            bill.category !== "Loan"
+        )
+        .map((bill) => ({
         name: bill.name,
         type: "Bill",
         statementDate:
@@ -106,10 +95,7 @@ function hasScannedStatement(
         autoPayEnabled:
           bill.autoPayEnabled ??
           false,
-        scanned: 
-        hasScannedStatement
-          (bill.activityHistory
-        ),
+        scanned: bill.statementScanned ?? false,
       })),
 
     ...debts
@@ -127,8 +113,7 @@ function hasScannedStatement(
           debt.autoPayEnabled ??
           false,
         scanned:
-        hasScannedStatement
-          (debt.activityHistory),
+        debt.statementScanned ?? false,
       })),
   ]
     .map((item) => ({
