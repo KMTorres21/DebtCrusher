@@ -179,12 +179,6 @@ function getDaysUntilStatement(
   item.reviewed
   ).length;
 
-  const needsReviewCount =
-  statementItems.filter(
-  (item) =>
-  !item.reviewed
-  ).length;
-
   const scannedCount =
   statementItems.filter(
     (item) =>
@@ -197,10 +191,25 @@ function getDaysUntilStatement(
       !item.scanned
   ).length;
 
+  const activeStatementItems =
+      statementItems.filter(
+      (item) =>
+      !item.reviewed ||
+      !item.scanned
+      );
+
+
   const availableCount =
-  statementItems.filter(
+  activeStatementItems.filter(
     (item) =>
       item.daysUntil <= 0
+  ).length;
+
+  const needsReviewCount =
+  activeStatementItems.filter(
+    (item) =>
+      item.daysUntil <= 0 &&
+      !item.reviewed
   ).length;
 
   const attentionNeeded =
@@ -212,14 +221,6 @@ function getDaysUntilStatement(
         !item.scanned
       )    
   );
-
-    const activeStatementItems =
-      statementItems.filter(
-      (item) =>
-      !item.reviewed ||
-      !item.scanned
-      );
-
     const availableStatements =
       activeStatementItems.filter(
       (item) =>
@@ -353,7 +354,7 @@ function getDaysUntilStatement(
         </h3>
 
         <p className="mt-2 text-sm text-slate-500">
-          Available: {availableCount} •{" "}
+          Needs Review: {needsReviewCount} •{" "}
           Ready to Scan: {readyToScanCount} •{" "}
           Upcoming: {upcomingCount}
         </p>
