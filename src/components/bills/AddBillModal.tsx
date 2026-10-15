@@ -44,7 +44,7 @@ export default function AddBillModal({
   onSave,
 }: AddBillModalProps) {
   const [name, setName] = useState("");
-  const [receivesStatements, setReceivesStatements] = useState(false);
+  const [receivesStatements, setReceivesStatements] = useState(true);
   const [statementDate, setStatementDate] = useState("");
   const [statementBalance, setStatementBalance] = useState("");
   const [amount, setAmount] = useState("");
@@ -93,6 +93,7 @@ const [
           : ""
       );
     setName(bill.name);
+    setReceivesStatements(bill.receivesStatements ?? true);
     setStatementDate(bill.statementDate ?? "");
     setStatementBalance(bill.statementBalance !== undefined
       ? String(bill.statementBalance)
@@ -163,6 +164,7 @@ const [
     const newBill: Bill = {
     id: bill?.id ?? crypto.randomUUID(),
     name: name.trim(),
+    receivesStatements,
     statementDate: statementDate || undefined,
     statementBalance: statementBalance
       ? Number(statementBalance)
@@ -498,6 +500,38 @@ if (
           </div>
 
 {/* Statement Information */}
+<div className="rounded-xl border border-slate-200 p-4">
+  <label className="flex cursor-pointer items-center gap-3">
+    <input
+      type="checkbox"
+      checked={receivesStatements}
+      onChange={(event) =>
+        setReceivesStatements(
+          event.target.checked
+        )
+      }
+      className="h-5 w-5 rounded border-slate-300 text-blue-600"
+    />
+
+    <div>
+      <div className="font-semibold text-slate-800">
+        Receives Statements
+      </div>
+
+      <div className="text-sm text-slate-500">
+        Statements are issued for this account
+      </div>
+    </div>
+  </label>
+</div>
+
+{receivesStatements && (
+  <>
+    {/* Statement Date */}
+    {/* Statement Balance */}
+    {/* Other statement fields */}
+  </>
+)}
 <div className="rounded-2xl bg-slate-50 p-4">
   <h3 className="mb-4 font-semibold text-slate-800">
     Statement Information

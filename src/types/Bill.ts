@@ -26,6 +26,7 @@ export type BillFrequency =
 export interface Bill {
   id: string;
   name: string;
+  receivesStatements?: boolean;
   statementDate?: string;
   statementReviewed?: boolean;
   statementReviewedAt?: string;
