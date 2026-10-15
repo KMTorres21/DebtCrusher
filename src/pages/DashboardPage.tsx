@@ -106,6 +106,7 @@ function getDaysUntilStatement(
     ...bills
         .filter(
           (bill) =>
+            bill.receivesStatements !== false &&
             bill.statementDate
         )
         .map((bill) => ({
@@ -132,6 +133,7 @@ function getDaysUntilStatement(
     ...debts
       .filter(
         (debt) =>
+          debt.receivesStatements !== false &&
           debt.statementDate 
       )
       .map((debt) => ({

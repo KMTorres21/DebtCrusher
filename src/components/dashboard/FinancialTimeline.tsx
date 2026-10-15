@@ -69,7 +69,7 @@ export default function FinancialTimeline({
               action: "Statement Reviewed",
             },
           ],
-          
+          statementReviewed: true,
           statementReviewedAt: now,
         });
       }
@@ -105,6 +105,7 @@ export default function FinancialTimeline({
         title: `${bill.name} Due`,
         icon: "💳",
         reviewNeeded:
+          bill.receivesStatements !== false &&
           !!bill.statementDate &&
           !bill.statementReviewedAt &&
           bill.statementDate <= today.toISOString().slice(0, 10) &&
@@ -113,6 +114,7 @@ export default function FinancialTimeline({
       });
 
       if (
+        bill.receivesStatements !== false &&
         bill.statementDate &&
         bill.statementDate <= today.toISOString().slice(0, 10) &&
         bill.dueDate >= today.toISOString().slice(0, 10) &&
@@ -135,6 +137,7 @@ export default function FinancialTimeline({
         title: `${debt.name} Due`,
         icon: "💳",
         reviewNeeded:
+          debt.receivesStatements !== false &&
           !!debt.statementDate &&
           !debt.statementReviewedAt &&
           debt.statementDate <= today.toISOString().slice(0, 10) &&
@@ -143,6 +146,7 @@ export default function FinancialTimeline({
       });
 
       if (
+        debt.receivesStatements !== false &&
         debt.statementDate &&
         debt.statementDate <= today.toISOString().slice(0, 10) &&
         debt.dueDate >= today.toISOString().slice(0, 10) &&
