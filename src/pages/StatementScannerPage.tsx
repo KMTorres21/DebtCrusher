@@ -903,15 +903,34 @@ const handleAddDebt = (bill: ExtractedBill) => {
     // Keep internal balance compatible with the debt model
     balance: latestBalance,
     // Statement information from scanner
-    statementBalance:
-      typeof bill.statementBalance === "number"
-        ? bill.statementBalance
-        : typeof bill.currentBalance === "number"
-          ? bill.currentBalance
-          : undefined,
+
     statementDate:
       bill.statementDate ?? undefined,
-        autoPayEnabled:
+
+    statementBalance:
+      bill.statementBalance ??
+      bill.currentBalance ??
+      undefined,
+
+    statementReviewed:
+      bill.statementReviewed ?? false,
+
+    statementReviewedAt:
+      bill.statementReviewedAt ??
+      undefined,
+
+    statementScanned:
+      bill.statementScanned ?? true,
+
+    statementScannedAt:
+      bill.statementScannedAt ??
+      new Date().toISOString(),
+
+    activityHistory: [
+      ...(bill.activityHistory ?? []),
+    ],
+
+    autoPayEnabled:
       typeof bill.autoPayEnabled ===
       "boolean"
         ? bill.autoPayEnabled
