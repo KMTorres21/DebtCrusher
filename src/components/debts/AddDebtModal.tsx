@@ -179,6 +179,7 @@ useEffect(() => {
   type,
   balance: Number(statementBalance),
   originalBalance: Number(originalBalance),
+  receivesStatements,
   statementDate:
   statementDate ||
   prefill?.statementDate ||
@@ -608,6 +609,39 @@ updatedAt: now,
                 />
               </div>
             </div>
+
+            <div className="rounded-xl border border-slate-200 p-4">
+              <label className="flex cursor-pointer items-center gap-3">
+                <input
+                  type="checkbox"
+                  checked={receivesStatements}
+                  onChange={(event) =>
+                    setReceivesStatements(
+                      event.target.checked
+                    )
+                  }
+                  className="h-5 w-5 rounded border-slate-300 text-blue-600"
+                />
+
+                <div>
+                  <div className="font-semibold text-slate-800">
+                    Receives Statements
+                  </div>
+
+                  <div className="text-sm text-slate-500">
+                    Statements are issued for this account
+                  </div>
+                </div>
+              </label>
+            </div>
+            {receivesStatements && (
+              <>
+                {/* existing Statement Date JSX */}
+
+                {/* existing Statement Balance JSX */}
+              </>
+            )}
+
             <div>
               <label
                 htmlFor="statement-date"
