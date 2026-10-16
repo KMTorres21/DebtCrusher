@@ -19,8 +19,6 @@ export interface PaydayPlan {
   remaining: number;
 }
 
-const LARGE_BILL_THRESHOLD = 2 / 3;
-
 function parseDate(dateString: string): Date {
   return new Date(`${dateString}T12:00:00`);
 }
@@ -939,7 +937,12 @@ function allocateNormally(
 function allocateBills(
   bills: Bill[],
   paydayPlans: PaydayPlan[],
-  protectedPaycheckAmount: number
+  protectedPaycheckAmount: number,
+  billFundingMode:
+    | "together"
+    | "large-bills"
+    | "always-split",
+  largeBillThreshold: number
 ): PaydayPlan[] {
   if (
     paydayPlans.length ===
@@ -1159,12 +1162,28 @@ if (
         0
       );
 
-    const isLargeBill =
-      occurrence.bill.amount >
-      largestEligiblePaycheck *
-        LARGE_BILL_THRESHOLD;
+    const threshold =
+      Math.max(
+        1,
+        Math.min(
+          100,
+          largeBillThreshold
+        )
+      ) / 100;
 
-    if (isLargeBill) {
+    const isLargeBill =
+      occurrence.bill.amount >=
+      largestEligiblePaycheck *
+        threshold;
+
+    const shouldSplit =
+      billFundingMode === "always-split" ||
+      (
+        billFundingMode === "large-bills" &&
+        isLargeBill
+      );
+
+    if (shouldSplit) {
       allocateProportionally(
         occurrence,
         eligibleIndexes,
@@ -1230,6 +1249,11 @@ export function buildAllPaydayPlans(
   bills: Bill[],
   debts: Debt[],
   protectedPaycheckAmount = 0,
+  billFundingMode:
+    | "together"
+    | "large-bills"
+    | "always-split" = "large-bills",
+  largeBillThreshold = 67,
 ): PaydayPlan[] {
 
 console.log(
@@ -1288,9 +1312,11 @@ console.table(
   )
 );
 
-  return allocateBills(
-    allObligations,
-    paydayPlans,
-    protectedPaycheckAmount
-  );
+return allocateBills(
+  allObligations,
+  paydayPlans,
+  protectedPaycheckAmount,
+  billFundingMode,
+  largeBillThreshold
+);
 }
