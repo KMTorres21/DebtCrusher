@@ -153,6 +153,30 @@ function namesPossiblyMatch(
     return false;
   }
 
+  function hasScannedStatement(
+    activityHistory?: ActivityEntry[]
+  ): boolean {
+    return (
+      activityHistory?.some(
+        (entry) =>
+          entry.action ===
+          "Statement Imported"
+      ) ?? false
+    );
+  }
+
+  function hasReviewedStatement(
+    activityHistory?: ActivityEntry[]
+  ): boolean {
+    return (
+      activityHistory?.some(
+        (entry) =>
+          entry.action ===
+          "Statement Reviewed"
+      ) ?? false
+    );
+  }
+
   return (
     normalizedFirstName ===
       normalizedSecondName ||

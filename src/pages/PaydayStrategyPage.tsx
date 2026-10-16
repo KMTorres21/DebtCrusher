@@ -735,13 +735,17 @@ export default function PaydayStrategyPage() {
         income,
         bills,
         debts,
-        settings.protectedPaycheckAmount
+        settings.protectedPaycheckAmount,
+        settings.billFundingMode,
+        settings.largeBillThreshold
       ),
     [
       income,
       bills,
       debts,
       settings.protectedPaycheckAmount,
+      settings.billFundingMode,
+      settings.largeBillThreshold,
     ]
   );
 

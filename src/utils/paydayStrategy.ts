@@ -660,213 +660,64 @@ if (
  * across all eligible paychecks.
  */
 function allocateProportionally(
-  occurrence: PaydayBill,
-  eligibleIndexes: number[],
-  paydayPlans: PaydayPlan[],
-  availableCents: number[]
-): void {
-  if (
-    eligibleIndexes.length ===
-    0
-  ) {
-    return;
-  }
+    occurrence: PaydayBill,
+    eligibleIndexes: number[],
+    paydayPlans: PaydayPlan[],
+    availableCents: number[]
+  ): void {
+    if (eligibleIndexes.length === 0) {
+      return;
+    }
 
-  const billCents =
-    Math.round(
-      occurrence.bill.amount *
-        100
+    let remainingCents = Math.round(
+      occurrence.bill.amount * 100
     );
 
-  /*
-   * Calculate the income represented by
-   * the eligible paychecks.
-   */
-  const totalEligibleIncome =
-    eligibleIndexes.reduce(
-      (sum, index) =>
-        sum +
-        paydayPlans[index]
-          .amount,
-      0
-    );
+    /*
+    * Fund the bill from the latest eligible
+    * paycheck backward.
+    *
+    * This avoids reserving money months early
+    * when later paychecks before the due date
+    * can cover the obligation.
+    */
+    for (
+      let position =
+        eligibleIndexes.length - 1;
+      position >= 0 &&
+      remainingCents > 0;
+      position--
+    ) {
+      const index =
+        eligibleIndexes[position];
 
-  if (
-    totalEligibleIncome <= 0
-  ) {
-    return;
-  }
+      const available =
+        availableCents[index];
 
-  let allocatedCents = 0;
+      if (available <= 0) {
+        continue;
+      }
 
-  eligibleIndexes.forEach(
-    (index, position) => {
-      const paycheckAmount =
-        paydayPlans[index]
-          .amount;
-
-      /*
-       * The percentage is based on the
-       * paycheck's share of total income
-       * in this funding cycle.
-       */
-      const percentage =
-        paycheckAmount /
-        totalEligibleIncome;
-
-      let allocationCents =
-        Math.round(
-          billCents *
-            percentage
-        );
-
-      /*
-       * Never allocate more than what
-       * remains available in this paycheck.
-       */
-      allocationCents =
+      const allocationCents =
         Math.min(
-          allocationCents,
-          availableCents[index]
+          remainingCents,
+          available
         );
 
-      /*
-       * Last eligible paycheck receives
-       * the remaining amount after
-       * rounding.
-       */
-      if (
-        position ===
-        eligibleIndexes.length - 1
-      ) {
-        const remainingBillCents =
-          billCents -
-          allocatedCents;
-
-        const possible =
-          Math.min(
-            remainingBillCents +
-              allocatedCents,
-            availableCents[index]
-          );
-
-        allocationCents =
-          Math.min(
-            possible,
-            remainingBillCents
-          );
-      }
-
-      if (
-        allocationCents <= 0
-      ) {
-        return;
-      }
-
-      paydayPlans[index].bills.push(
-        {
-          bill: occurrence.bill,
-          dueDate:
-            occurrence.dueDate,
-          allocatedAmount:
-            allocationCents /
-            100,
-        }
-      );
+      paydayPlans[index].bills.push({
+        bill: occurrence.bill,
+        dueDate: occurrence.dueDate,
+        allocatedAmount:
+          allocationCents / 100,
+      });
 
       availableCents[index] -=
         allocationCents;
 
-      allocatedCents +=
+      remainingCents -=
         allocationCents;
     }
-  );
-
-  /*
-   * If rounding or limited paycheck
-   * availability left part of the bill
-   * unfunded, fill the remainder using
-   * available eligible paychecks.
-   */
-  let remainingCents =
-    billCents -
-    eligibleIndexes.reduce(
-      (sum, index) => {
-        const allocations =
-          paydayPlans[index].bills
-            .filter(
-              (item) =>
-                item.bill.id ===
-                  occurrence.bill.id &&
-                item.dueDate ===
-                  occurrence.dueDate
-            )
-            .reduce(
-              (total, item) =>
-                total +
-                Math.round(
-                  item.allocatedAmount *
-                    100
-                ),
-              0
-            );
-
-        return sum + allocations;
-      },
-      0
-    );
-
-  if (
-    remainingCents <= 0
-  ) {
-    return;
   }
-
-  /*
-   * Add any remaining cents starting
-   * from the latest eligible paycheck.
-   */
-  for (
-    let position =
-      eligibleIndexes.length -
-      1;
-    position >= 0 &&
-    remainingCents > 0;
-    position--
-  ) {
-    const index =
-      eligibleIndexes[position];
-
-    const available =
-      availableCents[index];
-
-    if (available <= 0) {
-      continue;
-    }
-
-    const allocation =
-      Math.min(
-        remainingCents,
-        available
-      );
-
-    paydayPlans[index].bills.push(
-      {
-        bill: occurrence.bill,
-        dueDate:
-          occurrence.dueDate,
-        allocatedAmount:
-          allocation / 100,
-      }
-    );
-
-    availableCents[index] -=
-      allocation;
-
-    remainingCents -=
-      allocation;
-  }
-}
 
 /*
  * Normal bill allocation.
@@ -875,64 +726,105 @@ function allocateProportionally(
  * paycheck before the due date unless
  * that paycheck doesn't have enough.
  */
-function allocateNormally(
-  occurrence: PaydayBill,
-  eligibleIndexes: number[],
-  paydayPlans: PaydayPlan[],
-  availableCents: number[]
-): void {
-  if (eligibleIndexes.length === 0) {
-    return;
-  }
+  function allocateNormally(
+      occurrence: PaydayBill,
+      eligibleIndexes: number[],
+      paydayPlans: PaydayPlan[],
+      availableCents: number[]
+    ): void {
+      if (eligibleIndexes.length === 0) {
+        return;
+      }
 
-  let remainingCents =
-    Math.round(
-      occurrence.bill.amount * 100
-    );
-
-  /*
-   * Work forward through eligible paychecks.
-   *
-   * Earlier-due obligations are processed first,
-   * so available money is used for them before
-   * later-due obligations can consume it.
-   */
-  for (
-    let position = 0;
-    position < eligibleIndexes.length &&
-    remainingCents > 0;
-    position++
-  ) {
-    const index =
-      eligibleIndexes[position];
-
-    const available =
-      availableCents[index];
-
-    if (available <= 0) {
-      continue;
-    }
-
-    const allocation =
-      Math.min(
-        remainingCents,
-        available
+      const billCents = Math.round(
+        occurrence.bill.amount * 100
       );
 
-    paydayPlans[index].bills.push({
-      bill: occurrence.bill,
-      dueDate: occurrence.dueDate,
-      allocatedAmount:
-        allocation / 100,
-    });
+      /*
+      * Keep the bill together whenever possible.
+      *
+      * Search backward so the bill is assigned
+      * to the latest eligible paycheck before
+      * its due date.
+      */
+      for (
+        let position =
+          eligibleIndexes.length - 1;
+        position >= 0;
+        position--
+      ) {
+        const index =
+          eligibleIndexes[position];
 
-    availableCents[index] -=
-      allocation;
+        if (
+          availableCents[index] <
+          billCents
+        ) {
+          continue;
+        }
 
-    remainingCents -=
-      allocation;
-  }
-}
+        paydayPlans[index].bills.push({
+          bill: occurrence.bill,
+          dueDate: occurrence.dueDate,
+          allocatedAmount:
+            billCents / 100,
+        });
+
+        availableCents[index] -=
+          billCents;
+
+        return;
+      }
+
+      /*
+      * Fallback:
+      *
+      * No single eligible paycheck can fully
+      * cover the bill. Split it across eligible
+      * paychecks, prioritizing the latest
+      * paychecks before the due date.
+      */
+      let remainingCents =
+        billCents;
+
+      for (
+        let position =
+          eligibleIndexes.length - 1;
+        position >= 0 &&
+        remainingCents > 0;
+        position--
+      ) {
+        const index =
+          eligibleIndexes[position];
+
+        const available =
+          availableCents[index];
+
+        if (available <= 0) {
+          continue;
+        }
+
+        const allocationCents =
+          Math.min(
+            remainingCents,
+            available
+          );
+
+        paydayPlans[index].bills.push({
+          bill: occurrence.bill,
+          dueDate:
+            occurrence.dueDate,
+          allocatedAmount:
+            allocationCents / 100,
+        });
+
+        availableCents[index] -=
+          allocationCents;
+
+        remainingCents -=
+          allocationCents;
+      }
+    }
 
 function allocateBills(
   bills: Bill[],
