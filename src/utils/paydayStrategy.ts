@@ -2,6 +2,7 @@ import { Bill } from "../types/Bill";
 import { Income } from "../types/Income";
 import { getBillOccurrences } from "./calendarOccurrences";
 import { Debt } from "../types/Debt";
+import type { FundingAccount } from "../types/FundingAccount";
 
 export interface PaydayBill {
   bill: Bill;
@@ -879,15 +880,16 @@ if (
     }
 
 function allocateBills(
-  bills: Bill[],
-  paydayPlans: PaydayPlan[],
-  protectedPaycheckAmount: number,
-  billFundingMode:
-    | "together"
-    | "large-bills"
-    | "always-split",
-  largeBillThreshold: number
-): PaydayPlan[] {
+    bills: Bill[],
+    paydayPlans: PaydayPlan[],
+    fundingAccounts: FundingAccount[],
+    protectedPaycheckAmount: number,
+    billFundingMode:
+      | "together"
+      | "large-bills"
+      | "always-split",
+    largeBillThreshold: number
+    ): PaydayPlan[] {
   if (
     paydayPlans.length ===
     0
@@ -953,43 +955,82 @@ function allocateBills(
     );
 
   const availableCents =
-    paydayPlans.map(
-      (plan) => {
-        const planAmountCents =
-          Math.max(
-            0,
-            Math.round(
-              plan.amount * 100
-            )
-          );
-
-        const totalPaydayCents =
-          totalIncomeByPayday.get(
-            plan.payday
-          ) ?? planAmountCents;
-
-        if (
-          totalPaydayCents <= 0
-        ) {
-          return 0;
-        }
-
-        const protectedShareCents =
+    paydayPlans.map((plan) => {
+      const planAmountCents =
+        Math.max(
+          0,
           Math.round(
-            protectedCents *
-              (
-                planAmountCents /
-                totalPaydayCents
-              )
-          );
+            plan.amount * 100
+          )
+        );
 
-        return Math.max(
+      const totalPaydayCents =
+        totalIncomeByPayday.get(
+          plan.payday
+        ) ?? planAmountCents;
+
+      if (totalPaydayCents <= 0) {
+        return 0;
+      }
+
+      const protectedShareCents =
+        Math.round(
+          protectedCents *
+            (
+              planAmountCents /
+              totalPaydayCents
+            )
+        );
+
+      const paycheckAvailableCents =
+        Math.max(
           0,
           planAmountCents -
             protectedShareCents
         );
-      }
-    );
+
+      const fundingAccount =
+        fundingAccounts.find(
+          (account) =>
+            account.id ===
+            plan.income.fundingAccountId
+        );
+
+      const minimumBalanceCents =
+        Math.max(
+          0,
+          Math.round(
+            (
+              fundingAccount
+                ?.minimumBalance ?? 0
+            ) * 100
+          )
+        );
+
+      /*
+      * Protect the greater of:
+      *
+      * 1. This plan's share of the global
+      *    protected paycheck amount.
+      * 2. The receiving account's configured
+      *    minimum balance.
+      *
+      * Do not add currentBalance here because
+      * doing so would count today's balance
+      * again for every future paycheck.
+      */
+      const effectiveProtectionCents =
+        Math.max(
+          protectedShareCents,
+          minimumBalanceCents
+        );
+
+      return Math.max(
+        0,
+        planAmountCents -
+          effectiveProtectionCents
+      );
+    });
 
   /*
    * Process occurrences in due-date order.
@@ -1189,16 +1230,17 @@ if (
 }
 
 export function buildAllPaydayPlans(
-  incomes: Income[],
-  bills: Bill[],
-  debts: Debt[],
-  protectedPaycheckAmount = 0,
-  billFundingMode:
-    | "together"
-    | "large-bills"
-    | "always-split" = "large-bills",
-  largeBillThreshold = 67,
-): PaydayPlan[] {
+    incomes: Income[],
+    bills: Bill[],
+    debts: Debt[],
+    fundingAccounts: FundingAccount[],
+    protectedPaycheckAmount = 0,
+    billFundingMode:
+      | "together"
+      | "large-bills"
+      | "always-split" = "large-bills",
+    largeBillThreshold = 67
+  ): PaydayPlan[] {
 
 console.log(
 "buildAllPaydayPlans called",
@@ -1259,6 +1301,7 @@ console.table(
 return allocateBills(
   allObligations,
   paydayPlans,
+  fundingAccounts,
   protectedPaycheckAmount,
   billFundingMode,
   largeBillThreshold
