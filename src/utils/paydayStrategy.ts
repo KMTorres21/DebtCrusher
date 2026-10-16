@@ -866,53 +866,16 @@ if (
       }
 
       /*
-      * Fallback:
-      *
-      * No single eligible paycheck can fully
-      * cover the bill. Split it across eligible
-      * paychecks, prioritizing the latest
-      * paychecks before the due date.
+      * No individual paycheck can cover the
+      * bill. Fall back to a balanced split
+      * across the latest eligible paychecks.
       */
-      let remainingCents =
-        billCents;
-
-      for (
-        let position =
-          eligibleIndexes.length - 1;
-        position >= 0 &&
-        remainingCents > 0;
-        position--
-      ) {
-        const index =
-          eligibleIndexes[position];
-
-        const available =
-          availableCents[index];
-
-        if (available <= 0) {
-          continue;
-        }
-
-        const allocationCents =
-          Math.min(
-            remainingCents,
-            available
-          );
-
-        paydayPlans[index].bills.push({
-          bill: occurrence.bill,
-          dueDate:
-            occurrence.dueDate,
-          allocatedAmount:
-            allocationCents / 100,
-        });
-
-        availableCents[index] -=
-          allocationCents;
-
-        remainingCents -=
-          allocationCents;
-      }
+      allocateProportionally(
+        occurrence,
+        eligibleIndexes,
+        paydayPlans,
+        availableCents
+      );
     }
 
 function allocateBills(
