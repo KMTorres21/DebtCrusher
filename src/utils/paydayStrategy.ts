@@ -659,65 +659,154 @@ if (
  * Allocate a large bill proportionally
  * across all eligible paychecks.
  */
-function allocateProportionally(
-    occurrence: PaydayBill,
-    eligibleIndexes: number[],
-    paydayPlans: PaydayPlan[],
-    availableCents: number[]
-  ): void {
-    if (eligibleIndexes.length === 0) {
-      return;
-    }
-
-    let remainingCents = Math.round(
-      occurrence.bill.amount * 100
-    );
-
-    /*
-    * Fund the bill from the latest eligible
-    * paycheck backward.
-    *
-    * This avoids reserving money months early
-    * when later paychecks before the due date
-    * can cover the obligation.
-    */
-    for (
-      let position =
-        eligibleIndexes.length - 1;
-      position >= 0 &&
-      remainingCents > 0;
-      position--
-    ) {
-      const index =
-        eligibleIndexes[position];
-
-      const available =
-        availableCents[index];
-
-      if (available <= 0) {
-        continue;
+    function allocateProportionally(
+      occurrence: PaydayBill,
+      eligibleIndexes: number[],
+      paydayPlans: PaydayPlan[],
+      availableCents: number[]
+    ): void {
+      if (eligibleIndexes.length === 0) {
+        return;
       }
 
-      const allocationCents =
-        Math.min(
-          remainingCents,
-          available
+      const billCents = Math.round(
+        occurrence.bill.amount * 100
+      );
+
+      /*
+      * Select the minimum number of latest
+      * eligible paychecks whose combined
+      * capacity can fund the bill.
+      */
+      const selectedIndexes: number[] = [];
+      let selectedCapacity = 0;
+
+      for (
+        let position =
+          eligibleIndexes.length - 1;
+        position >= 0;
+        position--
+      ) {
+        const index =
+          eligibleIndexes[position];
+
+        const available =
+          availableCents[index];
+
+        if (available <= 0) {
+          continue;
+        }
+
+        selectedIndexes.push(index);
+        selectedCapacity += available;
+
+        if (selectedCapacity >= billCents) {
+          break;
+        }
+      }
+
+      if (selectedIndexes.length === 0) {
+        return;
+      }
+
+      /*
+      * Put selected paychecks back into
+      * chronological order.
+      */
+      selectedIndexes.sort(
+        (a, b) =>
+          paydayPlans[a].payday.localeCompare(
+            paydayPlans[b].payday
+          )
+      );
+
+      let remainingCents = billCents;
+
+      const remainingIndexes = [
+        ...selectedIndexes,
+      ];
+
+      /*
+      * Split the remaining bill evenly across
+      * the selected paychecks.
+      *
+      * If one paycheck cannot support its equal
+      * share, use its available capacity and
+      * redistribute the remainder.
+      */
+      while (
+        remainingCents > 0 &&
+        remainingIndexes.length > 0
+      ) {
+        const equalShare = Math.ceil(
+          remainingCents /
+            remainingIndexes.length
         );
 
-      paydayPlans[index].bills.push({
-        bill: occurrence.bill,
-        dueDate: occurrence.dueDate,
-        allocatedAmount:
-          allocationCents / 100,
-      });
+        let allocatedThisRound = 0;
 
-      availableCents[index] -=
-        allocationCents;
+        for (
+          let position =
+            remainingIndexes.length - 1;
+          position >= 0;
+          position--
+        ) {
+          const index =
+            remainingIndexes[position];
 
-      remainingCents -=
-        allocationCents;
+          const available =
+            availableCents[index];
+
+          if (available <= 0) {
+            remainingIndexes.splice(
+              position,
+              1
+            );
+
+            continue;
+          }
+
+          const allocationCents = Math.min(
+            equalShare,
+            available,
+            remainingCents
+          );
+
+          if (allocationCents <= 0) {
+            continue;
+          }
+
+          paydayPlans[index].bills.push({
+            bill: occurrence.bill,
+            dueDate:
+              occurrence.dueDate,
+            allocatedAmount:
+              allocationCents / 100,
+          });
+
+          availableCents[index] -=
+            allocationCents;
+
+          remainingCents -=
+            allocationCents;
+
+          allocatedThisRound +=
+            allocationCents;
+
+          if (availableCents[index] <= 0) {
+            remainingIndexes.splice(
+              position,
+              1
+            );
+          }
+        }
+
+        if (allocatedThisRound === 0) {
+          break;
+        }
+      }
     }
-  }
+
 
 /*
  * Normal bill allocation.
