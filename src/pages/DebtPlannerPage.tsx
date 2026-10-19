@@ -1,13 +1,6 @@
-import { 
-    useMemo,
-    useState 
-    } from "react";
+import {  useMemo,  useState } from "react";
 import { useDebts } from "../hooks/useDebts";
-import {
-  calculateDebtPayoff,
-  compareDebtPayoff,
-  type PayoffStrategy,
-} from "../utils/debtPayoff";
+import { calculateDebtPayoff, compareDebtPayoff, type PayoffStrategy } from "../utils/debtPayoff";
 import { formatCurrency } from "../utils/formatCurrency";
 import { useBills } from "../hooks/useBills";
 import { useIncome } from "../hooks/useIncome";
@@ -16,16 +9,20 @@ import PageContainer from "../components/common/PageContainer";
 import PageHeader from "../components/common/PageHeader";
 import Card from "../components/common/Card";
 import StatCard from "../components/common/StatCard";
-import {
-  calculateExtraPaymentAllocation,
-} from "../utils/extraPaymentAllocation";
+import { calculateExtraPaymentAllocation } from "../utils/extraPaymentAllocation";
 import RecommendedAllocationCard from "../components/debt-planner/RecommendedAllocationCard";
 import StrategyComparisonCard from "../components/debt-planner/StrategyComparisonCard";
+import { getFundingAccounts } from "../utils/fundingAccountsStorage";
 
 export default function DebtPlannerPage() {
   const { debts } = useDebts();
   const { bills } = useBills();
   const { income } = useIncome();
+
+  const fundingAccounts = useMemo(
+    () => getFundingAccounts(),
+    []
+  );
 
   const [strategy, setStrategy] =
     useState<PayoffStrategy>(() => {
@@ -51,6 +48,18 @@ export default function DebtPlannerPage() {
       : 0;
   });
 
+  const [ 
+    oneTimeExtraAmount, setOneTimeExtraAmount 
+    ] = useState(() => {
+    const saved =
+      localStorage.getItem(
+        "oneTimeExtraPayment"
+      );
+
+  return saved
+    ? Number(saved)
+    : 0;
+});  
 
       const extraPaymentAllocations = useMemo(
         () =>
@@ -66,6 +75,11 @@ export default function DebtPlannerPage() {
         if (!debt.promoEndDate) {
         return false;
         }
+
+      const fundingAccounts = useMemo(
+        () => getFundingAccounts(),
+        []
+      );  
         
         const today = new Date();
         const promoEnd = new Date(
@@ -85,15 +99,39 @@ export default function DebtPlannerPage() {
   const availableAfterObligations = summary.remainingCash;
   const maxExtraPayment = Math.max(0,
     Math.round(availableAfterObligations * 100) / 100);
+
+  const availableOneTimeCash =
+    Math.round(
+      fundingAccounts.reduce(
+        (sum, account) => {
+          const currentBalance =
+            account.currentBalance ?? 0;
+
+          const minimumBalance =
+            account.minimumBalance ?? 0;
+
+          return (
+            sum +
+            Math.max(
+              0,
+              currentBalance -
+                minimumBalance
+            )
+          );
+        },
+        0
+      ) * 100
+    ) / 100;  
     
   const plan = useMemo(
   () =>
     calculateDebtPayoff(
       debts,
       strategy,
-      extraAmount
+      extraAmount,
+      oneTimeExtraAmount,
     ),
-  [debts, strategy, extraAmount]
+  [debts, strategy, extraAmount, oneTimeExtraAmount]
 );
 
   const minimumPayments = debts.reduce(
@@ -110,9 +148,10 @@ export default function DebtPlannerPage() {
       calculateDebtPayoff(
         debts,
         "avalanche",
-        extraAmount
+        extraAmount,
+        oneTimeExtraAmount,
       ),
-    [debts, extraAmount]
+    [debts, extraAmount, oneTimeExtraAmount]
   );
 
   const payoffComparison = useMemo(
@@ -120,9 +159,10 @@ export default function DebtPlannerPage() {
     compareDebtPayoff(
       debts,
       strategy,
-      extraAmount
+      extraAmount,
+      oneTimeExtraAmount,
     ),
-  [debts, strategy, extraAmount]
+  [debts, strategy, extraAmount, oneTimeExtraAmount]
 );
 
   const snowballPlan = useMemo(
@@ -130,9 +170,10 @@ export default function DebtPlannerPage() {
       calculateDebtPayoff(
         debts,
         "snowball",
-        extraAmount
+        extraAmount,
+        oneTimeExtraAmount,
       ),
-    [debts, extraAmount]
+    [debts, "snowball",extraAmount, oneTimeExtraAmount]
   );
 
   const interestSaved =
@@ -328,6 +369,117 @@ export default function DebtPlannerPage() {
         </div>
       </Card>
 
+      <Card>
+        <label
+          htmlFor="one-time-extra-payment"
+          className="block text-lg font-bold"
+        >
+          One-Time Extra Payment
+        </label>
+
+        <p className="mt-1 text-sm text-slate-500">
+          Cash currently available above your
+          funding-account minimum balances. This
+          payment is applied only once.
+        </p>
+
+        <div className="relative mt-4">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+            $
+          </span>
+
+          <input
+            id="one-time-extra-payment"
+            type="number"
+            min="0"
+            step="25"
+            value={
+              oneTimeExtraAmount === 0
+                ? ""
+                : oneTimeExtraAmount
+            }
+            onChange={(event) => {
+              const value =
+                event.target.value;
+
+              if (value === "") {
+                setOneTimeExtraAmount(0);
+
+                localStorage.setItem(
+                  "oneTimeExtraPayment",
+                  "0"
+                );
+
+                return;
+              }
+
+              const numericValue =
+                Number(value);
+
+              if (
+                Number.isNaN(numericValue)
+              ) {
+                return;
+              }
+
+              const sanitizedValue =
+                Math.max(
+                  0,
+                  numericValue
+                );
+
+              setOneTimeExtraAmount(
+                sanitizedValue
+              );
+
+              localStorage.setItem(
+                "oneTimeExtraPayment",
+                sanitizedValue.toString()
+              );
+            }}
+            className="w-full rounded-xl border border-slate-200 py-3 pl-8 pr-4 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+          />
+        </div>
+
+        <div className="mt-3 flex items-center justify-between text-sm">
+          <span className="text-slate-500">
+            Available above account minimums
+          </span>
+
+          <span className="font-semibold text-green-600">
+            {formatCurrency(
+              availableOneTimeCash
+            )}
+          </span>
+        </div>
+
+        {oneTimeExtraAmount >
+          availableOneTimeCash && (
+          <p className="mt-2 text-sm font-semibold text-amber-600">
+            This payment is greater than the cash
+            currently available above your funding
+            account minimum balances.
+          </p>
+        )}
+
+        <button
+          type="button"
+          onClick={() => {
+            setOneTimeExtraAmount(
+              availableOneTimeCash
+            );
+
+            localStorage.setItem(
+              "oneTimeExtraPayment",
+              availableOneTimeCash.toString()
+            );
+          }}
+          className="mt-3 w-full rounded-xl bg-blue-50 px-4 py-3 text-blue-700 transition hover:bg-blue-100"
+        >
+          Use Available Cash Now
+        </button>
+      </Card>
+
           {promoDebts.length > 0 && (
           <Card>
             <h2 className="text-lg font-bold text-amber-600">
@@ -483,7 +635,7 @@ export default function DebtPlannerPage() {
         />
 
         <StatCard
-          title="Available After Obligations"
+          title="Sustainable Monthly Surplus"
           value={formatCurrency(availableAfterObligations)}
           valueClassName={
               availableAfterObligations >= 0 
@@ -503,6 +655,14 @@ export default function DebtPlannerPage() {
           title="Months to Payoff"
           value={plan.totalMonths}
         />
+
+        <StatCard
+          title="One-Time Extra Payment"
+          value={formatCurrency(
+            oneTimeExtraAmount
+  )}
+  valueClassName="text-blue-600"
+/>
       </div>
 
       {/* Payoff Date */}

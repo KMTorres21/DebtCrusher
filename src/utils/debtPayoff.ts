@@ -15,6 +15,7 @@ export interface PayoffDebtResult {
 export interface PayoffPlan {
   strategy: PayoffStrategy;
   extraMonthlyPayment: number;
+  oneTimeExtraPayment: number;
   totalStartingDebt: number;
   totalInterest: number;
   totalMonths: number;
@@ -54,7 +55,8 @@ function roundCurrency(
 export function calculateDebtPayoff(
   debts: Debt[],
   strategy: PayoffStrategy,
-  extraMonthlyPayment: number
+  extraMonthlyPayment: number,
+  oneTimeExtraPayment = 0
 ): PayoffPlan {
   const activeDebts = debts
     .filter((debt) => debt.balance > 0)
@@ -74,6 +76,7 @@ export function calculateDebtPayoff(
     return {
       strategy,
       extraMonthlyPayment,
+      oneTimeExtraPayment,
       totalStartingDebt: 0,
       totalInterest: 0,
       totalMonths: 0,
@@ -85,6 +88,11 @@ export function calculateDebtPayoff(
   const baseExtraPayment = Math.max(
     0,
     extraMonthlyPayment
+  );
+
+  const initialExtraPayment = Math.max(
+    0,
+    oneTimeExtraPayment
   );
 
   let rolloverPayment = 0;
@@ -144,7 +152,13 @@ export function calculateDebtPayoff(
      * 2. Pay minimum payments.
      */
     let extraAvailable =
-      baseExtraPayment + rolloverPayment;
+        baseExtraPayment +
+        rolloverPayment +
+        (
+          months === 1
+            ? initialExtraPayment
+            : 0
+        );
 
     activeDebts.forEach((debt) => {
       if (debt.balanceRemaining <= 0.005) {
@@ -245,6 +259,7 @@ export function calculateDebtPayoff(
         name: debt.name,
         startingBalance: debt.balance,
         totalInterest: debt.totalInterest,
+        oneTimeExtraPayment: oneTimeExtraPayment,
         monthsToPayoff: payoffMonth,
         payoffMonth:
           debtPayoffDate.getMonth() + 1,
@@ -256,6 +271,8 @@ export function calculateDebtPayoff(
   return {
     strategy,
     extraMonthlyPayment,
+    oneTimeExtraPayment: 
+      initialExtraPayment,
     totalStartingDebt,
     totalInterest,
     totalMonths: months,
@@ -266,21 +283,23 @@ export function calculateDebtPayoff(
   };
 }
 
-export function compareDebtPayoff(
-  debts: Debt[],
-  strategy: PayoffStrategy,
-  extraMonthlyPayment: number
-): PayoffComparison {
-  const normalizedExtraPayment =
-    Math.max(
-      0,
-      extraMonthlyPayment
-    );
+  export function compareDebtPayoff(
+    debts: Debt[],
+    strategy: PayoffStrategy,
+    extraMonthlyPayment: number,
+    oneTimeExtraPayment = 0
+  ): PayoffComparison {
+      const normalizedExtraPayment =
+        Math.max(
+          0,
+          extraMonthlyPayment
+        );
 
   const baselinePlan =
     calculateDebtPayoff(
       debts,
       strategy,
+      0,
       0
     );
 
@@ -288,7 +307,9 @@ export function compareDebtPayoff(
     calculateDebtPayoff(
       debts,
       strategy,
-      normalizedExtraPayment
+      normalizedExtraPayment,
+        Math.max
+          (0, oneTimeExtraPayment)
     );
 
   const interestAvoided =
