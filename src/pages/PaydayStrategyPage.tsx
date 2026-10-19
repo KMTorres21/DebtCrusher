@@ -736,7 +736,6 @@ export default function PaydayStrategyPage() {
         bills,
         debts,
         fundingAccounts,
-        settings.protectedPaycheckAmount,
         settings.billFundingMode,
         settings.largeBillThreshold
       ),
@@ -745,7 +744,6 @@ export default function PaydayStrategyPage() {
       bills,
       debts,
       fundingAccounts,
-      settings.protectedPaycheckAmount,
       settings.billFundingMode,
       settings.largeBillThreshold,
     ]

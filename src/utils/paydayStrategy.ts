@@ -883,7 +883,6 @@ function allocateBills(
     bills: Bill[],
     paydayPlans: PaydayPlan[],
     fundingAccounts: FundingAccount[],
-    protectedPaycheckAmount: number,
     billFundingMode:
       | "together"
       | "large-bills"
@@ -916,16 +915,6 @@ function allocateBills(
       lastPayday
     );
 
-  /*
-   * Available paycheck money.
-   */
-  const protectedCents =
-    Math.max(
-      0,
-      Math.round(
-        protectedPaycheckAmount * 100
-      )
-    );
 
   /*
   * Payday plans are separated by funding
@@ -954,9 +943,59 @@ function allocateBills(
       new Map<string, number>()
     );
 
+  /*
+ * Each account's existing spendable balance
+ * is counted once.
+ *
+ * Spendable existing balance is:
+ *
+ * current balance - minimum balance
+ *
+ * Future paycheck amounts are then added
+ * without subtracting the minimum again.
+ */
+const firstPlanIndexByAccount =
+  new Map<string, number>();
+
+paydayPlans.forEach((plan, index) => {
+  const fundingAccountId =
+    plan.income.fundingAccountId;
+
+  if (!fundingAccountId) {
+    return;
+  }
+
+  const existingIndex =
+    firstPlanIndexByAccount.get(
+      fundingAccountId
+    );
+
+  if (existingIndex === undefined) {
+    firstPlanIndexByAccount.set(
+      fundingAccountId,
+      index
+    );
+
+    return;
+  }
+
+  const existingPlan =
+    paydayPlans[existingIndex];
+
+  if (
+    plan.payday <
+    existingPlan.payday
+  ) {
+    firstPlanIndexByAccount.set(
+      fundingAccountId,
+      index
+    );
+  }
+});
+
   const availableCents =
-    paydayPlans.map((plan) => {
-      const planAmountCents =
+    paydayPlans.map((plan, index) => {
+      const paycheckCents =
         Math.max(
           0,
           Math.round(
@@ -964,36 +1003,42 @@ function allocateBills(
           )
         );
 
-      const totalPaydayCents =
-        totalIncomeByPayday.get(
-          plan.payday
-        ) ?? planAmountCents;
+      const fundingAccountId =
+        plan.income.fundingAccountId;
 
-      if (totalPaydayCents <= 0) {
-        return 0;
+      if (!fundingAccountId) {
+        return paycheckCents;
       }
-
-      const protectedShareCents =
-        Math.round(
-          protectedCents *
-            (
-              planAmountCents /
-              totalPaydayCents
-            )
-        );
-
-      const paycheckAvailableCents =
-        Math.max(
-          0,
-          planAmountCents -
-            protectedShareCents
-        );
 
       const fundingAccount =
         fundingAccounts.find(
           (account) =>
             account.id ===
-            plan.income.fundingAccountId
+            fundingAccountId
+        );
+
+      if (!fundingAccount) {
+        return paycheckCents;
+      }
+
+      const isFirstPlanForAccount =
+        firstPlanIndexByAccount.get(
+          fundingAccountId
+        ) === index;
+
+      if (!isFirstPlanForAccount) {
+        return paycheckCents;
+      }
+
+      const currentBalanceCents =
+        Math.max(
+          0,
+          Math.round(
+            (
+              fundingAccount.currentBalance ??
+              0
+            ) * 100
+          )
         );
 
       const minimumBalanceCents =
@@ -1001,34 +1046,22 @@ function allocateBills(
           0,
           Math.round(
             (
-              fundingAccount
-                ?.minimumBalance ?? 0
+              fundingAccount.minimumBalance ??
+              0
             ) * 100
           )
         );
 
-      /*
-      * Protect the greater of:
-      *
-      * 1. This plan's share of the global
-      *    protected paycheck amount.
-      * 2. The receiving account's configured
-      *    minimum balance.
-      *
-      * Do not add currentBalance here because
-      * doing so would count today's balance
-      * again for every future paycheck.
-      */
-      const effectiveProtectionCents =
+      const existingSpendableCents =
         Math.max(
-          protectedShareCents,
-          minimumBalanceCents
+          0,
+          currentBalanceCents -
+            minimumBalanceCents
         );
 
-      return Math.max(
-        0,
-        planAmountCents -
-          effectiveProtectionCents
+      return (
+        paycheckCents +
+        existingSpendableCents
       );
     });
 
@@ -1234,7 +1267,6 @@ export function buildAllPaydayPlans(
     bills: Bill[],
     debts: Debt[],
     fundingAccounts: FundingAccount[],
-    protectedPaycheckAmount = 0,
     billFundingMode:
       | "together"
       | "large-bills"
@@ -1302,7 +1334,6 @@ return allocateBills(
   allObligations,
   paydayPlans,
   fundingAccounts,
-  protectedPaycheckAmount,
   billFundingMode,
   largeBillThreshold
 );
