@@ -9,6 +9,7 @@ import { useBills } from "../hooks/useBills";
 import { useIncome } from "../hooks/useIncome";
 import { useDebts } from "../hooks/useDebts";
 import type { FundingAccount } from "../types/FundingAccount";
+import { calculateMonthlyIncome } from "../utils/calculateMonthlyIncome";
 
 import {
   buildAllPaydayPlans,
@@ -823,84 +824,63 @@ const summary = useMemo(() => {
       0
     );
 
-  const monthlyPlans =
-    paydayPlans.filter(
-      (plan) => {
-        const payday =
-          parseDate(
-            plan.payday
-          );
-
-        return (
-          payday >= monthStart &&
-          payday < nextMonthStart
-        );
-      }
-    );
-
-  const totalUpcomingIncome =
-    monthlyPlans.reduce(
-      (sum, plan) =>
-        sum + plan.amount,
-      0
+  const totalMonthlyIncome =
+    calculateMonthlyIncome(
+      income,
+      today.getFullYear(),
+      today.getMonth()
     );
 
   const monthlyObligations =
-    new Map<string, number>();
+        new Map<string, number>();
 
-  for (
-    const plan of paydayPlans
-  ) {
-    for (
-      const item of plan.bills
-    ) {
-      const dueDate =
-        parseDate(
-          item.dueDate
-        );
+      for (const plan of paydayPlans) {
+        for (const item of plan.bills) {
+          const dueDate =
+            parseDate(item.dueDate);
 
-      if (
-        dueDate >= monthStart &&
-        dueDate < nextMonthStart
-      ) {
-        const key =
-          createObligationOccurrenceKey(
-            item.bill.name,
-            item.bill.amount,
-            item.dueDate
-          );
+          if (
+            dueDate < monthStart ||
+            dueDate >= nextMonthStart
+          ) {
+            continue;
+          }
 
-        if (
-          !monthlyObligations.has(
-            key
-          )
-        ) {
+          const key =
+            createObligationOccurrenceKey(
+              item.bill.name,
+              item.bill.amount,
+              item.dueDate
+            );
+
+          const currentAmount =
+            monthlyObligations.get(key) ?? 0;
+
           monthlyObligations.set(
             key,
-            item.bill.amount
+            currentAmount +
+              item.allocatedAmount
           );
         }
       }
-    }
-  }
 
-  const totalUpcomingBills =
-    Array.from(
-      monthlyObligations.values()
-    ).reduce(
-      (sum, amount) =>
-        sum + amount,
-      0
-    );
+      const totalMonthlyObligations =
+        Array.from(
+          monthlyObligations.values()
+        ).reduce(
+          (sum, amount) =>
+            sum + amount,
+          0
+        );
 
   return {
-    totalUpcomingIncome,
-    totalUpcomingBills,
+    totalMonthlyIncome,
+    totalMonthlyObligations,
     projectedRemaining:
-      totalUpcomingIncome -
-      totalUpcomingBills,
+      totalMonthlyIncome -
+      totalMonthlyObligations,
   };
-}, [paydayPlans]);
+}, [paydayPlans, income]);
 
   return (
     <PageContainer>
@@ -913,7 +893,7 @@ const summary = useMemo(() => {
         <StatCard
           title="Income This Month"
           value={formatCurrency(
-            summary.totalUpcomingIncome
+            summary.totalMonthlyIncome
           )}
           valueClassName="text-green-600"
         />
@@ -921,7 +901,7 @@ const summary = useMemo(() => {
         <StatCard
           title="Obligations This Month"
           value={formatCurrency(
-            summary.totalUpcomingBills
+            summary.totalMonthlyObligations
           )}
           valueClassName="text-red-600"
         />
