@@ -886,6 +886,7 @@ const handleUpdateExistingDebt = (
   updatedDebt.statementScanned = true;
   updatedDebt.statementScannedAt = now;
 
+  updateDebt(updatedDebt);
   updatedDebt.activityHistory = [
     ...(existingDebt.activityHistory ??
       []),
@@ -900,8 +901,6 @@ const handleUpdateExistingDebt = (
           : "Statement scan matched to this existing debt.",
     },
   ];
-
-  updateDebt(updatedDebt);
 
   setBills((current) => {
     const remaining =
