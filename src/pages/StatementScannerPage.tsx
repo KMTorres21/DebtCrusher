@@ -671,6 +671,9 @@ console.table(
       );
     }
 
+    updatedBill.statementScanned = true;
+    updatedBill.statementScannedAt = now;
+
     updatedBill.activityHistory = [
       ...(existingBill.activityHistory ??
         []),
