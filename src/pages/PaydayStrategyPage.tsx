@@ -252,8 +252,23 @@ function PaydayCard({
       0
     );
 
+  const currentBalance =
+    receivingAccount?.currentBalance ?? 0;
+
+  const minimumBalance =
+    receivingAccount?.minimumBalance ?? 0;
+
+  const availableToday =
+    Math.max(
+      0,
+      currentBalance - minimumBalance
+    );
+
+  const fundingCapacity =
+    availableToday + plan.amount;
+
   const adjustedRemaining =
-    plan.amount -
+    fundingCapacity -
     uniqueTotalBills;
 
   const isPositive =
@@ -691,7 +706,7 @@ function PaydayCard({
         />
 
         <StatCard
-          title="Remaining"
+          title="Available After Allocation"
           value={formatCurrency(
             adjustedRemaining
           )}
