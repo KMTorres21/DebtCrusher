@@ -880,6 +880,9 @@ const handleUpdateExistingDebt = (
     );
   }
 
+  updatedDebt.statementScanned = true;
+  updatedDebt.statementScannedAt = now;
+
   updatedDebt.activityHistory = [
     ...(existingDebt.activityHistory ??
       []),
