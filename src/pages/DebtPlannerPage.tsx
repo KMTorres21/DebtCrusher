@@ -173,7 +173,7 @@ export default function DebtPlannerPage() {
         extraAmount,
         oneTimeExtraAmount,
       ),
-    [debts, "snowball",extraAmount, oneTimeExtraAmount]
+    [debts, "snowball", extraAmount, oneTimeExtraAmount]
   );
 
   const interestSaved =
@@ -272,99 +272,6 @@ export default function DebtPlannerPage() {
             <p className="mt-1 text-xs text-slate-500">
               Smallest balance first.
             </p>
-          </button>
-        </div>
-      </Card>
-
-      {/* Extra Payment */}
-      <Card>
-        <label
-          htmlFor="extra-payment"
-          className="block text-lg font-bold"
-        >
-          Extra Monthly Payment
-        </label>
-
-        <p className="mt-1 text-sm text-slate-500">
-          Additional money applied to your
-          payoff strategy each month.
-        </p>
-
-        <div className="relative">
-          <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
-             $
-            </span>
-
-      <input
-        id="extra-payment"
-        type="number"
-        min="0"
-        step="25"
-        value={
-        extraAmount === 0
-          ? ""
-          : extraAmount
-      }
-        onChange={(event) => {
-          const value = event.target.value;
-
-          if (value === "") {
-            setExtraAmount(0);
-
-            localStorage.setItem(
-              "extraMonthlyPayment",
-              "0"
-            );
-
-            return;
-          }
-
-          const numericValue =
-            Number(value);
-
-          if (
-            Number.isNaN(numericValue)
-          ) {
-            return;
-          }
-
-          const sanitizedValue =
-            Math.max(0, numericValue);
-
-          setExtraAmount(
-            sanitizedValue
-          );
-
-          localStorage.setItem(
-            "extraMonthlyPayment",
-            sanitizedValue.toString()
-          );
-        }}
-        className="w-full rounded-xl border border-slate-200 py-3 pl-8 pr-4 outline-none 
-                  focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                  />
-          </div>
-
-          <div className="mt-3 flex items-center justify-between text-sm">
-            <span className="text-slate-500">
-              Available after obligations
-            </span>
-            {extraAmount > maxExtraPayment && (
-              <p className="mt-2 text-sm font-semibold text-amber-600">
-                This extra payment IS GREATER than your currently calculated available cash.
-              </p>
-            )}
-            <span className="font-semibold text-green-600">
-              {formatCurrency(maxExtraPayment)}
-            </span>
-          </div>
-          <button
-            type="button"
-            onClick={() => setExtraAmount(maxExtraPayment)}
-            className="mt-3 w-full rounded-xl bg-blue-50 px-4 py-3 text-blue-700 transition hover:bg-blue-100"
-          >
-            Use All Available Cash
           </button>
         </div>
       </Card>
