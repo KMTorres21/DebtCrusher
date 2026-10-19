@@ -3,6 +3,7 @@ import { Debt } from "../types/Debt";
 import { Income } from "../types/Income";
 import { FinancialSummary } from "../types/FinancialSummary";
 import { calculateMonthlyIncome } from "./calculateMonthlyIncome";
+import { getBillOccurrences } from "./calendarOccurrences";
 
 export function calculateFinancialSummary(
   bills: Bill[],
@@ -17,7 +18,19 @@ export function calculateFinancialSummary(
   );
 
   const totalBills = bills.reduce(
-    (sum, bill) => sum + bill.amount,
+    (sum, bill) => {
+      const occurrences =
+        getBillOccurrences(
+          bill,
+          today.getFullYear(),
+          today.getMonth()
+        );
+
+      return (
+        sum +
+        occurrences.length * bill.amount
+      );
+    },
     0
   );
 
