@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { Plus } from "lucide-react";
-import {
-  getFundingAccounts,
-} from "../utils/fundingAccountsStorage";
+import { getFundingAccounts } from "../utils/fundingAccountsStorage";
 import { Bill } from "../types/Bill";
 import { useBills } from "../hooks/useBills";
 import { useDisplaySettings } from "../hooks/useDisplaySettings";
@@ -15,6 +13,9 @@ import PageContainer from "../components/common/PageContainer";
 import PageHeader from "../components/common/PageHeader";
 import SearchBar from "../components/common/SearchBar";
 import EmptyState from "../components/common/EmptyState";
+import StatCard from "../components/common/StatCard";
+import { formatCurrency } from "../utils/formatCurrency";
+import { getBillOccurrences } from "../utils/calendarOccurrences";
 
 export default function BillsPage() {
   const {
@@ -43,10 +44,11 @@ export default function BillsPage() {
     useState<Bill | null>(null);
   const [sortBy, setSortBy] = useState<
   "name" | "dueDate" | "statementDate"
-    >(() => {
-  const saved = localStorage.getItem(
-    "debtSortBy"
-  );
+>(() => {
+  const saved =
+    localStorage.getItem(
+      "debtSortBy"
+    );
 
   if (
     saved === "name" ||
@@ -57,9 +59,39 @@ export default function BillsPage() {
   }
 
   return "dueDate";
-    });
-  const today =
-  new Date().toISOString().slice(0, 10);
+});
+
+const currentDate = new Date();
+
+const monthlyBillSummary = bills.reduce(
+  (summary, bill) => {
+    const occurrences =
+      getBillOccurrences(
+        bill,
+        currentDate.getFullYear(),
+        currentDate.getMonth()
+      );
+
+    return {
+      count:
+        summary.count +
+        occurrences.length,
+
+      total:
+        summary.total +
+        occurrences.length *
+          bill.amount,
+    };
+  },
+  {
+    count: 0,
+    total: 0,
+  }
+);
+
+const today = new Date()
+    .toISOString()
+    .slice(0, 10);
 
   const filteredBills = bills
     .filter((bill) =>
@@ -220,6 +252,19 @@ export default function BillsPage() {
       <PageHeader
         title="Bills"
         subtitle="Track and manage your bills"
+      />
+
+      <StatCard
+        title="Bills This Month"
+        value={monthlyBillSummary.count}
+      />
+
+      <StatCard
+        title="Monthly Obligations"
+        value={formatCurrency(
+          monthlyBillSummary.total
+        )}
+        valueClassName="text-red-600"
       />
 
         <SearchBar
